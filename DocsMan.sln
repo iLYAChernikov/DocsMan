@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{488CDFEB-C34
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocsMan.Domain", "src\DocsMan.Domain\DocsMan.Domain.csproj", "{C640E7CB-023D-454D-9B3F-673F7369B88E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocsMan.App", "src\DocsMan.App\DocsMan.App.csproj", "{06D41343-B5CC-472C-BE07-3586E53F56BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +19,17 @@ Global
 		{C640E7CB-023D-454D-9B3F-673F7369B88E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C640E7CB-023D-454D-9B3F-673F7369B88E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C640E7CB-023D-454D-9B3F-673F7369B88E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06D41343-B5CC-472C-BE07-3586E53F56BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D41343-B5CC-472C-BE07-3586E53F56BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D41343-B5CC-472C-BE07-3586E53F56BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D41343-B5CC-472C-BE07-3586E53F56BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C640E7CB-023D-454D-9B3F-673F7369B88E} = {488CDFEB-C345-4D2A-BA8D-FB1DADD13476}
+		{06D41343-B5CC-472C-BE07-3586E53F56BA} = {488CDFEB-C345-4D2A-BA8D-FB1DADD13476}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {982C5054-BE9F-4018-8652-A742AAEED085}
