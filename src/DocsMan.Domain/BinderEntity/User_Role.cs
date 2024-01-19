@@ -2,7 +2,7 @@ using DocsMan.Domain.Entity;
 
 namespace DocsMan.Domain.BinderEntity
 {
-	public class Role_User
+	public class User_Role
 	{
 		public int RoleId { get; set; }
 		public Role Role { get; set; }
