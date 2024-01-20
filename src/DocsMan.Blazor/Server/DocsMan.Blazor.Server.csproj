@@ -8,9 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.15" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DocsMan.Adapter\DocsMan.Adapter.csproj" />
     <ProjectReference Include="..\..\DocsMan.App\DocsMan.App.csproj" />
     <ProjectReference Include="..\Client\DocsMan.Blazor.Client.csproj" />
     <ProjectReference Include="..\Shared\DocsMan.Blazor.Shared.csproj" />

@@ -11,7 +11,7 @@ namespace DocsMan.Domain.Entity
 				if ( string.IsNullOrWhiteSpace(value) )
 					throw new NullReferenceException("Ошибка заполнения имени");
 				_name = value;
-			};
+			}
 		}
 		public string? Description { get; set; }
 
