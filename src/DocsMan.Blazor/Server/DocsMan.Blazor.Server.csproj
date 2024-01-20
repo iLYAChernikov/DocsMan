@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DocsMan.App\DocsMan.App.csproj" />
     <ProjectReference Include="..\Client\DocsMan.Blazor.Client.csproj" />
     <ProjectReference Include="..\Shared\DocsMan.Blazor.Shared.csproj" />
   </ItemGroup>

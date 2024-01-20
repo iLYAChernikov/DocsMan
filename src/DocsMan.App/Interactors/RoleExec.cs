@@ -89,6 +89,9 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
+				if ( id > 0 && id < 4 )
+					return new("Запрещено удалять эту роль", "Forbidden delete this role");
+
 				await _repos.DeleteAsync(( await _repos.GetOneAsync(id) )
 					?? throw new NullReferenceException("Not found"));
 				await _unitWork.Commit();
