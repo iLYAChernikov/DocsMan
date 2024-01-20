@@ -13,24 +13,24 @@ namespace DocsMan.Adapter
 			Database.EnsureCreatedAsync();
 		}
 
-		DbSet<Document> Documents { get; set; }
-		DbSet<DocumentHistory> DocumentHistories { get; set; }
-		DbSet<Folder> Folders { get; set; }
-		DbSet<Group> Groups { get; set; }
-		DbSet<Notification> Notifications { get; set; }
-		DbSet<PersonalDocument> PersonalDocuments { get; set; }
-		DbSet<PersonalDocumentType> PersonalDocumentTypes { get; set; }
-		DbSet<Profile> Profiles { get; set; }
-		DbSet<Role> Roles { get; set; }
-		DbSet<UploadFile> Files { get; set; }
-		DbSet<User> Users { get; set; }
+		public DbSet<Document> Documents { get; set; }
+		public DbSet<DocumentHistory> DocumentHistories { get; set; }
+		public DbSet<Folder> Folders { get; set; }
+		public DbSet<Group> Groups { get; set; }
+		public DbSet<Notification> Notifications { get; set; }
+		public DbSet<PersonalDocument> PersonalDocuments { get; set; }
+		public DbSet<PersonalDocumentType> PersonalDocumentTypes { get; set; }
+		public DbSet<Profile> Profiles { get; set; }
+		public DbSet<Role> Roles { get; set; }
+		public DbSet<UploadFile> Files { get; set; }
+		public DbSet<User> Users { get; set; }
 
-		DbSet<Folder_Document> Folder_Documents { get; set; }
-		DbSet<Folder_Folder> Folder_Folders { get; set; }
-		DbSet<Profile_Document> Profile_Documents { get; set; }
-		DbSet<Profile_Group> Profile_Groups { get; set; }
-		DbSet<Profile_Notify> Profile_Notifications { get; set; }
-		DbSet<User_Role> User_Roles { get; set; }
+		public DbSet<Folder_Document> Folder_Documents { get; set; }
+		public DbSet<Folder_Folder> Folder_Folders { get; set; }
+		public DbSet<Profile_Document> Profile_Documents { get; set; }
+		public DbSet<Profile_Group> Profile_Groups { get; set; }
+		public DbSet<Profile_Notify> Profile_Notifications { get; set; }
+		public DbSet<User_Role> User_Roles { get; set; }
 
 
 		private List<Role> defaultRoles = new()

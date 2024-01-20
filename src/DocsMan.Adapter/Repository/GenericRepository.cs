@@ -11,13 +11,13 @@ namespace DocsMan.Adapter.Repository
 			_context = context;
 		}
 
-		public async Task CreateAsync(TEntity entity)
+		public async Task CreateAsync(TEntity? entity)
 		{
 			if ( entity == null ) throw new Exception("Null input data");
 			await _context.Set<TEntity>().AddAsync(entity);
 		}
 
-		public async Task DeleteAsync(TEntity entity)
+		public async Task DeleteAsync(TEntity? entity)
 		{
 			if ( entity == null ) throw new Exception("Null input data");
 			_context.Remove(entity);
@@ -31,16 +31,20 @@ namespace DocsMan.Adapter.Repository
 		public async Task<TEntity?> GetOneAsync(int id)
 		{
 			if ( id <= 0 ) throw new Exception("Null input data");
-			return await _context.Set<TEntity>().FindAsync(id);
+			var ent = await _context.Set<TEntity>().FindAsync(id);
+			if ( ent == null ) throw new NullReferenceException("Not found");
+			return ent;
 		}
 
 		public async Task<TEntity?> GetOneAsync(int firstId, int secondId)
 		{
 			if ( firstId <= 0 || secondId <= 0 ) throw new Exception("Null input data");
-			return await _context.Set<TEntity>().FindAsync(firstId, secondId);
+			var ent = await _context.Set<TEntity>().FindAsync(firstId, secondId);
+			if ( ent == null ) throw new NullReferenceException("Not found");
+			return ent;
 		}
 
-		public async Task UpdateAsync(TEntity entity)
+		public async Task UpdateAsync(TEntity? entity)
 		{
 			if ( entity == null ) throw new Exception("Null input data");
 			_context.Update(entity);

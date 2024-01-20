@@ -4,7 +4,7 @@ namespace DocsMan.Adapter.Transaction
 {
 	public class UnitWork : IUnitWork
 	{
-		DocsMan_DBContext _context;
+		private DocsMan_DBContext _context;
 		public UnitWork(DocsMan_DBContext context)
 		{
 			_context = context;
