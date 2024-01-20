@@ -4,18 +4,6 @@ namespace DocsMan.Domain.BinderEntity
 {
 	public class User_Role
 	{
-		public int RoleId
-		{
-			get => _roleId;
-			set
-			{
-				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения роли");
-				_roleId = value;
-			}
-		}
-		public Role Role { get; set; }
-
 		public int UserId
 		{
 			get => _userId;
@@ -28,7 +16,19 @@ namespace DocsMan.Domain.BinderEntity
 		}
 		public User User { get; set; }
 
-		private int _roleId;
+		public int RoleId
+		{
+			get => _roleId;
+			set
+			{
+				if ( value <= 0 )
+					throw new NullReferenceException("Ошибка заполнения роли");
+				_roleId = value;
+			}
+		}
+		public Role Role { get; set; }
+
 		private int _userId;
+		private int _roleId;
 	}
 }

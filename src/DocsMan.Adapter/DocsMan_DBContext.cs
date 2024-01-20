@@ -1,3 +1,4 @@
+using DocsMan.Adapter.EntityConfigurations;
 using DocsMan.Domain.BinderEntity;
 using DocsMan.Domain.Entity;
 
@@ -39,9 +40,32 @@ namespace DocsMan.Adapter
 			new Role(){ Id = 3, Title = "user",         Description = "default system user"         }
 		};
 
+		private List<PersonalDocumentType> personalDocumentTypes = new()
+		{
+			new PersonalDocumentType(){ Id = 1, Title = "Фото", Description = "фото профиля, аватарка" }
+		};
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder
+				.ApplyConfiguration(new DocumentHistoryConfig());
+			modelBuilder
+				.ApplyConfiguration(new Folder_Document_Config());
+			modelBuilder
+				.ApplyConfiguration(new Folder_Folder_Config());
+			modelBuilder
+				.ApplyConfiguration(new PersonalDocumentConfig());
+			modelBuilder
+				.ApplyConfiguration(new Profile_Document_Config());
+			modelBuilder
+				.ApplyConfiguration(new Profile_Group_Config());
+			modelBuilder
+				.ApplyConfiguration(new Profile_Notify_Config());
+			modelBuilder
+				.ApplyConfiguration(new User_Role_Config());
+
 			modelBuilder.Entity<Role>().HasData(defaultRoles);
+			modelBuilder.Entity<PersonalDocumentType>().HasData(personalDocumentTypes);
 		}
 	}
 }
