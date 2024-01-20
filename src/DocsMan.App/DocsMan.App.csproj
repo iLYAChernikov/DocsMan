@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DocsMan.Blazor\Shared\DocsMan.Blazor.Shared.csproj" />
+    <ProjectReference Include="..\DocsMan.Domain\DocsMan.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

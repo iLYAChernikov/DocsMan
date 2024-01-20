@@ -11,12 +11,12 @@ namespace DocsMan.Blazor.Shared.DTOs
 		public string? LastName { get; set; } = string.Empty;
 
 		public DateTime Birthdate { get; set; } = DateTime.Now;
-		public Gender Gender { get; set; } = Gender.Man;
+		public GenderDto Gender { get; set; } = Gender.Man;
 		public string Email { get; set; } = null!;
 		public string? PhoneNumber { get; set; } = string.Empty;
 	}
 
-	public enum Gender : short
+	public enum GenderDto : short
 	{
 		Woman = 0,
 		Man = 1
