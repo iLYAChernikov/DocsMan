@@ -8,7 +8,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( value < 0 )
-					throw new NullReferenceException("Ошибка заполнения id");
+					throw new ArgumentNullException("Ошибка заполнения id пользователя");
 				_id = value;
 			}
 		}
@@ -18,7 +18,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения почты");
+					throw new ArgumentNullException("Ошибка заполнения почты пользователя");
 				_email = value;
 			}
 		}
@@ -28,7 +28,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения пароля");
+					throw new ArgumentNullException("Ошибка заполнения пароля пользователя");
 				_password = value;
 			}
 		}

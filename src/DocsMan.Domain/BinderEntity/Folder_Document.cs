@@ -10,7 +10,7 @@ namespace DocsMan.Domain.BinderEntity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения папки");
+					throw new ArgumentNullException("Ошибка заполнения id папки");
 				_folderId = value;
 			}
 		}
@@ -22,7 +22,7 @@ namespace DocsMan.Domain.BinderEntity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения файла");
+					throw new ArgumentNullException("Ошибка заполнения id файла");
 				_fileId = value;
 			}
 		}

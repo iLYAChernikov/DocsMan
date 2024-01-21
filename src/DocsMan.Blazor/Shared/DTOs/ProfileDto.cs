@@ -6,9 +6,9 @@ namespace DocsMan.Blazor.Shared.DTOs
 
 		public int UserId { get; set; }
 
-		public string? SurName { get; set; } = string.Empty;
-		public string? Name { get; set; } = string.Empty;
-		public string? LastName { get; set; } = string.Empty;
+		public string SurName { get; set; } = null!;
+		public string Name { get; set; } = null!;
+		public string LastName { get; set; } = null!;
 
 		public DateTime Birthdate { get; set; } = DateTime.Now;
 		public GenderDto Gender { get; set; } = GenderDto.Man;

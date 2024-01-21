@@ -2,7 +2,16 @@ namespace DocsMan.Domain.Entity
 {
 	public class Profile
 	{
-		public int Id { get; set; }
+		public int Id
+		{
+			get => _id;
+			set
+			{
+				if ( value < 0 )
+					throw new ArgumentNullException("Ошибка заполнения id профиля");
+				_id = value;
+			}
+		}
 
 		public int UserId
 		{
@@ -10,7 +19,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения пользователя");
+					throw new ArgumentNullException("Ошибка заполнения id пользователя в профиле");
 				_userId = value;
 			}
 		}
@@ -22,7 +31,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения фамилии");
+					throw new ArgumentNullException("Ошибка заполнения фамилии в профиле");
 				_surName = value;
 			}
 		}
@@ -32,7 +41,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения имени");
+					throw new ArgumentNullException("Ошибка заполнения имени в профиле");
 				_name = value;
 			}
 		}
@@ -42,30 +51,21 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения отчества");
+					throw new ArgumentNullException("Ошибка заполнения отчества в профиле");
 				_lastName = value;
 			}
 		}
 
 		public DateTime Birthdate { get; set; } = DateTime.Now;
 		public Gender Gender { get; set; } = Gender.Man;
-		public string Email
-		{
-			get => _email;
-			set
-			{
-				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения почты");
-				_email = value;
-			}
-		}
+		public string Email => User.Email;
 		public string? PhoneNumber { get; set; } = string.Empty;
 
+		private int _id;
 		private int _userId;
 		private string _surName = string.Empty;
 		private string _name = string.Empty;
 		private string _lastName = string.Empty;
-		private string _email = string.Empty;
 	}
 
 	public enum Gender : short

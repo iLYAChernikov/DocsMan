@@ -10,7 +10,7 @@ namespace DocsMan.Domain.BinderEntity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения пользователя");
+					throw new ArgumentNullException("Ошибка заполнения id пользователя");
 				_userId = value;
 			}
 		}
@@ -22,7 +22,7 @@ namespace DocsMan.Domain.BinderEntity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения роли");
+					throw new ArgumentNullException("Ошибка заполнения id роли");
 				_roleId = value;
 			}
 		}

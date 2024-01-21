@@ -28,7 +28,6 @@ namespace DocsMan.App.Mappers
 				SurName = dto.SurName,
 				LastName = dto.LastName,
 				Birthdate = dto.Birthdate,
-				Email = dto.Email,
 				PhoneNumber = dto.PhoneNumber,
 				Gender = dto.Gender == GenderDto.Man ? Gender.Man : Gender.Woman
 			};

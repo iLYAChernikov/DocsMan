@@ -8,7 +8,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения документа");
+					throw new ArgumentNullException("Ошибка заполнения id документа");
 				_documentId = value;
 			}
 		}
@@ -20,7 +20,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения описания");
+					throw new ArgumentNullException("Ошибка заполнения id файла");
 				_fileId = value;
 			}
 		}

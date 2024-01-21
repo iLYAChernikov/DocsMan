@@ -2,7 +2,16 @@ namespace DocsMan.Domain.Entity
 {
 	public class Document
 	{
-		public int Id { get; set; }
+		public int Id
+		{
+			get => _id;
+			set
+			{
+				if ( value < 0 )
+					throw new ArgumentNullException("Ошибка заполнения id документа");
+				_id = value;
+			}
+		}
 
 		public string Name
 		{
@@ -10,7 +19,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения имени");
+					throw new ArgumentNullException("Ошибка заполнения имени документа");
 				_name = value;
 			}
 		}
@@ -20,7 +29,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new NullReferenceException("Ошибка заполнения типа файла");
+					throw new ArgumentNullException("Ошибка заполнения типа файла");
 				_fileType = value;
 			}
 		}
@@ -33,7 +42,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( value <= 0 )
-					throw new NullReferenceException("Ошибка заполнения файла");
+					throw new ArgumentNullException("Ошибка заполнения id файла");
 				_fileId = value;
 			}
 		}
@@ -41,6 +50,7 @@ namespace DocsMan.Domain.Entity
 
 		public bool IsDeleted { get; set; } = false;
 
+		private int _id;
 		private string _name = string.Empty;
 		private string _fileType = string.Empty;
 		private int _fileId;
