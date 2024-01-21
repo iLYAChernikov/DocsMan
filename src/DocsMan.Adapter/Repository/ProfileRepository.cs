@@ -45,11 +45,5 @@ namespace DocsMan.Adapter.Repository
 		{
 			throw new NotSupportedException("Not a composite key");
 		}
-
-		public async Task UpdateAsync(Profile? entity)
-		{
-			if ( entity == null ) throw new ArgumentNullException("Null input data");
-			_context.Profiles.Update(entity);
-		}
 	}
 }

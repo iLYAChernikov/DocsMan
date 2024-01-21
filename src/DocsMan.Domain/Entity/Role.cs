@@ -18,7 +18,7 @@ namespace DocsMan.Domain.Entity
 			set
 			{
 				if ( string.IsNullOrWhiteSpace(value) )
-					throw new ArgumentNullException("Ошибка заполнения названия");
+					throw new ArgumentNullException("Ошибка заполнения названия роли");
 				_title = value;
 			}
 		}

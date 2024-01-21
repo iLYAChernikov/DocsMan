@@ -40,7 +40,7 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.GetOne(roleId);
 		}
 
-		[HttpGet("GetOneByTitle/title")]
+		[HttpGet("GetOneByTitle/{title}")]
 		public async Task<Response<RoleDto?>> GetOne(string title)
 		{
 			return await _master.GetOne(title);

@@ -45,7 +45,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -67,7 +67,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -113,7 +113,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new($"Пустые входные данные\n{ex.Message}", "Internal error of entity null props");
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
 			catch ( Exception ex )
 			{
@@ -133,7 +133,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -143,37 +143,16 @@ namespace DocsMan.App.Interactors
 			{
 				return new("Ошибка удаления", ex.Message);
 			}
-		}
-
-		public async Task<Response> Update(UserDto ent)
-		{
-			try
-			{
-				var old = await _userRepos.GetOneAsync(ent.Id);
-				if ( old == null ) throw new NullReferenceException("Not found");
-				await _userRepos.UpdateAsync(ent.ToEntity());
-				await _unitWork.Commit();
-
-				return new(true);
-			}
-			catch ( ArgumentNullException ex )
-			{
-				return new($"Пустые входные данные\n{ex.Message}", "Internal error of entity null props");
-			}
-			catch ( NullReferenceException ex )
-			{
-				return new("Запись не найдена", ex.Message);
-			}
-			catch ( Exception ex )
-			{
-				return new("Ошибка изменения", ex.Message);
-			}
-		}
+		}		
 
 		public async Task<Response<IEnumerable<RoleDto>?>> GetRoles(int userId)
 		{
 			try
 			{
+				if ( userId <= 0 ) throw new ArgumentNullException("Null input data");
+				if ( await _userRepos.GetOneAsync(userId) == null )
+					throw new NullReferenceException("Not found");
+
 				var roles = ( await _userRoles.GetAllBinds() )?
 					.Where(x => x.UserId == userId)?
 					.Select(x => x.Role.ToDto());
@@ -181,7 +160,11 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch ( NullReferenceException ex )
+			{
+				return new("Запись не найдена", ex.Message);
 			}
 			catch ( Exception ex )
 			{
@@ -205,7 +188,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( Exception ex )
 			{
@@ -226,7 +209,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( NullReferenceException ex )
 			{

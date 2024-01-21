@@ -28,30 +28,22 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.GetAll();
 		}
 
-		[HttpGet("GetOneById/userId")]
+		[HttpGet("GetOneById/{userId}")]
 		public async Task<Response<UserDto?>> GetOne(int userId)
 		{
 			return await _master.GetOne(userId);
 		}
 
-		[HttpGet("GetOneByEmail/email")]
+		[HttpGet("GetOneByEmail/{email}")]
 		public async Task<Response<UserDto?>> GetOne(string email)
 		{
 			return await _master.GetOne(email);
-		}
+		}		
 
-		[HttpPost("Update")]
-		public async Task<Response> Update(UserDto user)
-		{
-			return await _master.Update(user);
-		}
-
-		[HttpGet("GetRoles/userId")]
+		[HttpGet("GetRoles/{userId}")]
 		public async Task<Response<IEnumerable<RoleDto>?>> GetRoles(int userId)
 		{
 			return await _master.GetRoles(userId);
 		}
-
-
 	}
 }

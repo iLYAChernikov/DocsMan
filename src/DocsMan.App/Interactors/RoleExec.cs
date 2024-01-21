@@ -40,7 +40,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -62,7 +62,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -89,7 +89,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new($"Пустые входные данные\n{ex.Message}", "Internal error of entity null props");
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
 			catch ( Exception ex )
 			{
@@ -101,7 +101,7 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				if ( id <= 3 )
+				if ( id > 0 && id <= 3 )
 					return new("Запрещено удалять эту роль", "Forbidden delete this role");
 
 				await _repos.DeleteAsync(( await _repos.GetOneAsync(id) )
@@ -112,7 +112,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.Message);
+				return new("Пустые входные данные", ex.ParamName);
 			}
 			catch ( NullReferenceException ex )
 			{

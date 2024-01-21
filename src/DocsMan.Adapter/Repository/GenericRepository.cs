@@ -43,11 +43,5 @@ namespace DocsMan.Adapter.Repository
 			if ( ent == null ) throw new NullReferenceException("Not found");
 			return ent;
 		}
-
-		public async Task UpdateAsync(TEntity? entity)
-		{
-			if ( entity == null ) throw new ArgumentNullException("Null input data");
-			_context.Update(entity);
-		}
 	}
 }

@@ -9,8 +9,6 @@ namespace DocsMan.App.Storage.RepositoryPattern
 
 		public Task<IEnumerable<TEntity>?> GetAllAsync();
 
-		public Task UpdateAsync(TEntity? entity);
-
 		public Task DeleteAsync(TEntity? entity);
 	}
 }

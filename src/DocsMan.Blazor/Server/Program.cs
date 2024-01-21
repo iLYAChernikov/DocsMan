@@ -45,7 +45,7 @@ namespace DocsMan.Blazor
 			//	swagger
 			builder.Services.AddSwaggerGen(options =>
 			{
-				options.SwaggerDoc("v1", new OpenApiInfo { Title = "DocsManAge_Service", Version = "v1" });
+				options.SwaggerDoc("v1", new OpenApiInfo { Title = "DocsMan_Service", Version = "v1" });
 			});
 
 			var app = builder.Build();
