@@ -15,7 +15,13 @@ namespace DocsMan.App.Interactors
 		private IBindingRepository<User_Role> _userRoles;
 		private IUnitWork _unitWork;
 
-		public UserExec(IRepository<User> repos, IBindingRepository<User_Role> userRoles, IUnitWork unitWork, IRepository<Profile> profileRepos)
+		public UserExec
+		(
+			IRepository<User> repos,
+			IBindingRepository<User_Role> userRoles,
+			IUnitWork unitWork,
+			IRepository<Profile> profileRepos
+		)
 		{
 			_userRepos = repos;
 			_profileRepos = profileRepos;
@@ -27,8 +33,9 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var data = await _userRepos.GetAllAsync();
-				return new(data?.Select(x => x?.ToDto()));
+				var data = ( await _userRepos.GetAllAsync() )?
+					.Select(x => x.ToDto());
+				return new(data);
 			}
 			catch ( Exception ex )
 			{
@@ -41,7 +48,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var ent = await _userRepos.GetOneAsync(id);
-				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
+				return new(ent.ToDto());
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -63,15 +70,10 @@ namespace DocsMan.App.Interactors
 			{
 				var ent = ( await _userRepos.GetAllAsync() )?
 					.FirstOrDefault(x => x.Email == email);
-				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
-			}
-			catch ( ArgumentNullException ex )
-			{
-				return new("Пустые входные данные", ex.ParamName);
-			}
-			catch ( NullReferenceException ex )
-			{
-				return new("Запись не найдена", ex.Message);
+				if ( ent == null )
+					return new("Пользователь не найден", "User not exist");
+				else
+					return new(ent.ToDto());
 			}
 			catch ( Exception ex )
 			{
@@ -95,7 +97,7 @@ namespace DocsMan.App.Interactors
 					new()
 					{
 						UserId = user.Id,
-						RoleId = 3
+						RoleId = 1
 					});
 				await _unitWork.Commit();
 
@@ -125,8 +127,7 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var ent = await _userRepos.GetOneAsync(id);
-				await _userRepos.DeleteAsync(ent ?? throw new NullReferenceException("Not found"));
+				await _userRepos.DeleteAsync(id);
 				await _unitWork.Commit();
 
 				return new(true);
@@ -149,10 +150,6 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				if ( userId <= 0 ) throw new ArgumentNullException("Null input data");
-				if ( await _userRepos.GetOneAsync(userId) == null )
-					throw new NullReferenceException("Not found");
-
 				var roles = ( await _userRoles.GetAllBinds() )?
 					.Where(x => x.UserId == userId)?
 					.Select(x => x.Role.ToDto());
@@ -161,10 +158,6 @@ namespace DocsMan.App.Interactors
 			catch ( ArgumentNullException ex )
 			{
 				return new("Пустые входные данные", ex.ParamName);
-			}
-			catch ( NullReferenceException ex )
-			{
-				return new("Запись не найдена", ex.Message);
 			}
 			catch ( Exception ex )
 			{
@@ -200,11 +193,12 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				if ( userId <= 0 || roleId <= 0 ) throw new ArgumentNullException("Null input data");
-
-				var bind = ( await _userRoles.GetAllBinds() )?
-					.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
-				await _userRoles.DeleteBindAsync(bind ?? throw new NullReferenceException("Not found"));
+				await _userRoles.DeleteBindAsync(
+					new()
+					{
+						UserId = userId,
+						RoleId = roleId
+					});
 				await _unitWork.Commit();
 
 				return new(true);
@@ -212,10 +206,6 @@ namespace DocsMan.App.Interactors
 			catch ( ArgumentNullException ex )
 			{
 				return new("Пустые входные данные", ex.ParamName);
-			}
-			catch ( NullReferenceException ex )
-			{
-				return new("Запись не найдена", ex.Message);
 			}
 			catch ( Exception ex )
 			{

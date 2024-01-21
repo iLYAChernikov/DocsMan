@@ -1,3 +1,4 @@
+using System.Data;
 using DocsMan.App.Mappers;
 using DocsMan.App.Storage.RepositoryPattern;
 using DocsMan.App.Storage.Transaction;
@@ -14,7 +15,12 @@ namespace DocsMan.App.Interactors
 		private IBindingRepository<User_Role> _userRoles;
 		private IUnitWork _unitWork;
 
-		public RoleExec(IRepository<Role> repos, IUnitWork unitWork, IBindingRepository<User_Role> userRoles)
+		public RoleExec
+		(
+			IRepository<Role> repos,
+			IUnitWork unitWork,
+			IBindingRepository<User_Role> userRoles
+		)
 		{
 			_repos = repos;
 			_userRoles = userRoles;
@@ -39,7 +45,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var ent = await _repos.GetOneAsync(id);
-				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
+				return new(ent.ToDto());
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -61,15 +67,10 @@ namespace DocsMan.App.Interactors
 			{
 				var ent = ( await _repos.GetAllAsync() )?
 					.FirstOrDefault(x => x.Title == title);
-				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
-			}
-			catch ( ArgumentNullException ex )
-			{
-				return new("Пустые входные данные", ex.ParamName);
-			}
-			catch ( NullReferenceException ex )
-			{
-				return new("Запись не найдена", ex.Message);
+				if ( ent == null )
+					return new("Запись не найдена", "Not found");
+				else
+					return new(ent.ToDto());
 			}
 			catch ( Exception ex )
 			{
@@ -107,8 +108,7 @@ namespace DocsMan.App.Interactors
 				if ( id > 0 && id <= 3 )
 					return new("Запрещено удалять эту роль", "Forbidden delete this role");
 
-				await _repos.DeleteAsync(( await _repos.GetOneAsync(id) )
-					?? throw new NullReferenceException("Not found"));
+				await _repos.DeleteAsync(id);
 				await _unitWork.Commit();
 
 				return new(true);
@@ -131,9 +131,7 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				if ( roleId <= 0 ) throw new ArgumentNullException("Null input data");
-				if ( await _repos.GetOneAsync(roleId) == null )
-					throw new NullReferenceException("Not found");
+				await _repos.GetOneAsync(roleId);
 
 				var users = ( await _userRoles.GetAllBinds() )?
 					.Where(x => x.RoleId == roleId)
