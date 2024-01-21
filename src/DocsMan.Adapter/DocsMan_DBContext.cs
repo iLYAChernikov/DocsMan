@@ -28,6 +28,7 @@ namespace DocsMan.Adapter
 		public DbSet<Folder_Document> Folder_Documents { get; set; }
 		public DbSet<Folder_Folder> Folder_Folders { get; set; }
 		public DbSet<Profile_Document> Profile_Documents { get; set; }
+		public DbSet<Profile_Folder> Profile_Folders { get; set; }
 		public DbSet<Profile_Group> Profile_Groups { get; set; }
 		public DbSet<Profile_Notify> Profile_Notifications { get; set; }
 		public DbSet<User_Role> User_Roles { get; set; }
