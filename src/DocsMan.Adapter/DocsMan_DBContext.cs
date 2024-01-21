@@ -36,9 +36,9 @@ namespace DocsMan.Adapter
 
 		private List<Role> defaultRoles = new()
 		{
-			new Role(){ Id = 1, Title = "superAdmin",   Description = "control system settings"     },
+			new Role(){ Id = 1, Title = "user",         Description = "default system user"         }
 			new Role(){ Id = 2, Title = "admin",        Description = "control in system"           },
-			new Role(){ Id = 3, Title = "user",         Description = "default system user"         }
+			new Role(){ Id = 3, Title = "superAdmin",   Description = "control system settings"     },
 		};
 
 		private List<PersonalDocumentType> personalDocumentTypes = new()

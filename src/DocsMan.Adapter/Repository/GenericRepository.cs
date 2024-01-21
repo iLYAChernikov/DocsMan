@@ -19,8 +19,24 @@ namespace DocsMan.Adapter.Repository
 
 		public async Task DeleteAsync(TEntity? entity)
 		{
-			if ( entity == null ) throw new ArgumentNullException("Null input data");
+			if ( entity == null ) throw new NullReferenceException("Not found");
 			_context.Remove(entity);
+		}
+
+		public async Task DeleteAsync(int id)
+		{
+			if ( id <= 0 ) throw new ArgumentNullException("Null input data");
+			var ent = await _context.Set<TEntity>().FindAsync(id);
+			if ( ent == null ) throw new NullReferenceException("Not found");
+			_context.Remove(ent);
+		}
+
+		public async Task DeleteAsync(int firstId, int secondId)
+		{
+			if ( firstId <= 0 || secondId <= 0 ) throw new ArgumentNullException("Null input data");
+			var ent = await _context.Set<TEntity>().FindAsync(firstId, secondId);
+			if ( ent == null ) throw new NullReferenceException("Not found");
+			_context.Remove(ent);
 		}
 
 		public async Task<IEnumerable<TEntity>?> GetAllAsync()
@@ -28,7 +44,7 @@ namespace DocsMan.Adapter.Repository
 			return _context.Set<TEntity>();
 		}
 
-		public async Task<TEntity?> GetOneAsync(int id)
+		public async Task<TEntity> GetOneAsync(int id)
 		{
 			if ( id <= 0 ) throw new ArgumentNullException("Null input data");
 			var ent = await _context.Set<TEntity>().FindAsync(id);
@@ -36,7 +52,7 @@ namespace DocsMan.Adapter.Repository
 			return ent;
 		}
 
-		public async Task<TEntity?> GetOneAsync(int firstId, int secondId)
+		public async Task<TEntity> GetOneAsync(int firstId, int secondId)
 		{
 			if ( firstId <= 0 || secondId <= 0 ) throw new ArgumentNullException("Null input data");
 			var ent = await _context.Set<TEntity>().FindAsync(firstId, secondId);
