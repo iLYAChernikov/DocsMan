@@ -19,5 +19,9 @@
     <ProjectReference Include="..\Shared\DocsMan.Blazor.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataStorage\DataBase\" />
+  </ItemGroup>
+
 
 </Project>
