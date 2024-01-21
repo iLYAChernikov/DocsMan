@@ -37,7 +37,7 @@ namespace DocsMan.Domain.Entity
 				_fileId = value;
 			}
 		}
-		public UploadFile UploadFile { get; set; }
+		public UploadFile File { get; set; }
 
 		public bool IsDeleted { get; set; } = false;
 

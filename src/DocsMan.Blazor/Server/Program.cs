@@ -46,7 +46,6 @@ namespace DocsMan.Blazor
 			builder.Services.AddSwaggerGen(options =>
 			{
 				options.SwaggerDoc("v1", new OpenApiInfo { Title = "DocsManAge_Service", Version = "v1" });
-				options.SwaggerDoc("v2", new OpenApiInfo { Title = "DocsManAge_Service222", Version = "v2" });
 			});
 
 			var app = builder.Build();
@@ -59,7 +58,6 @@ namespace DocsMan.Blazor
 				app.UseSwaggerUI(c =>
 				{
 					c.SwaggerEndpoint("/swagger/v1/swagger.json", "DocsMan Blazor API v1.0");
-					c.SwaggerEndpoint("/swagger/v2/swagger.json", "DocsMan Blazor API v2.0");
 				});
 			}
 			else

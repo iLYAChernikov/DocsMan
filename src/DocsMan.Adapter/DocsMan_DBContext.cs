@@ -64,6 +64,8 @@ namespace DocsMan.Adapter
 				.ApplyConfiguration(new Profile_Notify_Config());
 			modelBuilder
 				.ApplyConfiguration(new User_Role_Config());
+			modelBuilder
+				.ApplyConfiguration(new Profile_Folder_Config());
 
 			modelBuilder.Entity<Role>().HasData(defaultRoles);
 			modelBuilder.Entity<PersonalDocumentType>().HasData(personalDocumentTypes);
