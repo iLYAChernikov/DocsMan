@@ -3,6 +3,7 @@ using DocsMan.App.Storage.RepositoryPattern;
 using DocsMan.App.Storage.Transaction;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.OutputData;
+using DocsMan.Domain.BinderEntity;
 using DocsMan.Domain.Entity;
 
 namespace DocsMan.App.Interactors
@@ -10,11 +11,13 @@ namespace DocsMan.App.Interactors
 	public class RoleExec
 	{
 		private IRepository<Role> _repos;
+		private IBindingRepository<User_Role> _userRoles;
 		private IUnitWork _unitWork;
 
-		public RoleExec(IRepository<Role> repos, IUnitWork unitWork)
+		public RoleExec(IRepository<Role> repos, IUnitWork unitWork, IBindingRepository<User_Role> userRoles)
 		{
 			_repos = repos;
+			_userRoles = userRoles;
 			_unitWork = unitWork;
 		}
 
@@ -121,6 +124,33 @@ namespace DocsMan.App.Interactors
 			catch ( Exception ex )
 			{
 				return new("Ошибка удаления", ex.Message);
+			}
+		}
+
+		public async Task<Response<IEnumerable<UserDto>?>> GetUsers(int roleId)
+		{
+			try
+			{
+				if ( roleId <= 0 ) throw new ArgumentNullException("Null input data");
+				if ( await _repos.GetOneAsync(roleId) == null )
+					throw new NullReferenceException("Not found");
+
+				var users = ( await _userRoles.GetAllBinds() )?
+					.Where(x => x.RoleId == roleId)
+					.Select(x => x.User.ToDto());
+				return new(users);
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch ( NullReferenceException ex )
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch ( Exception ex )
+			{
+				return new("Ошибка получения", ex.Message);
 			}
 		}
 	}

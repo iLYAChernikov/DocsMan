@@ -38,12 +38,24 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response<UserDto?>> GetOne(string email)
 		{
 			return await _master.GetOne(email);
-		}		
+		}
 
 		[HttpGet("GetRoles/{userId}")]
 		public async Task<Response<IEnumerable<RoleDto>?>> GetRoles(int userId)
 		{
 			return await _master.GetRoles(userId);
+		}
+
+		[HttpPost("AddRole/{userId}/{roleId}")]
+		public async Task<Response> AddRole(int userId, int roleId)
+		{
+			return await _master.AddRole(userId, roleId);
+		}
+
+		[HttpDelete("DeleteRole/{userId}/{roleId}")]
+		public async Task<Response> DeleteRole(int userId, int roleId)
+		{
+			return await _master.DeleteRole(userId, roleId);
 		}
 	}
 }

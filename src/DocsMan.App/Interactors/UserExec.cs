@@ -143,7 +143,7 @@ namespace DocsMan.App.Interactors
 			{
 				return new("Ошибка удаления", ex.Message);
 			}
-		}		
+		}
 
 		public async Task<Response<IEnumerable<RoleDto>?>> GetRoles(int userId)
 		{
@@ -200,6 +200,8 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
+				if ( userId <= 0 || roleId <= 0 ) throw new ArgumentNullException("Null input data");
+
 				var bind = ( await _userRoles.GetAllBinds() )?
 					.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
 				await _userRoles.DeleteBindAsync(bind ?? throw new NullReferenceException("Not found"));
