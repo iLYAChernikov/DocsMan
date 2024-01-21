@@ -15,13 +15,13 @@ namespace DocsMan.Adapter.Repository
 
 		public async Task CreateBindAsync(User_Role? bind)
 		{
-			if ( bind == null ) throw new Exception("Null input data");
+			if ( bind == null || bind.UserId <= 0 || bind.RoleId <= 0 ) throw new ArgumentNullException("Null input data");
 			await _context.User_Roles.AddAsync(bind);
 		}
 
 		public async Task DeleteBindAsync(User_Role? bind)
 		{
-			if ( bind == null ) throw new Exception("Null input data");
+			if ( bind == null || bind.UserId <= 0 || bind.RoleId <= 0 ) throw new ArgumentNullException("Null input data");
 			_context.User_Roles.Remove(bind);
 		}
 

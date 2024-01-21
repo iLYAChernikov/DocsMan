@@ -29,7 +29,7 @@ namespace DocsMan.Blazor
 			//	repositories
 			builder.Services.AddScoped<IRepository<Role>, GenericRepository<Role>>();
 			builder.Services.AddScoped<IRepository<User>, GenericRepository<User>>();
-			builder.Services.AddScoped<IRepository<Profile>, GenericRepository<Profile>>();
+			builder.Services.AddScoped<IRepository<Profile>, ProfileRepository>();
 
 			//	binding repositories
 			builder.Services.AddScoped<IBindingRepository<User_Role>, User_Role_BindRepository>();

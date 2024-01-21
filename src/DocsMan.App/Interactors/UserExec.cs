@@ -43,6 +43,10 @@ namespace DocsMan.App.Interactors
 				var ent = await _userRepos.GetOneAsync(id);
 				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
 			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
+			}
 			catch ( NullReferenceException ex )
 			{
 				return new("Запись не найдена", ex.Message);
@@ -60,6 +64,10 @@ namespace DocsMan.App.Interactors
 				var ent = ( await _userRepos.GetAllAsync() )?
 					.FirstOrDefault(x => x.Email == email);
 				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -79,29 +87,33 @@ namespace DocsMan.App.Interactors
 					.FirstOrDefault(x => x.Email == ent.Email) != null )
 					return new("Ошибка создания, пользователь с такой почтой уже существует", "User even exist");
 
-				await _userRepos.CreateAsync(ent?.ToEntity());
+				var user = ent?.ToEntity();
+				await _userRepos.CreateAsync(user);
 				await _unitWork.Commit();
 
 				await _userRoles.CreateBindAsync(
 					new()
 					{
-						UserId = ent.Id,
+						UserId = user.Id,
 						RoleId = 3
 					});
 				await _unitWork.Commit();
 
 				var profile = new Profile()
 				{
-					Email = ent.Email,
+					UserId = user.Id,
 					SurName = "User_Surname",
 					Name = "User_Name",
-					LastName = "User_Lastname",
-					UserId = ent.Id
+					LastName = "User_Lastname"
 				};
 				await _profileRepos.CreateAsync(profile);
 				await _unitWork.Commit();
 
 				return new(true);
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new($"Пустые входные данные\n{ex.Message}", "Internal error of entity null props");
 			}
 			catch ( Exception ex )
 			{
@@ -118,6 +130,10 @@ namespace DocsMan.App.Interactors
 				await _unitWork.Commit();
 
 				return new(true);
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -140,6 +156,10 @@ namespace DocsMan.App.Interactors
 
 				return new(true);
 			}
+			catch ( ArgumentNullException ex )
+			{
+				return new($"Пустые входные данные\n{ex.Message}", "Internal error of entity null props");
+			}
 			catch ( NullReferenceException ex )
 			{
 				return new("Запись не найдена", ex.Message);
@@ -158,6 +178,10 @@ namespace DocsMan.App.Interactors
 					.Where(x => x.UserId == userId)?
 					.Select(x => x.Role.ToDto());
 				return new(roles);
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
 			}
 			catch ( Exception ex )
 			{
@@ -179,6 +203,10 @@ namespace DocsMan.App.Interactors
 
 				return new(true);
 			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
+			}
 			catch ( Exception ex )
 			{
 				return new("Ошибка создания", ex.Message);
@@ -195,6 +223,10 @@ namespace DocsMan.App.Interactors
 				await _unitWork.Commit();
 
 				return new(true);
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
 			}
 			catch ( NullReferenceException ex )
 			{

@@ -38,6 +38,10 @@ namespace DocsMan.App.Interactors
 				var ent = await _repos.GetOneAsync(id);
 				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
 			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
+			}
 			catch ( NullReferenceException ex )
 			{
 				return new("Запись не найдена", ex.Message);
@@ -55,6 +59,10 @@ namespace DocsMan.App.Interactors
 				var ent = ( await _repos.GetAllAsync() )?
 					.FirstOrDefault(x => x.Title == title);
 				return new(ent?.ToDto() ?? throw new NullReferenceException("Not found"));
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -79,6 +87,10 @@ namespace DocsMan.App.Interactors
 
 				return new(true);
 			}
+			catch ( ArgumentNullException ex )
+			{
+				return new($"Пустые входные данные\n{ex.Message}", "Internal error of entity null props");
+			}
 			catch ( Exception ex )
 			{
 				return new("Ошибка создания", ex.Message);
@@ -89,7 +101,7 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				if ( id > 0 && id < 4 )
+				if ( id <= 3 )
 					return new("Запрещено удалять эту роль", "Forbidden delete this role");
 
 				await _repos.DeleteAsync(( await _repos.GetOneAsync(id) )
@@ -97,6 +109,10 @@ namespace DocsMan.App.Interactors
 				await _unitWork.Commit();
 
 				return new(true);
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.Message);
 			}
 			catch ( NullReferenceException ex )
 			{
