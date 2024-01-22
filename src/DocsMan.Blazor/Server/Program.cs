@@ -29,6 +29,8 @@ namespace DocsMan.Blazor
 			//	repositories
 			builder.Services.AddScoped<IRepository<Role>, GenericRepository<Role>>();
 			builder.Services.AddScoped<IRepository<User>, GenericRepository<User>>();
+			builder.Services.AddScoped<IRepository<PersonalDocumentType>, GenericRepository<PersonalDocumentType>>();
+			builder.Services.AddScoped<IRepository<UploadFile>, GenericRepository<UploadFile>>();
 			builder.Services.AddScoped<IRepository<Profile>, ProfileRepository>();
 			builder.Services.AddScoped<IRepository<PersonalDocument>, PersonalDocumentRepository>();
 
@@ -39,6 +41,8 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<RoleExec>();
 			builder.Services.AddScoped<UserExec>();
 			builder.Services.AddScoped<ProfileExec>();
+			builder.Services.AddScoped<UploadFileExec>();
+			builder.Services.AddScoped<PersonalDocumentTypeExec>();
 
 			builder.Services.AddControllers();
 			builder.Services.AddControllersWithViews();
