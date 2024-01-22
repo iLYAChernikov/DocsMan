@@ -2,7 +2,7 @@ using DocsMan.App.Storage.RepositoryPattern;
 using DocsMan.Domain.BinderEntity;
 using Microsoft.EntityFrameworkCore;
 
-namespace DocsMan.Adapter.Repository
+namespace DocsMan.Adapter.Repository.Binding
 {
 	public class User_Role_BindRepository : IBindingRepository<User_Role>
 	{
@@ -15,14 +15,14 @@ namespace DocsMan.Adapter.Repository
 
 		public async Task CreateBindAsync(User_Role? bind)
 		{
-			if ( bind == null || bind.UserId <= 0 || bind.RoleId <= 0 )
-				throw new ArgumentNullException("Null input data");
-			await _context.User_Roles.AddAsync(bind);
+				if (bind == null || bind.UserId <= 0 || bind.RoleId <= 0)
+					throw new ArgumentNullException("Null input data");
+				await _context.User_Roles.AddAsync(bind);
 		}
 
 		public async Task DeleteBindAsync(User_Role? bind)
 		{
-			if ( bind == null || bind.UserId <= 0 || bind.RoleId <= 0 )
+			if (bind == null || bind.UserId <= 0 || bind.RoleId <= 0)
 				throw new ArgumentNullException("Null input data");
 			_context.User_Roles.Remove(bind);
 		}

@@ -25,13 +25,16 @@ namespace DocsMan.Adapter.Repository
 			_context.PersonalDocuments.Remove(entity);
 		}
 
-		public async Task DeleteAsync(int id)
+		public async Task DeleteAsync(object key)
 		{
 			throw new NotSupportedException("Has a composite key");
 		}
 
-		public async Task DeleteAsync(int firstId, int secondId)
+		public async Task DeleteAsync(object firstKey, object secondKey)
 		{
+			int firstId = (int) firstKey;
+			int secondId = (int) secondKey;
+
 			if ( firstId <= 0 || secondId <= 0 ) throw new ArgumentNullException("Null input data");
 			var ent = await _context.PersonalDocuments
 				.FirstOrDefaultAsync(x => x.ProfileId == firstId && x.TypeId == secondId);
@@ -46,13 +49,16 @@ namespace DocsMan.Adapter.Repository
 				.Include(x => x.File);
 		}
 
-		public async Task<PersonalDocument> GetOneAsync(int id)
+		public async Task<PersonalDocument> GetOneAsync(object key)
 		{
 			throw new NotSupportedException("Has a composite key");
 		}
 
-		public async Task<PersonalDocument> GetOneAsync(int firstId, int secondId)
+		public async Task<PersonalDocument> GetOneAsync(object firstKey, object secondKey)
 		{
+			int firstId = (int) firstKey;
+			int secondId = (int) secondKey;
+
 			if ( firstId <= 0 || secondId <= 0 ) throw new ArgumentNullException("Null input data");
 			var ent = await _context.PersonalDocuments
 				.Include(x => x.PersonalDocumentType)

@@ -4,13 +4,13 @@ namespace DocsMan.App.Storage.RepositoryPattern
 	{
 		public Task CreateAsync(TEntity? entity);
 
-		public Task<TEntity> GetOneAsync(int id);
-		public Task<TEntity> GetOneAsync(int firstId, int secondId);    //	если составной ключ
+		public Task<TEntity> GetOneAsync(object key);
+		public Task<TEntity> GetOneAsync(object firstKey, object secondKey);    //	if composite key
 
 		public Task<IEnumerable<TEntity>?> GetAllAsync();
 
 		public Task DeleteAsync(TEntity? entity);
-		public Task DeleteAsync(int id);
-		public Task DeleteAsync(int firstId, int secondId);
+		public Task DeleteAsync(object key);
+		public Task DeleteAsync(object firstKey, object secondKey);     //	if composite key
 	}
 }

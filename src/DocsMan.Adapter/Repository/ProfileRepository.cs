@@ -25,8 +25,9 @@ namespace DocsMan.Adapter.Repository
 			_context.Profiles.Remove(entity);
 		}
 
-		public async Task DeleteAsync(int id)
+		public async Task DeleteAsync(object key)
 		{
+			int id = (int) key;
 			if ( id <= 0 ) throw new ArgumentNullException("Null input data");
 			var ent = await _context.Profiles
 				.FirstOrDefaultAsync(x => x.Id == id);
@@ -34,7 +35,7 @@ namespace DocsMan.Adapter.Repository
 			_context.Profiles.Remove(ent);
 		}
 
-		public async Task DeleteAsync(int firstId, int secondId)
+		public async Task DeleteAsync(object firstKey, object secondKey)
 		{
 			throw new NotSupportedException("Not a composite key");
 		}
@@ -45,8 +46,9 @@ namespace DocsMan.Adapter.Repository
 				.Include(x => x.User);
 		}
 
-		public async Task<Profile> GetOneAsync(int id)
+		public async Task<Profile> GetOneAsync(object key)
 		{
+			int id = (int) key;
 			if ( id <= 0 ) throw new ArgumentNullException("Null input data");
 			var ent = await _context.Profiles
 				.Include(x => x.User)
@@ -55,7 +57,7 @@ namespace DocsMan.Adapter.Repository
 			return ent;
 		}
 
-		public async Task<Profile> GetOneAsync(int firstId, int secondId)
+		public async Task<Profile> GetOneAsync(object firstKey, object secondKey)
 		{
 			throw new NotSupportedException("Not a composite key");
 		}
