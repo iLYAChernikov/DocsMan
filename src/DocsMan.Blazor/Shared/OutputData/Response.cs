@@ -14,9 +14,7 @@ namespace DocsMan.Blazor.Shared.OutputData
 		//	for backView
 		public string? ErrorInfo { get; set; } = string.Empty;
 
-		public Response() { }
-
-		public Response(bool success)
+		public Response()
 		{
 			IsSuccess = true;
 		}

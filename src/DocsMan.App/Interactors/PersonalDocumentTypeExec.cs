@@ -76,7 +76,7 @@ namespace DocsMan.App.Interactors
 				await _repos.CreateAsync(dto.ToEntity());
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -98,7 +98,7 @@ namespace DocsMan.App.Interactors
 				await _repos.DeleteAsync(id);
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{

@@ -28,7 +28,7 @@ namespace DocsMan.App.Interactors
 			return tempName + GetOnlyFileResolution(fileName);
 		}
 
-		public async Task<Response<int>> AddFile(string fileName, string storagePath, Stream fileStream)
+		public async Task<Response<(int FileId, string FileName, string FileType)>> AddFile(string fileName, string storagePath, Stream fileStream)
 		{
 			try
 			{
@@ -44,7 +44,7 @@ namespace DocsMan.App.Interactors
 					await fileStream.CopyToAsync(nfs);
 				}
 
-				return new(newFile.Id);
+				return new((newFile.Id, GetOnlyFileName(fileName), GetOnlyFileResolution(fileName)));
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -52,7 +52,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( Exception ex )
 			{
-				return new("Ошибка получения", ex.Message);
+				return new("Ошибка создания", ex.Message);
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace DocsMan.App.Interactors
 			if ( File.Exists(storagePath + path) )
 				File.Delete(storagePath + path);
 
-			return new(true);
+			return new();
 		}
 
 		public async Task<Response<(string SavedFileType, byte[]? FileData)>> DownloadFile(int fileId, string storagePath)

@@ -47,7 +47,7 @@ namespace DocsMan.App.Interactors
 				old.PhoneNumber = ent.PhoneNumber;
 
 				await _unitWork.Commit();
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -154,13 +154,13 @@ namespace DocsMan.App.Interactors
 				{
 					ProfileId = profileId,
 					TypeId = typeId,
-					FileId = respNewFile.Value,
+					FileId = respNewFile.Value.FileId,
 					Text = textDoc
 				};
 				await _persDocRepos.CreateAsync(doc);
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -183,7 +183,7 @@ namespace DocsMan.App.Interactors
 
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{

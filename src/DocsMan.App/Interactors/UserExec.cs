@@ -111,7 +111,7 @@ namespace DocsMan.App.Interactors
 				await _profileRepos.CreateAsync(profile);
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -130,7 +130,7 @@ namespace DocsMan.App.Interactors
 				await _userRepos.DeleteAsync(id);
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -177,7 +177,7 @@ namespace DocsMan.App.Interactors
 					});
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{
@@ -201,7 +201,7 @@ namespace DocsMan.App.Interactors
 					});
 				await _unitWork.Commit();
 
-				return new(true);
+				return new();
 			}
 			catch ( ArgumentNullException ex )
 			{
