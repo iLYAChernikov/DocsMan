@@ -56,7 +56,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response> DeleteFile(int fileId, string storageFile)
+		public async Task<Response> DeleteFile(int fileId, string storagePath)
 		{
 			var file = await _fileRepos.GetOneAsync(fileId);
 			var path = file.FilePath;
@@ -64,10 +64,39 @@ namespace DocsMan.App.Interactors
 			await _fileRepos.DeleteAsync(fileId);
 			await _unitWork.Commit();
 
-			if ( File.Exists(storageFile + path) )
-				File.Delete(storageFile + path);
+			if ( File.Exists(storagePath + path) )
+				File.Delete(storagePath + path);
 
 			return new(true);
+		}
+
+		public async Task<Response<byte[]?>> DownloadFile(int fileId, string storagePath)
+		{
+			try
+			{
+				var file = await _fileRepos.GetOneAsync(fileId);
+				if ( file == null )
+					return new("Файл не существует", "File not exist");
+
+				using ( var nfs = new FileStream(storagePath + file.FilePath, FileMode.Open) )
+				{
+					var ms = new MemoryStream();
+					await nfs.CopyToAsync(ms);
+					return new(ms.ToArray());
+				}
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch ( NullReferenceException ex )
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch ( Exception ex )
+			{
+				return new("Ошибка получения", ex.Message);
+			}
 		}
 	}
 }

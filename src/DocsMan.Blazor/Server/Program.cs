@@ -1,5 +1,6 @@
 using DocsMan.Adapter;
 using DocsMan.Adapter.Repository;
+using DocsMan.Adapter.Repository.Bindings;
 using DocsMan.Adapter.Transaction;
 using DocsMan.App.Interactors;
 using DocsMan.App.Storage.RepositoryPattern;
@@ -31,11 +32,15 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<IRepository<User>, GenericRepository<User>>();
 			builder.Services.AddScoped<IRepository<PersonalDocumentType>, GenericRepository<PersonalDocumentType>>();
 			builder.Services.AddScoped<IRepository<UploadFile>, GenericRepository<UploadFile>>();
+			builder.Services.AddScoped<IRepository<Document>, GenericRepository<Document>>();
+			builder.Services.AddScoped<IRepository<DocumentHistory>, GenericRepository<DocumentHistory>>();
+
 			builder.Services.AddScoped<IRepository<Profile>, ProfileRepository>();
 			builder.Services.AddScoped<IRepository<PersonalDocument>, PersonalDocumentRepository>();
 
 			//	binding repositories
 			builder.Services.AddScoped<IBindingRepository<User_Role>, User_Role_BindRepository>();
+			builder.Services.AddScoped<IBindingRepository<Profile_Document>, Profile_Document_BindRepository>();
 
 			//	interactors
 			builder.Services.AddScoped<RoleExec>();
@@ -43,6 +48,8 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<ProfileExec>();
 			builder.Services.AddScoped<UploadFileExec>();
 			builder.Services.AddScoped<PersonalDocumentTypeExec>();
+			builder.Services.AddScoped<FileManagerExec>();
+			builder.Services.AddScoped<DocumentHistoryExec>();
 
 			builder.Services.AddControllers();
 			builder.Services.AddControllersWithViews();
