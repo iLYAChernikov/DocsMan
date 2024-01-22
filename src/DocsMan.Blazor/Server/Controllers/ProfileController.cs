@@ -69,5 +69,15 @@ namespace DocsMan.Blazor.Server.Controllers
 		{
 			return await _master.DeletePersonDoc(profileId, typeId, PathStorage.PersonalDocs_Dir);
 		}
+
+		[HttpGet("DownloadPersonalDoc/{profileId}/{typeId}")]
+		public async Task<ActionResult> Download(int profileId, int typeId)
+		{
+			var resp = await _master.DownloadPersonDoc(profileId, typeId, PathStorage.PersonalDocs_Dir);
+			if ( resp.IsSuccess )
+				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
+			else
+				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
+		}
 	}
 }

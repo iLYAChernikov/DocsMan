@@ -74,15 +74,15 @@ namespace DocsMan.App.Interactors
 			{
 				var doc = await _docRepos.GetOneAsync(documentId);
 				var history = await _historyRepos.GetOneAsync(documentId, dateTime);
-				var dataRepos = await _fileExec.DownloadFile(history.FileId, storagePath);
-				if ( !dataRepos.IsSuccess )
-					return new(dataRepos.ErrorMessage, dataRepos.ErrorInfo);
+				var resp = await _fileExec.DownloadFile(history.FileId, storagePath);
+				if ( !resp.IsSuccess )
+					return new(resp.ErrorMessage, resp.ErrorInfo);
 
 				DataFile dataFile = new()
 				{
 					OwnerId = doc.Id,
-					FileName = doc.Name + doc.FileType,
-					FileData = dataRepos.Value
+					FileName = doc.Name + resp.Value.SavedFileType,
+					FileData = resp.Value.FileData
 				};
 
 				return new(dataFile);

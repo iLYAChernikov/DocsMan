@@ -2,6 +2,7 @@ using DocsMan.App.Mappers;
 using DocsMan.App.Storage.RepositoryPattern;
 using DocsMan.App.Storage.Transaction;
 using DocsMan.Blazor.Shared.DTOs;
+using DocsMan.Blazor.Shared.Helpers;
 using DocsMan.Blazor.Shared.OutputData;
 using DocsMan.Domain.Entity;
 
@@ -195,6 +196,40 @@ namespace DocsMan.App.Interactors
 			catch ( Exception ex )
 			{
 				return new("Ошибка удаления", ex.Message);
+			}
+		}
+
+		public async Task<Response<DataFile>> DownloadPersonDoc(int profileId, int typeId, string storagePath)
+		{
+			try
+			{
+				var profile = await _profileRepos.GetOneAsync(profileId);
+				var doc = await _persDocRepos.GetOneAsync(profileId, typeId);
+				var resp = await _fileExec.DownloadFile(doc.FileId, storagePath);
+				if ( !resp.IsSuccess )
+					return new(resp.ErrorMessage, resp.ErrorInfo);
+
+				return new
+					(
+						new()
+						{
+							OwnerId = profileId,
+							FileName = $"{doc.PersonalDocumentType.Title} {profile.Email}{resp.Value.SavedFileType}",
+							FileData = resp.Value.FileData
+						}
+					);
+			}
+			catch ( ArgumentNullException ex )
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch ( NullReferenceException ex )
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch ( Exception ex )
+			{
+				return new("Ошибка получения", ex.Message);
 			}
 		}
 	}

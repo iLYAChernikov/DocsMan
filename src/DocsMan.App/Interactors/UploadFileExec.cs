@@ -70,7 +70,7 @@ namespace DocsMan.App.Interactors
 			return new(true);
 		}
 
-		public async Task<Response<byte[]?>> DownloadFile(int fileId, string storagePath)
+		public async Task<Response<(string SavedFileType, byte[]? FileData)>> DownloadFile(int fileId, string storagePath)
 		{
 			try
 			{
@@ -82,7 +82,7 @@ namespace DocsMan.App.Interactors
 				{
 					var ms = new MemoryStream();
 					await nfs.CopyToAsync(ms);
-					return new(ms.ToArray());
+					return new((GetOnlyFileResolution(file.FilePath), ms.ToArray()));
 				}
 			}
 			catch ( ArgumentNullException ex )
