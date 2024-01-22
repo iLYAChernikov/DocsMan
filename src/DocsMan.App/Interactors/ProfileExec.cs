@@ -12,7 +12,7 @@ namespace DocsMan.App.Interactors
 		private IRepository<Profile> _profileRepos;
 		private IRepository<PersonalDocument> _persDocRepos;
 		private IRepository<PersonalDocumentType> _docTypeRepos;
-		private IRepository<UploadFile> _fileRepos;
+		private UploadFileExec _fileExec;
 		private IUnitWork _unitWork;
 
 		public ProfileExec
@@ -21,26 +21,13 @@ namespace DocsMan.App.Interactors
 			IUnitWork unitWork,
 			IRepository<PersonalDocument> persDocRepos,
 			IRepository<PersonalDocumentType> docTypeRepos,
-			IRepository<UploadFile> fileRepos
-		)
+			UploadFileExec fileExec)
 		{
 			_profileRepos = profileRepos;
 			_unitWork = unitWork;
 			_persDocRepos = persDocRepos;
 			_docTypeRepos = docTypeRepos;
-			_fileRepos = fileRepos;
-		}
-
-		private string GetOnlyFileResolution(string fileName) =>
-			fileName.Substring(fileName.LastIndexOf('.'));
-		private string GetOnlyFileName(string fileName) =>
-			fileName.Substring(0, fileName.Length - GetOnlyFileResolution(fileName).Length);
-		private string GetDateTimeFileName(string fileName)
-		{
-			var howNow = DateTime.Now;
-			string name = GetOnlyFileName(fileName);
-			string tempName = $"{name}_{howNow.Day}.{howNow.Month}.{howNow.Year}_{howNow.Hour}.{howNow.Minute}.{howNow.Second}";
-			return tempName + GetOnlyFileResolution(fileName);
+			_fileExec = fileExec;
 		}
 
 		public async Task<Response> ChangeInfo(ProfileDto dto)
@@ -102,7 +89,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var ent = ( await _profileRepos.GetAllAsync() )?
-					.FirstOrDefault(x => x.Email == email)?
+					.FirstOrDefault(x => x.Email.ToLower() == email.ToLower())?
 					.ToDto();
 				if ( ent == null )
 					return new("Запись не найдена", "Profile not exist");
@@ -158,20 +145,15 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				UploadFile newFile = new() { FilePath = GetDateTimeFileName(fileName) };
-				await _fileRepos.CreateAsync(newFile);
-				await _unitWork.Commit();
-
-				using ( var nfs = new FileStream(storagePath + newFile.FilePath, FileMode.Create) )
-				{
-					await fileStream.CopyToAsync(nfs);
-				}
+				var respNewFile = await _fileExec.AddFile(fileName, storagePath, fileStream);
+				if ( !respNewFile.IsSuccess )
+					return new(respNewFile.ErrorMessage, respNewFile.ErrorInfo);
 
 				PersonalDocument doc = new()
 				{
 					ProfileId = profileId,
 					TypeId = typeId,
-					FileId = newFile.Id,
+					FileId = respNewFile.Value,
 					Text = textDoc
 				};
 				await _persDocRepos.CreateAsync(doc);
@@ -195,15 +177,10 @@ namespace DocsMan.App.Interactors
 			{
 				var doc = await _persDocRepos.GetOneAsync(profileId, typeId);
 
-				string filePath = doc.File.FilePath;
-
+				await _fileExec.DeleteFile(doc.FileId, storagePath);
 				await _persDocRepos.DeleteAsync(doc.ProfileId, doc.TypeId);
-				await _fileRepos.DeleteAsync(doc.FileId);
 
 				await _unitWork.Commit();
-
-				if ( File.Exists(storagePath + filePath) )
-					File.Delete(storagePath + filePath);
 
 				return new(true);
 			}
@@ -217,7 +194,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( Exception ex )
 			{
-				return new("Ошибка создания", ex.Message);
+				return new("Ошибка удаления", ex.Message);
 			}
 		}
 	}

@@ -69,7 +69,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var ent = ( await _userRepos.GetAllAsync() )?
-					.FirstOrDefault(x => x.Email == email);
+					.FirstOrDefault(x => x.Email.ToLower() == email.ToLower());
 				if ( ent == null )
 					return new("Пользователь не найден", "User not exist");
 				else

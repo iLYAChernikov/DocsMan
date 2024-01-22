@@ -57,7 +57,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var ent = ( await _repos.GetAllAsync() )?
-					.FirstOrDefault(x => x.Title == title);
+					.FirstOrDefault(x => x.Title.ToLower() == title.ToLower());
 				if ( ent == null )
 					return new("Запись не найдена", "Personal Doc Type not exist");
 				else
@@ -84,7 +84,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( Exception ex )
 			{
-				return new("Ошибка получения", ex.Message);
+				return new("Ошибка создания", ex.Message);
 			}
 		}
 
@@ -92,6 +92,9 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
+				if ( id == 1 )
+					return new("Запрещено удалять этот тип", "Forbidden delete this type");
+
 				await _repos.DeleteAsync(id);
 				await _unitWork.Commit();
 
@@ -107,10 +110,8 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( Exception ex )
 			{
-				return new("Ошибка получения", ex.Message);
+				return new("Ошибка удаления", ex.Message);
 			}
 		}
-
-
 	}
 }

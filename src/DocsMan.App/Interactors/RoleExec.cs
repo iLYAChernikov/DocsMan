@@ -66,7 +66,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var ent = ( await _repos.GetAllAsync() )?
-					.FirstOrDefault(x => x.Title == title);
+					.FirstOrDefault(x => x.Title.ToLower() == title.ToLower());
 				if ( ent == null )
 					return new("Запись не найдена", "Not found");
 				else
