@@ -50,6 +50,7 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<PersonalDocumentTypeExec>();
 			builder.Services.AddScoped<FileManagerExec>();
 			builder.Services.AddScoped<DocumentHistoryExec>();
+			builder.Services.AddScoped<AuthExec>();
 
 			builder.Services.AddControllers();
 			builder.Services.AddControllersWithViews();
