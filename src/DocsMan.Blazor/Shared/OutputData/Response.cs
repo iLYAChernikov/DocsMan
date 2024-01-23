@@ -19,7 +19,7 @@ namespace DocsMan.Blazor.Shared.OutputData
 			IsSuccess = true;
 		}
 
-		public Response(string errorMessage, string errorInfo)
+		public Response(string? errorMessage, string? errorInfo)
 		{
 			IsSuccess = false;
 			ErrorMessage = errorMessage;
@@ -42,7 +42,7 @@ namespace DocsMan.Blazor.Shared.OutputData
 			IsSuccess = true;
 		}
 
-		public Response(string errorMessage, string errorInfo)
+		public Response(string? errorMessage, string? errorInfo)
 		{
 			IsSuccess = false;
 			ErrorMessage = errorMessage;

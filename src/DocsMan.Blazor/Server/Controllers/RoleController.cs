@@ -29,7 +29,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		}
 
 		[HttpGet("GetAll")]
-		public async Task<Response<IEnumerable<RoleDto>?>> GetAll()
+		public async Task<Response<IEnumerable<RoleDto?>?>> GetAll()
 		{
 			return await _master.GetAll();
 		}
@@ -47,7 +47,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		}
 
 		[HttpGet("GetUsers/{roleId}")]
-		public async Task<Response<IEnumerable<UserDto>?>> GetUsers(int roleId)
+		public async Task<Response<IEnumerable<UserDto?>?>> GetUsers(int roleId)
 		{
 			return await _master.GetUsers(roleId);
 		}

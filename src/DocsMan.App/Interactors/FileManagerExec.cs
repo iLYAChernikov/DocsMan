@@ -18,13 +18,14 @@ namespace DocsMan.App.Interactors
 		private DocumentHistoryExec _historyExec;
 		private UploadFileExec _fileExec;
 
-		public FileManagerExec(IRepository<Document> docRepos, UploadFileExec fileExec, IUnitWork unitWork, IRepository<Profile> profileRepos, IBindingRepository<Profile_Document> bindProfileDoc)
+		public FileManagerExec(IRepository<Document> docRepos, UploadFileExec fileExec, IUnitWork unitWork, IRepository<Profile> profileRepos, IBindingRepository<Profile_Document> bindProfileDoc, DocumentHistoryExec historyExec)
 		{
 			_docRepos = docRepos;
 			_fileExec = fileExec;
 			_unitWork = unitWork;
 			_profileRepos = profileRepos;
 			_bindProfileDoc = bindProfileDoc;
+			_historyExec = historyExec;
 		}
 
 		public async Task<Response> AddDocument(int profileId, string fileName, string storagePath, Stream fileStream, string description)
@@ -60,7 +61,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.ParamName);
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -99,7 +100,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response> RenameDocument(int profileId, int documentId, string name, string description)
+		public async Task<Response> RenameDocument(int profileId, int documentId, string name, string? description)
 		{
 			try
 			{
@@ -117,7 +118,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.ParamName);
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -129,7 +130,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response> ChangeDocumentFile(int profileId, int documentId, string fileName, string storagePath, Stream fileStream)
+		public async Task<Response> ChangeFile(int profileId, int documentId, string fileName, string storagePath, Stream fileStream)
 		{
 			try
 			{
@@ -151,7 +152,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.ParamName);
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -163,7 +164,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<DataFile>> DownloadDocumentFile(int documentId, string storagePath)
+		public async Task<Response<DataFile>> DownloadFile(int documentId, string storagePath)
 		{
 			try
 			{
@@ -200,11 +201,14 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var ent = dto.ToEntity();
+				if ( ent == null )
+					return new("Пустые входные данные", "Null input data");
+
 				return await _historyExec.DownloadFile(ent.DocumentId, ent.DateTimeOfChanges, storagePath);
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.ParamName);
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
 			catch ( NullReferenceException ex )
 			{
@@ -216,7 +220,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<DocumentHistoryDto>?>> GetDocumentHistory(int documentId)
+		public async Task<Response<IEnumerable<DocumentHistoryDto?>?>> GetHistory(int documentId)
 		{
 			return await _historyExec.GetDocumentHistory(documentId);
 		}

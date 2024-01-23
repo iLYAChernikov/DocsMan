@@ -37,13 +37,13 @@ namespace DocsMan.Blazor.Server.Controllers
 		}
 
 		[HttpGet("GetAll")]
-		public async Task<Response<IEnumerable<ProfileDto>?>> GetAll()
+		public async Task<Response<IEnumerable<ProfileDto?>?>> GetAll()
 		{
 			return await _master.GetAll();
 		}
 
 		[HttpGet("GetPersonalDocs/{id}")]
-		public async Task<Response<IEnumerable<PersonalDocumentDto>?>> GetPersonDocs(int id)
+		public async Task<Response<IEnumerable<PersonalDocumentDto?>?>> GetPersonDocs(int id)
 		{
 			return await _master.GetAllPersonalDocuments(id);
 		}
@@ -74,7 +74,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<ActionResult> Download(int profileId, int typeId)
 		{
 			var resp = await _master.DownloadPersonDoc(profileId, typeId, PathStorage.PersonalDocs_Dir);
-			if ( resp.IsSuccess )
+			if ( resp.IsSuccess && resp.Value?.FileData != null )
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");

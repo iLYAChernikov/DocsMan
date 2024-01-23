@@ -4,6 +4,6 @@ namespace DocsMan.Blazor.Server.DataStorage
 	{
 		public static string DB_Dir => Directory.GetCurrentDirectory() + @"\DataStorage\DataBase\";
 		public static string PersonalDocs_Dir => Directory.GetCurrentDirectory() + @"\DataStorage\UserDocuments\";
-		public static string UserFiles_Dir => Directory.GetCurrentDirectory() + @"\DataStorage\UserFiles\";
+		public static string Files_Dir => Directory.GetCurrentDirectory() + @"\DataStorage\UserFiles\";
 	}
 }

@@ -103,13 +103,16 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<ProfileDto>?>> GetAll()
+		public async Task<Response<IEnumerable<ProfileDto?>?>> GetAll()
 		{
 			try
 			{
 				var data = ( await _profileRepos.GetAllAsync() )?
 					.Select(x => x.ToDto());
-				return new(data);
+				if ( data == null )
+					return new("Записи не найдены", "Not found");
+				else
+					return new(data);
 			}
 			catch ( Exception ex )
 			{
@@ -117,15 +120,17 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<PersonalDocumentDto>?>> GetAllPersonalDocuments(int profileId)
+		public async Task<Response<IEnumerable<PersonalDocumentDto?>?>> GetAllPersonalDocuments(int profileId)
 		{
 			try
 			{
 				var docs = ( await _persDocRepos.GetAllAsync() )?
 					.Where(x => x.ProfileId == profileId)
 					.Select(x => x.ToDto());
-
-				return new(docs);
+				if ( docs == null )
+					return new("Записи не найдены", "Not found");
+				else
+					return new(docs);
 			}
 			catch ( ArgumentNullException ex )
 			{

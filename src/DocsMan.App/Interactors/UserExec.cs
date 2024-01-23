@@ -29,13 +29,16 @@ namespace DocsMan.App.Interactors
 			_unitWork = unitWork;
 		}
 
-		public async Task<Response<IEnumerable<UserDto>?>> GetAll()
+		public async Task<Response<IEnumerable<UserDto?>?>> GetAll()
 		{
 			try
 			{
 				var data = ( await _userRepos.GetAllAsync() )?
 					.Select(x => x.ToDto());
-				return new(data);
+				if ( data == null )
+					return new("Записи не найдены", "Not found");
+				else
+					return new(data);
 			}
 			catch ( Exception ex )
 			{
@@ -146,14 +149,17 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<RoleDto>?>> GetRoles(int userId)
+		public async Task<Response<IEnumerable<RoleDto?>?>> GetRoles(int userId)
 		{
 			try
 			{
 				var roles = ( await _userRoles.GetAllBinds() )?
 					.Where(x => x.UserId == userId)?
 					.Select(x => x.Role.ToDto());
-				return new(roles);
+				if ( roles == null )
+					return new("Записи не найдены", "Not found");
+				else
+					return new(roles);
 			}
 			catch ( ArgumentNullException ex )
 			{

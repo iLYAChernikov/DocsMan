@@ -18,13 +18,16 @@ namespace DocsMan.App.Interactors
 			_unitWork = unitWork;
 		}
 
-		public async Task<Response<IEnumerable<PersonalDocumentTypeDto>?>> GetAll()
+		public async Task<Response<IEnumerable<PersonalDocumentTypeDto?>?>> GetAll()
 		{
 			try
 			{
 				var data = ( await _repos.GetAllAsync() )?
 					.Select(x => x.ToDto());
-				return new(data);
+				if ( data == null )
+					return new("Записи не найдены", "Not found");
+				else
+					return new(data);
 			}
 			catch ( Exception ex )
 			{

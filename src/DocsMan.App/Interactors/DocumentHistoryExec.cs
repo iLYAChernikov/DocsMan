@@ -42,7 +42,7 @@ namespace DocsMan.App.Interactors
 			}
 			catch ( ArgumentNullException ex )
 			{
-				return new("Пустые входные данные", ex.ParamName);
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
 			catch ( Exception ex )
 			{
@@ -50,7 +50,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<DocumentHistoryDto>?>> GetDocumentHistory(int documentId)
+		public async Task<Response<IEnumerable<DocumentHistoryDto?>?>> GetDocumentHistory(int documentId)
 		{
 			try
 			{
@@ -58,7 +58,7 @@ namespace DocsMan.App.Interactors
 					.Where(x => x.DocumentId == documentId)?
 					.Select(x => x.ToDto());
 				if ( data == null )
-					return new("Записи не найдены", "History not exist");
+					return new("Записи не найдены", "Not found");
 				else
 					return new(data);
 			}
