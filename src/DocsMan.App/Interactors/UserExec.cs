@@ -153,6 +153,8 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
+				await _userRepos.GetOneAsync(userId);
+
 				var roles = ( await _userRoles.GetAllBinds() )?
 					.Where(x => x.UserId == userId)?
 					.Select(x => x.Role.ToDto());
@@ -164,6 +166,10 @@ namespace DocsMan.App.Interactors
 			catch ( ArgumentNullException ex )
 			{
 				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch ( NullReferenceException ex )
+			{
+				return new("Запись не найдена", ex.Message);
 			}
 			catch ( Exception ex )
 			{
