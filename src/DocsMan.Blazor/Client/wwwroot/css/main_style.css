@@ -1,54 +1,22 @@
-/*Fonts*/
-@font-face {
-	font-family: 'Open Sans';
-	font-style: normal;
-	font-weight: normal;
-	src: local('Open Sans'),
-		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-Regular.ttf') format('ttf');
-}
-
-@font-face {
-	font-family: 'Open Sans';
-	font-style: normal;
-	font-weight: bold;
-	src: local('Open Sans'),
-		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-Bold.ttf') format('ttf');
-}
-
-@font-face {
-	font-family: 'Open Sans';
-	font-style: italic;
-	font-weight: bold;
-	src: local('Open Sans'),
-		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-BoldItalic.ttf') format('ttf');
-}
-
-@font-face {
-	font-family: 'Open Sans';
-	font-style: italic;
-	font-weight: normal;
-	src: local('Open Sans'),
-		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-Italic.ttf') format('ttf');
-}
-
 /*Colors*/
 :root {
+	--dm-dark: #222;
+	--dm-dark-l: #2d2d2d;
+	--dm-main-paper: #e3e3e3;
+	--dm-light: #ccc;
 	--dm-blue: #0b9ff3;
 	--dm-malina: #ff006e;
 	--dm-malina-d: #992255;
 	--dm-siren: #7971ea;
 	--dm-siren-d: #4f46c3;
-	--dm-drozd-egg: #11d7c7;
 	--dm-green-sea: #0fc9b9;
+	--dm-green-sea-l: #11d7c7;
 }
 
-.user-main {
-	flex: 1 0 auto;
-	padding: 20px;
-	margin-top: 40px;
-	margin-left: 200px;
-	background: #e3e3e3;
-	text-align: justify;
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 .global-page {
@@ -59,7 +27,16 @@
 }
 
 .global-page * {
-	font-family: 'Open Sans';
+	font-family: 'Times New Roman', Times, serif;
+}
+
+.user-main {
+	flex: 1 0 auto;
+	padding: 20px;
+	margin-top: 40px;
+	margin-left: 200px;
+	background: var(--dm-main-paper);
+	text-align: justify;
 }
 
 .set-center {
