@@ -37,12 +37,17 @@
 	text-align: right;
 }
 
+i:has(.nav-button) {
+	position: relative;
+	left: -2px;
+}
+
 .nav-button {
-	width: 60px;
+	width: 52px;
 	height: 52px;
 	position: absolute;
-	top: 0;
-	left: 0;
+	top: -18px;
+	left: -18px;
 }
 
 .nav-dark-brand {
@@ -114,7 +119,7 @@
 
 .nav-dark-header-menu-list:not(:has(>ul)) {
 	min-width: 52px;
-	max-width: 60px;
+	max-width: 52px;
 	color: #fff;
 }
 
@@ -165,6 +170,10 @@
 	border-top: 2px solid var(--dm-malina-d);
 }
 
+.nav-dark-submenu-list {
+
+}
+
 .nav-dark-submenu-list:last-child {
 	border-bottom: 2px solid var(--dm-malina-d);
 }
@@ -206,8 +215,8 @@
 	color: red;
 	scale: 0.4;
 	position: absolute;
-	top: 10px;
-	left: 24px;
+	top: -6px;
+	left: 4px;
 }
 
 
