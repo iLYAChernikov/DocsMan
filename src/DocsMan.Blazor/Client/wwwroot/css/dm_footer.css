@@ -1,0 +1,150 @@
+/*#region Footer*/
+
+.footer-style {
+	z-index: 10;
+}
+
+.footer-dark {
+	flex: 0 0 auto;
+}
+
+hr.footer-line-slim {
+	margin: 0;
+	border: 1px solid lightseagreen;
+	width: 100%;
+}
+
+hr.footer-line-bold {
+	margin: 0;
+	border: 3px solid lightseagreen;
+	width: 100%;
+}
+
+/*#region Footer Top*/
+
+.footer-dark-top {
+	background: #2d2d2d;
+	width: 100%;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+}
+
+.footer-dark-top>.footer-left {
+	flex-basis: 35%;
+	padding: 10px;
+}
+
+.footer-dark-top>.footer-right {
+	flex-basis: 30%;
+	padding: 10px;
+}
+
+.footer-dark-top>.footer-left h3,
+.footer-dark-top>.footer-right h3 {
+	font-size: 18px;
+	font-weight: bold;
+	color: #eee;
+	text-align: center;
+}
+
+.footer-dark-top>.footer-left p,
+.footer-dark-top>.footer-right p {
+	color: #ccc;
+	font-size: 14px;
+	line-height: 30px;
+	font-weight: 300;
+	padding-right: 20px;
+	text-align: center;
+}
+
+.footer-dark-top>.footer-left ul,
+.footer-dark-top>.footer-right ul {
+	list-style: none;
+	color: #ccc;
+	line-height: 30px;
+	font-weight: 300;
+	font-size: 16px;
+	text-align: center;
+	margin-top: 20px;
+}
+
+.footer-dark-top>.footer-left ul li a,
+.footer-dark-top>.footer-right ul li a {
+	text-decoration: none;
+	color: #11d7c7;
+}
+
+.footer-dark-top>.footer-left ul li a:hover,
+.footer-dark-top>.footer-right ul li a:hover {
+	color: #ff006e;
+	transition: 0.5s;
+}
+
+.footer-dark-top>.footer-left ul li a:not(:hover),
+.footer-dark-top>.footer-right ul li a:not(:hover) {
+	transition: 0.5s;
+}
+
+/*#endregion Footer Top*/
+
+/*#region Footer Bottom*/
+
+.footer-dark-bottom {
+	background: #222;
+	width: 100%;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	font-size: 14px;
+	padding: 15px;
+}
+
+.footer-links {
+	margin-right: auto;
+	margin-left: 50px;
+	color: #777;
+}
+
+.footer-links a {
+	text-decoration: none;
+	color: lightseagreen;
+}
+
+.footer-links a:hover {
+	color: #ff006e;
+	transition: 0.5s;
+}
+
+.footer-links a:not(:hover) {
+	transition: 0.5s;
+}
+
+.footer-copyright {
+	margin-left: auto;
+	margin-right: 10px;
+	color: #666;
+}
+
+.footer-copyright a {
+	text-decoration: none;
+	color: #999;
+	cursor: pointer;
+}
+
+.footer-copyright a:hover {
+	color: #7971ea;
+	transition: 0.5s;
+}
+
+.footer-copyright a:not(:hover) {
+	transition: 0.5s;
+}
+
+/*#endregion Footer Bottom*/
+
+/*#endregion Footer*/
