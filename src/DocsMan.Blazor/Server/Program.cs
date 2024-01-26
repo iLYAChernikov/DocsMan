@@ -62,6 +62,14 @@ namespace DocsMan.Blazor
 				options.SwaggerDoc("v1", new OpenApiInfo { Title = "DocsMan_Service", Version = "v1" });
 			});
 
+			//	cors
+			builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
+			policybuilder =>
+			{
+				policybuilder.WithOrigins("https://localhost:7075").AllowAnyHeader().AllowAnyMethod();
+			}
+			));
+
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
@@ -87,6 +95,8 @@ namespace DocsMan.Blazor
 			app.UseStaticFiles();
 
 			app.UseRouting();
+
+			app.UseCors("CorsPolicy");
 
 			app.MapRazorPages();
 			app.MapControllers();

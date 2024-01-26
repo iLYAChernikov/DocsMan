@@ -15,4 +15,12 @@
     <ProjectReference Include="..\Shared\DocsMan.Blazor.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="WebSite\Pages\Admin\" />
+    <Folder Include="WebSite\Pages\Default_User\" />
+    <Folder Include="WebSite\Shared\Components\" />
+    <Folder Include="WebSite\Shared\Support\" />
+    <Folder Include="WebSite\Shared\Layouts\" />
+  </ItemGroup>
+
 </Project>

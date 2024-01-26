@@ -1,0 +1,72 @@
+/*Fonts*/
+@font-face {
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: normal;
+	src: local('Open Sans'),
+		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-Regular.ttf') format('ttf');
+}
+
+@font-face {
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: bold;
+	src: local('Open Sans'),
+		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-Bold.ttf') format('ttf');
+}
+
+@font-face {
+	font-family: 'Open Sans';
+	font-style: italic;
+	font-weight: bold;
+	src: local('Open Sans'),
+		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-BoldItalic.ttf') format('ttf');
+}
+
+@font-face {
+	font-family: 'Open Sans';
+	font-style: italic;
+	font-weight: normal;
+	src: local('Open Sans'),
+		url('/src/DocsMan.Blazor/Client/wwwroot/fonts/Open_Sans/static/OpenSans-Italic.ttf') format('ttf');
+}
+
+/*Colors*/
+:root {
+	--dm-blue: #0b9ff3;
+	--dm-malina: #ff006e;
+	--dm-malina-d: #992255;
+	--dm-siren: #7971ea;
+	--dm-siren-d: #4f46c3;
+	--dm-drozd-egg: #11d7c7;
+	--dm-green-sea: #0fc9b9;
+}
+
+.user-main {
+	flex: 1 0 auto;
+	padding: 20px;
+	margin-top: 40px;
+	margin-left: 200px;
+	background: #e3e3e3;
+	text-align: justify;
+}
+
+.global-page {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.global-page * {
+	font-family: 'Open Sans';
+}
+
+.set-center {
+	margin: 0 auto;
+}
+
+.set-center-text {
+	margin: unset;
+	text-align: center;
+}
