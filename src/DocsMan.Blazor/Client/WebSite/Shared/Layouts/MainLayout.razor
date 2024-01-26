@@ -4,7 +4,7 @@
 <div class="global-page">
 
 	<header>
-		<HeaderPage/>
+		<HeaderPage PhotoUrl=@photoUrl IsNotifyNotRead=@isNotifyNotRead UserName=@name></HeaderPage>
 	</header>
 
 	<main class="user-main">
@@ -16,3 +16,9 @@
 	</footer>
 
 </div>
+
+@code{
+	bool isNotifyNotRead = true;
+	string name = "UserName";
+	string photoUrl = "/img/none-photo.png";
+}

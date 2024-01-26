@@ -7,12 +7,26 @@
 	</ul>
 
 	<ul class="nav-dark-header-menu">
+
+		<li class="nav-dark-header-menu-list">
+			<i class="fas fa-bell">
+				<a class="nav-button" href="User/Notify"></a>
+				@if (IsNotifyNotRead)
+				{
+					<div class="exist-notify">
+						<i class="fas fa-circle"></i>
+					</div>	
+				}			
+			</i>
+		</li>
 		
 		<li class="nav-dark-header-menu-list @GetMenuType(profileMenu)" @onclick="()=>OpenSubmenu(profileMenu)">
-				<span class="menu-item-icon">
-				<i class="@profileMenu.Icon"></i>
-				</span>
-			<a class="title">@profileMenu.Title</a>
+				
+			<span class="menu-profile-photo">
+				<img src="@PhotoUrl" alt="@UserName Photo">
+			</span>
+				
+			<a class="title">@UserName</a>
 				<span class="caret-icon">
 				@if (profileMenu.IsOpen)
 					{
@@ -52,11 +66,14 @@
 	void OpenSubmenu(DropdownMenu menuItem) => menuItem.IsOpen = !menuItem.IsOpen;
 
 	[Parameter]
-	public int UserId { get; set; }
+	public string PhotoUrl { get; set; }
+	[Parameter]
+	public bool IsNotifyNotRead { get; set; }
+	[Parameter]
+	public string UserName { get; set; }
 
 	DropdownMenu profileMenu = new()
 	{
-		Title = "UserId",
 		Submenus = new()
 		{ 
 			new()
