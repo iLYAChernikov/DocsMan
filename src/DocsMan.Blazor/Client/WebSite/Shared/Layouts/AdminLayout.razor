@@ -1,0 +1,20 @@
+@using DocsMan.Blazor.Client.WebSite.Shared.Components
+@inherits LayoutComponentBase
+
+<div class="global-page">
+
+	<header>
+		<HeaderPage PhotoUrl=@photoUrl IsNotifyNotRead=@isNotifyNotRead UserName=@name></HeaderPage>
+	</header>
+
+	<main class="user-main">
+		@Body
+	</main>
+
+</div>
+
+@code{
+	bool isNotifyNotRead = true;
+	string name = "UserName";
+	string photoUrl = "/img/none-photo.png";
+}
