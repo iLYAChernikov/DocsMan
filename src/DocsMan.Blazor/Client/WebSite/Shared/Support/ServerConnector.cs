@@ -28,7 +28,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 		public async Task RemoveCookie(string name) =>
 			await _cooker.RemoveAsync(name);
 
-		protected async Task<bool> IsUserAuthorized()
+		public async Task<bool> IsUserAuthorized()
 		{
 			try
 			{
@@ -54,7 +54,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 		{
 			try
 			{
-				using HttpResponseMessage request = await ServerOk.GetAsync("Auth/Check");
+				using HttpResponseMessage request = await ServerOk.PostAsJsonAsync("Auth/GetToken", auth);
 				request.EnsureSuccessStatusCode();
 				var resp = await request.Content.ReadFromJsonAsync<Response<string>>();
 				if (resp != null && resp.IsSuccess && !string.IsNullOrWhiteSpace(resp.Value))

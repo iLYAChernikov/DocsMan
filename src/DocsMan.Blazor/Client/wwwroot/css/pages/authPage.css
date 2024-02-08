@@ -1,0 +1,137 @@
+/*Authorization / Registration box*/
+
+.form-page {
+	width: 100%;
+	height: 100vh;
+	background: #ccc;
+}
+
+.form-box {
+	width: 400px;
+	height: 350px;
+	padding: 30px;
+	border-radius: 10px;
+	background: #333;
+	color: #fff;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	padding: 20px 40px;
+	letter-spacing: 1px;
+}
+
+.form-box.registration {
+	height: 360px;
+}
+
+.form-box.is-correct-registration {
+	height: 150px;
+}
+
+.form-box>h1 {
+	margin-top: -10px;
+	margin-bottom: 10px;
+}
+
+.form-group {
+	font-size: 18px;
+}
+
+.form-group.registration {
+	margin-top: -20px;
+}
+
+.button-group {
+	margin-top: -15px;
+}
+
+.button-group.registration {
+	margin-top: -20px;
+}
+
+.label-for-input {
+	font-weight: bold;
+	margin-left: 15px;
+}
+
+.confirm-alert {
+	margin-top: -10px;
+	margin-bottom: 5px;
+	animation: breath 5s linear infinite;
+	font-size: 16px;
+}
+
+.confirm-alert::after {
+	content: 'Password was not confirm !';
+}
+
+@keyframes breath {
+	0% {
+		color: #ff006e;
+	}
+
+	50% {
+		color: #fff;
+	}
+
+	100% {
+		color: #ff006e;
+	}
+}
+
+.form-control-text {
+	width: 100%;
+	font-size: 18px;
+	background: transparent;
+	border: none;
+	outline: none;
+	margin-top: 10px;
+	color: #fff;
+	letter-spacing: 1px;
+	border-bottom: 1px solid #11d7c7;
+	padding-bottom: 4px;
+}
+
+.form-control-text:focus {
+	box-shadow: #11d7c7aa 0px 20px 25px -10px;
+	transition: 1s;
+}
+
+.form-control-text:not(:focus) {
+	transition: 1s;
+}
+
+.eye-pass-icon {
+	position: relative;
+	right: -290px;
+	top: -25px;
+	cursor: pointer;
+}
+
+.btn-auth {
+	width: 100%;
+	font-size: 18px;
+	background: transparent;
+	border: none;
+	outline: none;
+	border-radius: 30px;
+	border: 2px solid #992255;
+	color: #fff;
+	letter-spacing: 1px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	padding: 10px;
+}
+
+.btn-auth:hover {
+	color: #222;
+	font-weight: bold;
+	border: 2px solid #7971ea;
+	background-color: #11d7c7;
+	cursor: pointer;
+	transition: .5s;
+	box-shadow: #222222bb 0px 15px 5px;
+}

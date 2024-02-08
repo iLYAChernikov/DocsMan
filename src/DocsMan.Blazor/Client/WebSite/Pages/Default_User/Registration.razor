@@ -1,0 +1,106 @@
+@page "/User/Registration"
+@using DocsMan.Blazor.Client.WebSite.Shared.Layouts;
+@layout EmptyLayout
+@using DocsMan.Blazor.Shared.DTOs;
+
+<PageTitle>Регистрация</PageTitle>
+
+<div class="form-page">
+	<div class="form-box @boxType">
+
+		<div class="set-center-text">
+			<h1>Регистрация</h1>
+		</div>
+
+		@if (!isCorrectReg)
+		{
+			<div class="form-group">
+				<label class="label-for-input" for="Email">Email:</label>
+				<InputText @bind-Value="user.Email" id="Email" class="form-control-text" placeholder="Email address" />
+			</div>
+			<br>
+			<div class="form-group">
+				<label class="label-for-input" for="Pass">Пароль:</label>
+				<InputText @bind-Value="user.Password" type="@PasswordType" id="Pass" class="form-control-text"
+					placeholder="Password" />
+				<span @onclick="HidePass" class="eye-pass-icon">
+					@if (hide_password)
+					{
+						<i class="fas fa-eye-slash"></i>
+					}
+					else
+					{
+						<i class="fas fa-eye"></i>
+					}
+				</span>
+			</div>
+			<br>
+			<div class="form-group registration">
+				<label class="label-for-input" for="ConfirmPass">Подтвердите пароль:</label>
+				<InputText @bind-Value="confirmPass" type="@ConfirmType" id="ConfirmPass" class="form-control-text"
+					placeholder="Confirm Password" />
+				<span @onclick="HideConfirm" class="eye-pass-icon">
+					@if (hide_confirm)
+					{
+						<i class="fas fa-eye-slash"></i>
+					}
+					else
+					{
+						<i class="fas fa-eye"></i>
+					}
+				</span>
+				@if (!confirmSuccess && confirmPass != string.Empty)
+				{
+					<br>
+					<div class="set-center-text confirm-alert"></div>
+				}
+			</div>
+			<br>
+			<div class="button-group registration">
+				<button class="btn-auth" @onclick=Submit>Регистрация</button>
+			</div>
+		}
+		else
+		{
+			<br>
+			<div class="button-group">
+				<button class="btn-auth" @onclick=GoToAuth>Авторизация</button>
+			</div>
+		}
+	</div>
+	<br>
+</div>
+
+@code
+{
+	bool hide_password = true;
+	bool hide_confirm = true;
+	string PasswordType => hide_password ? "password" : "text";
+	string ConfirmType => hide_confirm ? "password" : "text";
+	void HidePass() => hide_password = !hide_password;
+	void HideConfirm() => hide_confirm = !hide_confirm;
+
+	string confirmPass = string.Empty;
+	bool confirmSuccess => confirmPass == user.Password;
+
+	bool isCorrectReg = false;
+	string boxType => isCorrectReg ? "is-correct-registration" : "registration";
+
+	UserDto user = new();
+
+	async Task Submit()
+	{
+		if (!confirmSuccess) return;
+
+		var helper = new ServerPost<UserDto>(WebCooker);
+		var result = await helper.DoRequest_POST("User/Create", user);
+
+		if (result.Response.IsSuccess) isCorrectReg = true;
+
+		StateHasChanged();
+	}
+	void GoToAuth()
+	{
+		PagesNavigation.NavigateTo("/User/Authorization");
+	}
+}

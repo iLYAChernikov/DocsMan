@@ -36,6 +36,11 @@ namespace DocsMan.Blazor.Shared.OutputData
 	{
 		public T? Value { get; set; }
 
+		public Response()
+		{
+			IsSuccess = true;
+		}
+
 		public Response(T? data)
 		{
 			Value = data;
