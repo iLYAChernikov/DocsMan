@@ -51,7 +51,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		[HttpPost("AddPersonalDoc")]
 		public async Task<Response> AddDoc(PersonalDocumentDataDto dto)
 		{
-			if ( dto.FileData == null ) return new("Нет файла", "Empty file");
+			if (dto.FileData == null) return new("Нет файла", "Empty file");
 
 			return await _master.AddPersonDoc
 				(
@@ -74,10 +74,20 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<ActionResult> Download(int profileId, int typeId)
 		{
 			var resp = await _master.DownloadPersonDoc(profileId, typeId, PathStorage.PersonalDocs_Dir);
-			if ( resp.IsSuccess && resp.Value?.FileData != null )
+			if (resp.IsSuccess && resp.Value?.FileData != null)
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
+		}
+
+		[HttpGet("GetPersonalPhoto/{profileId}")]
+		public async Task<Response<byte[]>> DownloadPhoto(int profileId)
+		{
+			var resp = await _master.DownloadPersonDoc(profileId, 1, PathStorage.PersonalDocs_Dir);
+			if (resp.IsSuccess && resp.Value?.FileData != null)
+				return new(resp.Value.FileData);
+			else
+				return new(resp.ErrorMessage, resp.ErrorInfo);
 		}
 	}
 }

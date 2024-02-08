@@ -1,24 +1,62 @@
 ﻿@using DocsMan.Blazor.Client.WebSite.Shared.Components
+@using DocsMan.Blazor.Client.WebSite.Shared.Support
 @inherits LayoutComponentBase
 
-<div class="global-page">
+@if (loading)
+{
+	<PrimeLoading />
+}
+else
+{
+	<div class="global-page">
 
-	<header>
-		<HeaderPage PhotoUrl=@photoUrl IsNotifyNotRead=@isNotifyNotRead UserName=@name></HeaderPage>
-	</header>
+		<header>
+			<HeaderPage PhotoUrl=@photoUrl IsNotifyNotRead=@isNotifyNotRead UserName=@name></HeaderPage>
+		</header>
 
-	<main class="user-main">
-		@Body
-	</main>
+		<main class="user-main">
+			@Body
+		</main>
 
-	<footer class="footer-style">
-		<FooterPage/>
-	</footer>
+		<footer class="footer-style">
+			<FooterPage />
+		</footer>
 
-</div>
+	</div>
+}
 
-@code{
+@code {
 	bool isNotifyNotRead = true;
 	string name = "UserName";
 	string photoUrl = "/img/none-photo.png";
+
+	bool loading = true;
+	bool isUserAuth;
+	protected override async void OnInitialized()
+	{
+		isUserAuth = await new ServerConnector(WebCooker).IsUserAuthorized();
+		CheckAuthLinks(isUserAuth);
+
+		Thread.Sleep(1000);
+		loading = false;
+
+		StateHasChanged();
+	}
+
+	bool CheckCurrentPath(string path) =>
+		PagesNavigation.Uri.ToLower() == PagesNavigation.BaseUri.ToLower() + path.ToLower();
+	void GoAuthorizing() => PagesNavigation.NavigateTo("/User/Authorization");
+	void GoRegistration() => PagesNavigation.NavigateTo("/User/Registration");
+	void GoToHome() => PagesNavigation.NavigateTo("/");
+	void CheckAuthLinks(bool isUserAuth)
+	{
+		if (!isUserAuth) GoAuthorizing();
+		if (CheckCurrentPath("User/Authorization"))
+			if (isUserAuth) GoToHome();
+			else GoAuthorizing();
+		if (CheckCurrentPath("User/Registration"))
+			if (isUserAuth) GoToHome();
+			else GoRegistration();
+		if (CheckCurrentPath(PagesNavigation.BaseUri) && isUserAuth) GoToHome();
+	}
 }
