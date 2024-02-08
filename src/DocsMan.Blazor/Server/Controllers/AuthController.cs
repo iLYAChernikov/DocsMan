@@ -5,6 +5,7 @@ using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.Helpers;
 using DocsMan.Blazor.Shared.OutputData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -23,13 +24,41 @@ namespace DocsMan.Blazor.Server.Controllers
 			this.authOptions = authOptions;
 		}
 
+		[Authorize]
+		[HttpGet("Check")]
+		public bool CheckAuth() =>
+			User.Identity == null ? false : User.Identity.IsAuthenticated;
+
+		[Authorize]
+		[HttpGet("GetUserId")]
+		public Response<int> GetId()
+		{
+			int userId;
+			int.TryParse(User.FindFirstValue(ClaimTypes.UserData), out userId);
+			if (userId <= 0)
+				return new("Ошибка авторизации", "Id not found");
+			else
+				return new(userId);
+		}
+
+		[Authorize]
+		[HttpGet("GetUserEmail")]
+		public Response<string> GetEmail()
+		{
+			string? email = User.FindFirstValue(ClaimTypes.Email);
+			if (email == null || string.IsNullOrWhiteSpace(email))
+				return new("Ошибка авторизации", "Email not found");
+			else
+				return new(email);
+		}
+
 		[HttpPost("GetToken")]
 		public async Task<Response<string>> GetToken(AuthDto auth)
 		{
 			try
 			{
 				var resp_claims = await GetClaims(auth.Email, auth.Password);
-				if ( resp_claims.IsSuccess )
+				if (resp_claims.IsSuccess)
 				{
 					var result = resp_claims.Value;
 					var nowTime = DateTime.UtcNow;
@@ -51,7 +80,7 @@ namespace DocsMan.Blazor.Server.Controllers
 				else
 					return new(resp_claims.ErrorMessage, resp_claims.ErrorInfo);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка авторизации", ex.Message);
 			}
@@ -60,10 +89,10 @@ namespace DocsMan.Blazor.Server.Controllers
 		private async Task<Response<Claim[]?>> GetClaims(string email, string password)
 		{
 			var responseUser = await FindUser(email);
-			if ( responseUser.IsSuccess && responseUser.Value != null )
+			if (responseUser.IsSuccess && responseUser.Value != null)
 			{
 				var user = responseUser.Value;
-				if ( user.Password == password )
+				if (user.Password == password)
 				{
 					var claims = new Claim[]
 					{
@@ -85,12 +114,12 @@ namespace DocsMan.Blazor.Server.Controllers
 			try
 			{
 				var respUser = await _master.GetOne(email);
-				if ( respUser.IsSuccess )
+				if (respUser.IsSuccess)
 					return respUser;
 				else
 					return new("Пользователь не найден или не существует", respUser.ErrorInfo);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка поиска пользователей", ex.Message);
 			}

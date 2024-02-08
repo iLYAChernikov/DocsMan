@@ -92,7 +92,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 		{
 			try
 			{
-				if (!(await IsUserAuthorized()))
+				if (!await IsUserAuthorized())
 					return new(HttpStatusCode.Unauthorized,
 						new("Вы не Авторизованы или время Вашей Сессии истекло. \nВойдите в систему еще раз", "Auth Request Error"));
 
@@ -123,7 +123,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 		{
 			try
 			{
-				if (!(await IsUserAuthorized()))
+				if (!await IsUserAuthorized())
 					return new(HttpStatusCode.Unauthorized,
 						new("Вы не Авторизованы или время Вашей Сессии истекло. \nВойдите в систему еще раз", "Auth Request Error"));
 
@@ -154,7 +154,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 		{
 			try
 			{
-				if (!(await IsUserAuthorized()))
+				if (!await IsUserAuthorized())
 					return new(HttpStatusCode.Unauthorized,
 						new("Вы не Авторизованы или время Вашей Сессии истекло. \nВойдите в систему еще раз", "Auth Request Error"));
 
