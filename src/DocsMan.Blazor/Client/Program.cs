@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using AltairCA.Blazor.WebAssembly.Cookie.Framework;
 
 namespace DocsMan.Blazor.Client
 {
@@ -12,6 +13,11 @@ namespace DocsMan.Blazor.Client
 			builder.RootComponents.Add<HeadOutlet>("head::after");
 
 			builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+			builder.Services.AddAltairCACookieService(options =>
+			{
+				options.DefaultExpire = TimeSpan.FromHours(12);
+			});
 
 			await builder.Build().RunAsync();
 		}

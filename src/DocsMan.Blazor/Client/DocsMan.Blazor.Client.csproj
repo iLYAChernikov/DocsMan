@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AltairCA.Blazor.WebAssembly.Cookie" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.14" PrivateAssets="all" />
   </ItemGroup>
@@ -19,7 +20,6 @@
     <Folder Include="WebSite\Pages\Admin\" />
     <Folder Include="WebSite\Pages\Default_User\" />
     <Folder Include="WebSite\Shared\Components\" />
-    <Folder Include="WebSite\Shared\Support\" />
     <Folder Include="WebSite\Shared\Layouts\" />
   </ItemGroup>
 
