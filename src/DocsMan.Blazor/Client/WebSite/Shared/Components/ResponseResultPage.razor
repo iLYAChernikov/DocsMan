@@ -1,0 +1,142 @@
+@using System.Net;
+@using DocsMan.Blazor.Shared.Helpers;
+
+<div class="notify-block">
+	@if (WasSendRequest)
+	{
+		<div class="send-req @OpenCloseStyles[0] alert-success">
+			<h2>Запрос отправлен</h2>
+			<span @onclick="()=>ChangeCloseStyle(0)" class="cls-btn">
+				<i class="fas fa-times"></i>
+			</span>
+		</div>
+	}
+	@if (WasSendRequest && RequestResult != null)
+	{
+		@*when server not return any*@
+		@if (RequestResult.ResponseStatusCode == null)
+		{
+			<div class="resp-msg @OpenCloseStyles[1] alert-danger">
+				<h2>Сервер не подключен, отключен или доступ к нему невозможен, пожалуйста, подождите</h2>
+				<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+					<i class="fas fa-times"></i>
+				</span>
+			</div>
+		}
+		else @*return successful*@
+		@if ((int)RequestResult.ResponseStatusCode >= 200 && (int)RequestResult.ResponseStatusCode <= 299)
+		{
+			@if (RequestResult.ResponseStatusCode == HttpStatusCode.OK)
+			{
+				if (RequestResult.Response.IsSuccess)
+				{
+					<div class="resp-msg @OpenCloseStyles[1] alert-success">
+						<h2>Успешно</h2>
+						<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+							<i class="fas fa-times"></i>
+						</span>
+					</div>
+				}
+				else
+				{
+					<div class="resp-msg @OpenCloseStyles[1] alert-success">
+						<h2>@RequestResult.Response.ErrorMessage</h2>
+						<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+							<i class="fas fa-times"></i>
+						</span>
+					</div>
+				}
+			}
+			else
+			{
+				<div class="resp-msg @OpenCloseStyles[1] alert-warning">
+					<h2>@RequestResult.Response.ErrorMessage</h2>
+					<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+						<i class="fas fa-times"></i>
+					</span>
+				</div>
+			}
+		}
+		else @*return information*@
+		@if ((int)RequestResult.ResponseStatusCode >= 100 && (int)RequestResult.ResponseStatusCode <= 199)
+		{
+			<div class="resp-msg @OpenCloseStyles[1] alert-info">
+				<h2>@RequestResult.Response.ErrorMessage</h2>
+				<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+					<i class="fas fa-times"></i>
+				</span>
+			</div>
+		}
+		else @*return redirect*@
+		@if ((int)RequestResult.ResponseStatusCode >= 300 && (int)RequestResult.ResponseStatusCode <= 399)
+		{
+			<div class="resp-msg @OpenCloseStyles[1] alert-warning">
+				<h2>@RequestResult.Response.ErrorMessage</h2>
+				<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+					<i class="fas fa-times"></i>
+				</span>
+			</div>
+		}
+		else @*return client & server errors*@
+		@if ((int)RequestResult.ResponseStatusCode >= 400 && (int)RequestResult.ResponseStatusCode <= 599)
+		{
+			@if (RequestResult.ResponseStatusCode == HttpStatusCode.Unauthorized)
+			{
+				<div class="resp-msg @OpenCloseStyles[1] alert-danger">
+					<h2>
+						Вы не авторизованы или Ваша сессия завершена, пожалуйста, авторизуйтесь
+						<br>
+						@RequestResult.Response.ErrorMessage
+					</h2>
+					<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+						<i class="fas fa-times"></i>
+					</span>
+				</div>
+			}
+			else
+			@if (RequestResult.ResponseStatusCode == HttpStatusCode.Forbidden)
+			{
+				<div class="resp-msg @OpenCloseStyles[1] alert-danger">
+					<h2>
+						У Вас нет доступа, пожалуйста, обратитесь к администратору
+						<br>
+						@RequestResult.Response.ErrorMessage
+					</h2>
+					<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+						<i class="fas fa-times"></i>
+					</span>
+				</div>
+			}
+			else
+			{
+				<div class="resp-msg @OpenCloseStyles[1] alert-danger">
+					<h2>@RequestResult.Response.ErrorMessage</h2>
+					<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
+						<i class="fas fa-times"></i>
+					</span>
+				</div>
+			}
+		}
+	}
+</div>
+
+
+
+@code {
+	[Parameter]
+	public RequestResultDto? RequestResult { get; set; }
+	[Parameter]
+	public bool WasSendRequest { get; set; }
+	[Parameter]
+	public List<string> OpenCloseStyles { get; set; }
+
+	void ChangeCloseStyle(int id) => OpenCloseStyles[id] = "close";
+
+	protected override void OnInitialized()
+	{
+		if (RequestResult != null)
+		{
+			Console.WriteLine(RequestResult.Response.ErrorInfo);
+		}
+	}
+}

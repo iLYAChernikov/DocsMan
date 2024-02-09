@@ -1,5 +1,5 @@
 ﻿@page "/"
-@using Shared.Layouts
+@using DocsMan.Blazor.Client.WebSite.Shared.Layouts
 @layout MainLayout
 
 <PageTitle>Index</PageTitle>
@@ -7,3 +7,15 @@
 <h1>Hello, world!</h1>
 
 Welcome to new app.
+
+<button @onclick=clk>tap tap me pls</button>
+
+<ResponseResultPage RequestResult="@res" WasSendRequest="@clkBtn" OpenCloseStyles="@CSS_Styles.OpenCloseStyles">
+</ResponseResultPage>
+
+@code {
+	RequestResultDto? res = new(null, new("errors", "Info"));
+	bool clkBtn = false;
+
+	void clk() => clkBtn = true;
+}

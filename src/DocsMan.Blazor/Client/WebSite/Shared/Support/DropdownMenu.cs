@@ -15,6 +15,11 @@ public class SubMenu
 	public string HrefUrl { get; set; } = string.Empty;
 }
 
+public static class CSS_Styles
+{
+	public static List<string> OpenCloseStyles => new() { "", "" };
+}
+
 public static class HeaderNavMenuList
 {
 	public static List<DropdownMenu> headerMenu = new()
