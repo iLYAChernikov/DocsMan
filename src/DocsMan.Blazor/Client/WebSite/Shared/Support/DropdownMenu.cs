@@ -1,4 +1,4 @@
-﻿namespace DocsMan.Blazor.Client.WebSite.Shared.Support;
+namespace DocsMan.Blazor.Client.WebSite.Shared.Support;
 
 public class DropdownMenu
 {
@@ -49,33 +49,46 @@ public static class HeaderNavMenuList
 
 public static class SideBarNavMenuList
 {
-	public static List<DropdownMenu> sidebarMenu = new()
+
+	public static List<SubMenu> adminMenu = new()
 	{
 		new ()
 		{
-			Title = "UserPanel",
-			Icon = "far fa-user",
-			Submenus = new()
-			{
-				new ()
-				{
-					Title = "Документы",
-					HrefUrl = "User/Docs",
-					Icon = "fas fa-id-card"
-				},
-				new ()
-				{
-					Title = "Work",
-					HrefUrl = "User/Workplace",
-					Icon = "fas fa-briefcase"
-				},
-				new ()
-				{
-					Title = "Группы",
-					HrefUrl = "User/Groups",
-					Icon = "fas fa-user-friends"
-				}
-			}
+			Title = "AdminPanel",
+			Icon = "far fa-user-secret",
+			HrefUrl = "Admin/Panel"
+		}
+	};
+
+	public static List<SubMenu> userMenu = new()
+	{
+		new ()
+		{
+			Title = "Manager",
+			Icon = "fas fa-folder-open",
+			HrefUrl = "User/Files"
+		},
+	};
+
+	public static List<SubMenu> adminPanelMenu = new()
+	{
+		new ()
+		{
+			Title = "Home",
+			Icon = "far fa-home",
+			HrefUrl = "/"
+		},
+		new ()
+		{
+			Title = "Roles",
+			Icon = "fas fa-user-tag",
+			HrefUrl = "Admin/Role"
+		},
+		new ()
+		{
+			Title = "DocsTypes",
+			Icon = "fas fa-id-card",
+			HrefUrl = "Admin/DocsType"
 		},
 	};
 }

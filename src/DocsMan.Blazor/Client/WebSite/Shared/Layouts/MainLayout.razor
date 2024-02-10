@@ -1,4 +1,4 @@
-﻿@using DocsMan.Blazor.Client.WebSite.Shared.Components
+@using DocsMan.Blazor.Client.WebSite.Shared.Components
 @using DocsMan.Blazor.Client.WebSite.Shared.Support
 @inherits LayoutComponentBase
 
@@ -11,7 +11,8 @@ else
 	<div class="global-page">
 
 		<header>
-			<HeaderPage PhotoUrl=@photoUrl IsNotifyNotRead=@isNotifyNotRead UserName=@name></HeaderPage>
+			<HeaderPage PhotoUrl=@photoUrl IsNotifyNotRead=@isNotifyNotRead UserName=@name />
+			<SidebarPage IsRoleAdmin=@isAdmin />
 		</header>
 
 		<main class="user-main">
@@ -29,6 +30,7 @@ else
 	bool isNotifyNotRead = true;
 	string name = "UserName";
 	string photoUrl = "/img/none-photo.png";
+	bool isAdmin = true;
 
 	bool loading = true;
 	bool isUserAuth;
@@ -44,7 +46,7 @@ else
 	}
 
 	bool CheckCurrentPath(string path) =>
-		PagesNavigation.Uri.ToLower() == PagesNavigation.BaseUri.ToLower() + path.ToLower();
+	PagesNavigation.Uri.ToLower() == PagesNavigation.BaseUri.ToLower() + path.ToLower();
 	void GoAuthorizing() => PagesNavigation.NavigateTo("/User/Authorization");
 	void GoRegistration() => PagesNavigation.NavigateTo("/User/Registration");
 	void GoToHome() => PagesNavigation.NavigateTo("/");

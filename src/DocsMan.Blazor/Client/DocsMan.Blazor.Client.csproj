@@ -18,8 +18,6 @@
 
   <ItemGroup>
     <Folder Include="WebSite\Pages\Admin\" />
-    <Folder Include="WebSite\Pages\Default_User\" />
-    <Folder Include="WebSite\Shared\Components\" />
     <Folder Include="WebSite\Shared\Layouts\" />
   </ItemGroup>
 
