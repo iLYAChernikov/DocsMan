@@ -16,9 +16,4 @@
     <ProjectReference Include="..\Shared\DocsMan.Blazor.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="WebSite\Pages\Admin\" />
-    <Folder Include="WebSite\Shared\Layouts\" />
-  </ItemGroup>
-
 </Project>

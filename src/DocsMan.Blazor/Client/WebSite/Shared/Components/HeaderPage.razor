@@ -19,23 +19,23 @@
 				}			
 			</i>
 		</li>
-		
+
 		<li class="nav-dark-header-menu-list @GetMenuType(profileMenu)" @onclick="()=>OpenSubmenu(profileMenu)">
-				
+
 			<span class="menu-profile-photo">
 				<img src="@PhotoUrl" alt="@UserName Photo">
 			</span>
-				
+
 			<a class="title">@UserName</a>
 				<span class="caret-icon">
 				@if (profileMenu.IsOpen)
-					{
-						<i class="fas fa-angle-up"></i>
-					}
-					else
-					{
-						<i class="fas fa-angle-down"></i>
-					}
+				{
+					<i class="fas fa-angle-up"></i>
+				}
+				else
+				{
+					<i class="fas fa-angle-down"></i>
+				}
 				</span>
 			<ul class="nav-dark-submenu @GetMenuType(profileMenu)">
 				@foreach (var sub in profileMenu.Submenus)
@@ -72,28 +72,5 @@
 	[Parameter]
 	public string UserName { get; set; }
 
-	DropdownMenu profileMenu = new()
-	{
-		Submenus = new()
-		{ 
-			new()
-			{ 
-				Title = "Профиль",
-				Icon = "fas fa-user-tie",
-				HrefUrl = "User/Profile"
-			},
-			new()
-			{ 
-				Title = "Документы",
-				Icon = "fas fa-id-card",
-				HrefUrl = "User/Docs"
-			},
-			new()
-			{
-				Title = "Группы",
-				Icon = "fas fa-user-friends",
-				HrefUrl = "User/Groups"
-			}
-		}
-	};
+	DropdownMenu profileMenu = HeaderNavMenuList.headerMenu[0];
 }

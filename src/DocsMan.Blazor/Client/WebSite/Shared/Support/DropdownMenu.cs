@@ -26,8 +26,6 @@ public static class HeaderNavMenuList
 	{
 		new ()
 		{
-			Title = "User",
-			Icon = "fas fa-user-tie",
 			Submenus = new()
 			{
 				new()
@@ -36,10 +34,22 @@ public static class HeaderNavMenuList
 					Icon = "fas fa-user-tie",
 					HrefUrl = "User/Profile"
 				},
+				new()
+				{
+					Title = "Документы",
+					Icon = "fas fa-id-card",
+					HrefUrl = "User/Docs"
+				},
+				new()
+				{
+					Title = "Группы",
+					Icon = "fas fa-users",
+					HrefUrl = "User/Groups"
+				},
 				new ()
 				{
 					Title = "Настройки",
-					HrefUrl = "User/Settings",
+					HrefUrl = "User/Profile/Settings",
 					Icon = "fas fa-user-cog"
 				}
 			}
@@ -49,6 +59,15 @@ public static class HeaderNavMenuList
 
 public static class SideBarNavMenuList
 {
+	public static List<SubMenu> userMenu = new()
+	{
+		new ()
+		{
+			Title = "Manager",
+			Icon = "fas fa-folder-open",
+			HrefUrl = "User/Files"
+		},
+	};
 
 	public static List<SubMenu> adminMenu = new()
 	{
@@ -58,16 +77,6 @@ public static class SideBarNavMenuList
 			Icon = "far fa-user-secret",
 			HrefUrl = "Admin/Panel"
 		}
-	};
-
-	public static List<SubMenu> userMenu = new()
-	{
-		new ()
-		{
-			Title = "Manager",
-			Icon = "fas fa-folder-open",
-			HrefUrl = "User/Files"
-		},
 	};
 
 	public static List<SubMenu> adminPanelMenu = new()
@@ -89,6 +98,18 @@ public static class SideBarNavMenuList
 			Title = "DocsTypes",
 			Icon = "fas fa-id-card",
 			HrefUrl = "Admin/DocsType"
+		},
+		new ()
+		{
+			Title = "Groups",
+			Icon = "fas fa-users",
+			HrefUrl = "Admin/Group"
+		},
+		new ()
+		{
+			Title = "Notifying",
+			Icon = "fas fa-envelope",
+			HrefUrl = "Admin/Notify"
 		},
 	};
 }
