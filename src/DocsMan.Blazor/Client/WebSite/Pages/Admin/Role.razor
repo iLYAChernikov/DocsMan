@@ -1,10 +1,58 @@
 @page "/Admin/Role"
 @layout AdminLayout
+@using DocsMan.Blazor.Shared.DTOs
 
 <PageTitle>Role</PageTitle>
 
 <h3>Roles</h3>
 
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	@if (roles != null)
+	{
+		<table class="dm-table">
+			<tr>
+				<td>Title</td>
+				<td>Description</td>
+				<td>Delete</td>
+			</tr>
+			@foreach (var item in roles)
+			{
+				<tr>
+					<td>@item.Title</td>
+					<td>@item.Description</td>
+					<td>
+						<a class="delete-icon">
+							<i class="fas fa-trash"></i>
+						</a>
+					</td>
+				</tr>
+			}
+		</table>
+	}
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
 @code {
 
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+	IEnumerable<RoleDto>? roles;
+
+	protected override async void OnInitialized()
+	{
+		isClick = true;
+		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker).DoRequest_GET("Role/GetAll");
+		resp = req;
+		roles = req?.Value;
+		
+		loading = false;
+		StateHasChanged();
+	}
 }

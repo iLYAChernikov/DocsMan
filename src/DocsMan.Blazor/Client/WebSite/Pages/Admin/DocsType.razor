@@ -6,40 +6,53 @@
 
 <h3>DocsTypes</h3>
 
-<table class="dm-table">
-	<tr>
-		<td>Title</td>
-		<td>Description</td>
-		<td>Delete</td>
-	</tr>
-	@foreach (var tt in types)
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	@if (types != null)
 	{
-		<tr>
-			<td>@tt.Title</td>
-			<td>@tt.Description</td>
-			<td>
-				<a class="delete-icon">
-					<i class="fas fa-trash"></i>
-				</a>
-			</td>
-		</tr>
+		<table class="dm-table">
+			<tr>
+				<td>Title</td>
+				<td>Description</td>
+				<td>Delete</td>
+			</tr>
+			@foreach (var item in types)
+			{
+				<tr>
+					<td>@item.Title</td>
+					<td>@item.Description</td>
+					<td>
+						<a class="delete-icon">
+							<i class="fas fa-trash"></i>
+						</a>
+					</td>
+				</tr>
+			}
+		</table>
 	}
-</table>
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
 
 @code {
-	List<PersonalDocumentTypeDto> types = new()
+
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+	IEnumerable<PersonalDocumentTypeDto>? types;
+
+	protected override async void OnInitialized()
 	{
-		new()
-		{
-			Title="title_1", Description="about_1"
-		},
-		new()
-		{
-			Title="title_2", Description="about_2"
-		},
-		new()
-		{
-			Title="title_3", Description="about_3"
-		},
-	};
+		isClick = true;
+		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker).DoRequest_GET("PersonalDocType/GetAll");
+		resp = req;
+		types = req?.Value;
+		
+		loading = false;
+		StateHasChanged();
+	}
 }

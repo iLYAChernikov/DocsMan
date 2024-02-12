@@ -2,7 +2,7 @@
 @using DocsMan.Blazor.Shared.Helpers;
 
 <div class="notify-block">
-	@if (WasSendRequest)
+	@if (IsWasSendRequest)
 	{
 		<div class="send-req @OpenCloseStyles[0] alert-success">
 			<h2>Запрос отправлен</h2>
@@ -11,7 +11,7 @@
 			</span>
 		</div>
 	}
-	@if (WasSendRequest && RequestResult != null)
+	@if (IsWasSendRequest && RequestResult != null)
 	{
 		@*when server not return any*@
 		@if (RequestResult.ResponseStatusCode == null)
@@ -126,7 +126,7 @@
 	[Parameter]
 	public RequestResultDto? RequestResult { get; set; }
 	[Parameter]
-	public bool WasSendRequest { get; set; }
+	public bool IsWasSendRequest { get; set; }
 	[Parameter]
 	public List<string> OpenCloseStyles { get; set; }
 

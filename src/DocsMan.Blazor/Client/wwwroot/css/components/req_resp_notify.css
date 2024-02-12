@@ -1,14 +1,14 @@
 .notify-block {
 	display: block;
 	position: fixed;
-	bottom: 400px;
+	bottom: 250px;
 	left: 20px;
 	z-index: 100;
 }
 
 .notify-block h2 {
 	font-family: 'Open Sans';
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .send-req.close,
