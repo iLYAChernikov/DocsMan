@@ -1,10 +1,73 @@
 @page "/User/Docs"
 @layout MainLayout
+@using DocsMan.Blazor.Shared.DTOs
 
 <PageTitle>UserDocs</PageTitle>
 
 <h3>UserDocs</h3>
 
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	@if (docs != null)
+	{
+		<table class="dm-table">
+			<tr>
+				<td>TypeName</td>
+				<td>Text</td>
+				<td>Download</td>
+				<td>Delete</td>
+			</tr>
+			@foreach (var item in docs)
+			{
+				<tr>
+					<td>@item.PersonalDocumentType.Title</td>
+					<td>@item.Text</td>
+					<td>
+						<a class="link-icon">
+							<i class="fas fa-download"></i>
+						</a>
+					</td>
+					<td>
+						<a class="delete-icon">
+							<i class="fas fa-trash"></i>
+						</a>
+					</td>
+				</tr>
+			}
+		</table>
+	}
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
 @code {
 
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+	IEnumerable<PersonalDocumentDto>? docs;
+
+	protected override async void OnInitialized()
+	{
+		isClick = true;
+		var id_resp = await new ServerGet<int>(WebCooker)
+		.DoRequest_GET("Auth/GetUserId");
+		if (!id_resp.Response.IsSuccess)
+		{
+			resp = id_resp;
+		}
+		else
+		{
+			var req = await new ServerGet<IEnumerable<PersonalDocumentDto>>(WebCooker)
+			.DoRequest_GET($"Profile/GetPersonalDocs/{id_resp.Value}");
+			resp = req;
+			docs = req.Value;
+		}
+		loading = false;
+		StateHasChanged();
+	}
 }

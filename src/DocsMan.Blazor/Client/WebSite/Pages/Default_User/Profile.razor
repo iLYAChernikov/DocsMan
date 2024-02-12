@@ -1,10 +1,53 @@
 @page "/User/Profile"
 @layout MainLayout
+@using DocsMan.Blazor.Shared.DTOs
 
 <PageTitle>Profile</PageTitle>
 
 <h3>Profile</h3>
 
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	@if (profile != null)
+	{
+		<p>FIO</p>
+		<p>@profile.SurName @profile.Name @profile.LastName</p>
+		<p>Email</p>
+		<p>@profile.Email</p>
+		<p>Phone</p>
+		<p>@profile.PhoneNumber</p>
+	}
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
 @code {
 
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+	ProfileDto? profile;
+
+	protected override async void OnInitialized()
+	{
+		isClick = true;
+		var id_resp = await new ServerGet<int>(WebCooker).DoRequest_GET("Auth/GetUserId");
+		if (!id_resp.Response.IsSuccess)
+		{
+			resp = id_resp;
+		}
+		else
+		{
+			var req = await new ServerGet<ProfileDto>(WebCooker)
+			.DoRequest_GET($"Profile/GetOneById/{id_resp.Value}");
+			resp = req;
+			profile = req.Value;
+		}
+		loading = false;
+		StateHasChanged();
+	}
 }
