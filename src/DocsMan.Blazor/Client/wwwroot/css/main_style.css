@@ -47,3 +47,72 @@
 	margin: unset;
 	text-align: center;
 }
+
+/*#region Tables*/
+
+.dm-table {
+	border-collapse: collapse;
+	border-radius: 10px;
+	background-color: #eee;
+	width: 100%;
+	margin: 10px;
+	font-size: 16px;
+}
+
+.dm-table tr:first-child {
+	background-color: #4f46c344;
+	font-weight: bold;
+}
+
+.dm-table tr:first-child td:first-child {
+	border-top-left-radius: 10px;
+}
+
+.dm-table tr:first-child td:last-child {
+	border-top-right-radius: 10px;
+}
+
+.dm-table tr:not(:first-child) {
+	border-bottom: 4px solid #ff006e44;
+}
+
+.dm-table tr:last-child {
+	border-color: transparent;
+}
+
+.dm-table tr:not(:first-child)>td:first-child {
+	text-transform: uppercase;
+}
+
+.dm-table td {
+	text-align: center;
+	padding: 10px 5px;
+}
+
+.dm-table tr>td>a {
+	color: #000;
+}
+
+.dm-table a>i:hover {
+	cursor: pointer;
+	transform: scale(1.1);
+	transition: .5s;
+}
+
+.dm-table a>i:not(:hover) {
+	transition: .5s;
+}
+
+.dm-table a.link-icon>i:hover {
+	color: #0fc9b9;
+}
+
+.dm-table a.delete-icon>i:hover {
+	color: #992255;
+}
+
+.dm-table tr>td>a>i {}
+
+.dm-table tr>td>a>i {}
+
+/*#endregion*/

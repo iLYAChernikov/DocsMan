@@ -1,10 +1,45 @@
 @page "/Admin/DocsType"
 @layout AdminLayout
+@using DocsMan.Blazor.Shared.DTOs
 
 <PageTitle>DocsType</PageTitle>
 
 <h3>DocsTypes</h3>
 
-@code {
+<table class="dm-table">
+	<tr>
+		<td>Title</td>
+		<td>Description</td>
+		<td>Delete</td>
+	</tr>
+	@foreach (var tt in types)
+	{
+		<tr>
+			<td>@tt.Title</td>
+			<td>@tt.Description</td>
+			<td>
+				<a class="delete-icon">
+					<i class="fas fa-trash"></i>
+				</a>
+			</td>
+		</tr>
+	}
+</table>
 
+@code {
+	List<PersonalDocumentTypeDto> types = new()
+	{
+		new()
+		{
+			Title="title_1", Description="about_1"
+		},
+		new()
+		{
+			Title="title_2", Description="about_2"
+		},
+		new()
+		{
+			Title="title_3", Description="about_3"
+		},
+	};
 }
