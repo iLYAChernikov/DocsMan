@@ -18,6 +18,11 @@ public class SubMenu
 public static class CSS_Styles
 {
 	public static List<string> OpenCloseStyles => new() { "", "" };
+
+	public static string GetImage(byte[]? imageData) =>
+		imageData == null ?
+		"/img/none-photo.png" :
+		string.Format("data:image/png;base64," + Convert.ToBase64String(imageData));
 }
 
 public static class HeaderNavMenuList

@@ -45,6 +45,12 @@
 
 .set-center-text {
 	margin: unset;
+
+}
+
+h3 {
+	font-size: 18px;
+	margin: 14px;
 	text-align: center;
 }
 
@@ -94,13 +100,13 @@
 	color: #000;
 }
 
-.dm-table a>i:hover {
-	cursor: pointer;
-	transform: scale(1.1);
+.dm-table a>i {
 	transition: .5s;
 }
 
-.dm-table a>i:not(:hover) {
+.dm-table a>i:hover {
+	cursor: pointer;
+	transform: scale(1.1);
 	transition: .5s;
 }
 
@@ -112,5 +118,31 @@
 	color: var(--dm-malina-d);
 }
 
+.dm-table img {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+
+.role-block {
+	position: relative;
+}
+
+.role-block h3 {
+	margin-top: 30px;
+}
+
+.role-block .add-users>i {
+	position: relative;
+	left: 600px;
+	top: -5px;
+	transition: .5s;
+}
+
+.role-block .add-users>i:hover {
+	color: var(--dm-green-sea);
+	cursor: pointer;
+	transform: scale(1.1);
+}
 
 /*#endregion*/

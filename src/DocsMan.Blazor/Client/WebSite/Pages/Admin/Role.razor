@@ -12,28 +12,75 @@
 }
 else
 {
-	@if (roles != null)
-	{
-		<table class="dm-table">
-			<tr>
-				<td>Title</td>
-				<td>Description</td>
-				<td>Delete</td>
-			</tr>
-			@foreach (var item in roles)
-			{
+	<div class="role-block">
+		@if (roles != null)
+		{
+			<table class="dm-table">
 				<tr>
-					<td>@item.Title</td>
-					<td>@item.Description</td>
-					<td>
-						<a class="delete-icon">
-							<i class="fas fa-trash"></i>
-						</a>
-					</td>
+					<td>Title</td>
+					<td>Description</td>
+					<td>Users</td>
+					<td>Delete</td>
 				</tr>
+				@foreach (var item in roles)
+				{
+					<tr>
+						<td>@item.Title</td>
+						<td>@item.Description</td>
+						<td>
+							<a @onclick="()=>GetProfiles(item)" class="link-icon">
+								<i class="fas fa-user-friends"></i>
+							</a>
+						</td>
+						<td>
+							<a class="delete-icon">
+								<i class="fas fa-trash"></i>
+							</a>
+						</td>
+					</tr>
+				}
+			</table>
+
+			@if (chosenRole != null)
+			{
+
+				<h3>Chosen role: @chosenRole.Title</h3>
+				<a class="add-users">
+					<i class="fas fa-user-plus"></i>
+				</a>
+				@if (profiles != null && images != null)
+				{
+					<table class="dm-table">
+						<tr>
+							<td>Photo</td>
+							<td>FIO</td>
+							<td>Email</td>
+							<td>Delete</td>
+						</tr>
+						@if (profiles.Count > 0 && images.Count > 0)
+						{
+							@for (int i = 0; i < profiles.Count(); i++)
+							{
+								<tr>
+									<td>
+										<img src="@images[i]">
+									</td>
+									<td>@profiles[i].SurName @profiles[i].Name @profiles[i].LastName</td>
+									<td>@profiles[i].Email</td>
+									<td>
+										<a class="delete-icon">
+											<i class="fas fa-user-minus"></i>
+										</a>
+									</td>
+								</tr>
+							}
+						}
+					</table>
+				}
+
 			}
-		</table>
-	}
+		}
+	</div>
 }
 
 <ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
@@ -44,6 +91,9 @@ else
 	bool isClick = false;
 	RequestResultDto? resp;
 	IEnumerable<RoleDto>? roles;
+	RoleDto? chosenRole;
+	List<ProfileDto>? profiles;
+	List<string>? images;
 
 	protected override async void OnInitialized()
 	{
@@ -51,8 +101,38 @@ else
 		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker).DoRequest_GET("Role/GetAll");
 		resp = req;
 		roles = req?.Value;
-		
+
 		loading = false;
 		StateHasChanged();
+	}
+
+	async void GetProfiles(RoleDto role)
+	{
+		chosenRole = role;
+		resp = null;
+		loading = true;
+
+		var req = await new ServerGet<IEnumerable<ProfileDto>>(WebCooker)
+		.DoRequest_GET($"Role/GetUsers/{role.Id}");
+		resp = req;
+		profiles = req.Value?.ToList();
+		await GetPhotos();
+
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task GetPhotos()
+	{
+		if (profiles != null)
+		{
+			images = new();
+			foreach (var item in profiles)
+			{
+				images.Add(CSS_Styles.GetImage(
+				(await new ServerGet<byte[]>(WebCooker)
+				.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value));
+			}
+		}
 	}
 }
