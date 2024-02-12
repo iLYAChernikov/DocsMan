@@ -166,13 +166,11 @@ i:has(.nav-button) {
 
 .nav-dark-submenu-list {
 	width: 100%;
-	background: #2d2d2d;
+	background: var(--dm-dark-l);
 	border-top: 2px solid var(--dm-malina-d);
 }
 
-.nav-dark-submenu-list {
-
-}
+.nav-dark-submenu-list {}
 
 .nav-dark-submenu-list:last-child {
 	border-bottom: 2px solid var(--dm-malina-d);
@@ -218,6 +216,5 @@ i:has(.nav-button) {
 	top: -6px;
 	left: 4px;
 }
-
 
 /*#endregion Header*/

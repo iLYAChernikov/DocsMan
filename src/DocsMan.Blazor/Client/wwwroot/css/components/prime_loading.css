@@ -1,5 +1,5 @@
 .load-page {
-	background: #202020;
+	background: var(--dm-dark);
 	width: 100%;
 	height: 100vh;
 }
@@ -16,10 +16,10 @@
 	border-radius: 50%;
 	line-height: 120px;
 	font-size: 18px;
-	color: #11d7c7;
+	color: var(--dm-green-sea-l);
 	letter-spacing: 3px;
 	text-transform: uppercase;
-	text-shadow: 0 0 20px #0fc9b9;
+	text-shadow: 0 0 20px var(--dm-green-sea);
 	box-shadow: 0 0 20px rgba(0, 0, 0, .5);
 }
 
@@ -31,8 +31,8 @@
 	width: 100%;
 	height: 100%;
 	border: 3px solid transparent;
-	border-top: 3px solid #11d7c7;
-	border-right: 3px solid #11d7c7;
+	border-top: 3px solid var(--dm-green-sea-l);
+	border-right: 3px solid var(--dm-green-sea-l);
 	border-radius: 50%;
 	animation: animateCircle 2s linear infinite;
 }
@@ -64,11 +64,11 @@
 	position: absolute;
 	width: 16px;
 	height: 16px;
-	background: #11d7c7;
+	background: var(--dm-green-sea-l);
 	border-radius: 50%;
 	top: -6px;
 	right: -8px;
-	box-shadow: 0 0 20px #11d7c7;
+	box-shadow: 0 0 20px var(--dm-green-sea-l);
 }
 
 @keyframes animateBall {

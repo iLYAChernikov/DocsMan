@@ -3,7 +3,7 @@
 .form-page {
 	width: 100%;
 	height: 100vh;
-	background: #ccc;
+	background: var(--dm-light);
 }
 
 .form-box {
@@ -11,7 +11,7 @@
 	height: 350px;
 	padding: 30px;
 	border-radius: 10px;
-	background: #333;
+	background: var(--dm-dark-l);
 	color: #fff;
 	position: absolute;
 	top: 0;
@@ -70,7 +70,7 @@
 
 @keyframes breath {
 	0% {
-		color: #ff006e;
+		color: var(--dm-malina);
 	}
 
 	50% {
@@ -78,7 +78,7 @@
 	}
 
 	100% {
-		color: #ff006e;
+		color: var(--dm-malina);
 	}
 }
 
@@ -91,12 +91,12 @@
 	margin-top: 10px;
 	color: #fff;
 	letter-spacing: 1px;
-	border-bottom: 1px solid #11d7c7;
+	border-bottom: 1px solid var(--dm-green-sea-l);
 	padding-bottom: 4px;
 }
 
 .form-control-text:focus {
-	box-shadow: #11d7c7aa 0px 20px 25px -10px;
+	box-shadow: rgba(var(--dm-green-sea-l), 0.65) 0px 20px 25px -10px;
 	transition: 1s;
 }
 
@@ -118,7 +118,7 @@
 	border: none;
 	outline: none;
 	border-radius: 30px;
-	border: 2px solid #992255;
+	border: 2px solid var(--dm-malina-d);
 	color: #fff;
 	letter-spacing: 1px;
 	margin-bottom: 10px;
@@ -129,9 +129,9 @@
 .btn-auth:hover {
 	color: #222;
 	font-weight: bold;
-	border: 2px solid #7971ea;
-	background-color: #11d7c7;
+	border: 2px solid var(--dm-siren);
+	background-color: var(--dm-green-sea-l);
 	cursor: pointer;
 	transition: .5s;
-	box-shadow: #222222bb 0px 15px 5px;
+	box-shadow: rgba(var(--dm-dark), 0.75) 0px 15px 5px;
 }
