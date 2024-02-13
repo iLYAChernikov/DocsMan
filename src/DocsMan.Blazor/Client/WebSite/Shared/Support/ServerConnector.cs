@@ -174,7 +174,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 		}
 	}
 
-	public class ServerDelete<Input_T> : ServerConnector
+	public class ServerDelete : ServerConnector
 	{
 		public ServerDelete(IAltairCABlazorCookieUtil cooker) : base(cooker) { }
 

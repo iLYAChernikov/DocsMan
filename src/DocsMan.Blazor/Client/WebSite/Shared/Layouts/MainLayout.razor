@@ -55,7 +55,7 @@ else
 			var prof = await new ServerGet<ProfileDto>(WebCooker)
 			.DoRequest_GET($"Profile/GetOneById/{id_resp.Value}");
 			if (prof != null && prof.Value != null)
-				name = $"{prof.Value.SurName} {prof.Value.Name[0]}.{prof.Value.LastName[0]}.";
+				name = prof.Value.Short_FIO;
 			else
 				name = "User_FIO";
 
@@ -63,7 +63,8 @@ else
 			.DoRequest_GET($"GetPersonalPhoto/{id_resp.Value}");
 			if (photo != null)
 				imageUrl = CSS_Styles.GetImage(photo.Value);
-					}
+		}
+		CheckAuthLinks(isUserAuth);
 		StateHasChanged();
 	}
 

@@ -45,10 +45,10 @@
 
 .set-center-text {
 	margin: unset;
-
+	text-align: center;
 }
 
-h3 {
+h3.page-title {
 	font-size: 18px;
 	margin: 14px;
 	text-align: center;
@@ -124,25 +124,105 @@ h3 {
 	border-radius: 50%;
 }
 
-.role-block {
-	position: relative;
+/*#endregion*/
+
+/*#region Blocks*/
+
+.dm-add-new {
+	margin-bottom: 30px;
 }
 
-.role-block h3 {
-	margin-top: 30px;
+.dm-add-new h3 {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: left;
+	margin: 20px 50px;
 }
 
-.role-block .add-users>i {
-	position: relative;
-	left: 600px;
-	top: -5px;
+.set-data {
+	display: inline-block;
+}
+
+.set-data label,
+.set-data input,
+.set-data-file input,
+.set-data select {
+	font-size: 16px;
+	border: 2px transparent solid;
+}
+
+.set-data input,
+.set-data-file input {
+	margin-top: 10px;
+	margin-left: 20px;
+	padding: 10px 20px;
+	border-radius: 10px;
+	min-width: 200px;
+	outline: none;
+	background-color: #fff;
+}
+
+.set-data select:hover,
+.set-data select:focus,
+.set-data input:hover,
+.set-data input:focus,
+.set-data-file input:hover {
+	border: 2px var(--dm-siren-d) solid;
+	cursor: pointer;
+}
+
+.set-data label {
+	margin: 10px 30px;
+}
+
+.dm-list {
+	text-align: center;
+}
+
+.dm-list h3 {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.dm-list a.add-users>i {
 	transition: .5s;
+	margin-bottom: 20px;
 }
 
-.role-block .add-users>i:hover {
+.dm-list a.add-users>i:hover {
 	color: var(--dm-green-sea);
 	cursor: pointer;
 	transform: scale(1.1);
+}
+
+.dm-btn {
+	margin-left: 50px;
+	padding: 10px 20px;
+	font-size: 18px;
+	font-weight: bold;
+	border-radius: 15px;
+	border-color: transparent;
+	background-color: var(--dm-siren-d);
+	color: #fff;
+	transition: .5s;
+}
+
+.dm-btn:hover {
+	cursor: pointer;
+	padding: 10px 24px;
+	letter-spacing: 1px;
+}
+
+.dm-btn.create:hover {
+	background-color: var(--dm-green-sea);
+	color: var(--dm-dark);
+}
+
+.dm-btn.delete:hover {
+	background-color: var(--dm-malina-d);
 }
 
 /*#endregion*/

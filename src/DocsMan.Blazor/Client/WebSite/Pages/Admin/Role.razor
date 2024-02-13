@@ -4,7 +4,7 @@
 
 <PageTitle>Role</PageTitle>
 
-<h3>Roles</h3>
+<h3 class="page-title">Roles</h3>
 
 @if (loading)
 {
@@ -12,9 +12,24 @@
 }
 else
 {
-	<div class="role-block">
-		@if (roles != null)
-		{
+	<div class="dm-add-new">
+		<h3>Add Role</h3>
+		<div class="set-data">
+			<label for="role-name">Role Name</label>
+			<br>
+			<InputText @bind-Value="@newRole.Title" id="role-name"></InputText>
+		</div>
+		<div class="set-data">
+			<label for="role-desc">Role Desc</label>
+			<br>
+			<InputText @bind-Value="@newRole.Description" id="role-desc"></InputText>
+		</div>
+		<button @onclick="@CreateRole" class="dm-btn create">Create</button>
+	</div>
+
+	@if (roles != null)
+	{
+		<div class="dm-list">
 			<table class="dm-table">
 				<tr>
 					<td>Title</td>
@@ -33,17 +48,18 @@ else
 							</a>
 						</td>
 						<td>
-							<a class="delete-icon">
+							<a @onclick="()=>DeleteRole(item.Id)" class="delete-icon">
 								<i class="fas fa-trash"></i>
 							</a>
 						</td>
 					</tr>
 				}
 			</table>
+		</div>
 
-			@if (chosenRole != null)
-			{
-
+		@if (chosenRole != null)
+		{
+			<div class="dm-list">
 				<h3>Chosen role: @chosenRole.Title</h3>
 				<a class="add-users">
 					<i class="fas fa-user-plus"></i>
@@ -63,9 +79,9 @@ else
 							{
 								<tr>
 									<td>
-										<img src="@images[i]">
+										<img src="@images[i]" alt="@profiles[i].Short_FIO">
 									</td>
-									<td>@profiles[i].SurName @profiles[i].Name @profiles[i].LastName</td>
+									<td>@profiles[i].Full_FIO</td>
 									<td>@profiles[i].Email</td>
 									<td>
 										<a class="delete-icon">
@@ -77,10 +93,10 @@ else
 						}
 					</table>
 				}
-
-			}
+			</div>
 		}
-	</div>
+	}
+
 }
 
 <ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
@@ -94,6 +110,7 @@ else
 	RoleDto? chosenRole;
 	List<ProfileDto>? profiles;
 	List<string>? images;
+	RoleDto newRole = new();
 
 	protected override async void OnInitialized()
 	{
@@ -106,7 +123,7 @@ else
 		StateHasChanged();
 	}
 
-	async void GetProfiles(RoleDto role)
+	async Task GetProfiles(RoleDto role)
 	{
 		chosenRole = role;
 		resp = null;
@@ -134,5 +151,35 @@ else
 				.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value));
 			}
 		}
+	}
+
+	async Task CreateRole()
+	{
+		resp = null;
+		loading = true;
+		isClick = true;
+
+		var req = await new ServerPost<RoleDto>(WebCooker)
+		.DoRequest_POST($"Role/Create", newRole);
+
+		resp = req;
+		loading = false;
+
+		StateHasChanged();
+	}
+
+	async Task DeleteRole(int roleId)
+	{
+		resp = null;
+		loading = true;
+		isClick = true;
+
+		var req = await new ServerDelete(WebCooker)
+		.DoRequest_DELETE($"Role/Delete/{roleId}");
+
+		resp = req;
+		loading = false;
+
+		StateHasChanged();
 	}
 }

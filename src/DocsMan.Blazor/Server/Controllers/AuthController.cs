@@ -31,11 +31,11 @@ namespace DocsMan.Blazor.Server.Controllers
 
 		[Authorize]
 		[HttpGet("GetUserId")]
-		public Response<int> GetId()
+		public async Task<Response<int>> GetId()
 		{
 			int userId;
 			int.TryParse(User.FindFirstValue(ClaimTypes.UserData), out userId);
-			if (userId <= 0)
+			if (userId <= 0 || !(await _master.GetOne(userId)).IsSuccess)
 				return new("Ошибка авторизации", "Id not found");
 			else
 				return new(userId);
@@ -43,10 +43,10 @@ namespace DocsMan.Blazor.Server.Controllers
 
 		[Authorize]
 		[HttpGet("GetUserEmail")]
-		public Response<string> GetEmail()
+		public async Task<Response<string>> GetEmail()
 		{
 			string? email = User.FindFirstValue(ClaimTypes.Email);
-			if (email == null || string.IsNullOrWhiteSpace(email))
+			if (email == null || string.IsNullOrWhiteSpace(email) || !(await _master.GetOne(email)).IsSuccess)
 				return new("Ошибка авторизации", "Email not found");
 			else
 				return new(email);
