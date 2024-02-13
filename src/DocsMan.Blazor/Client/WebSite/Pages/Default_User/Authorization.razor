@@ -39,7 +39,7 @@
 			<button class="btn-auth" @onclick=GoToReg>Регистрация</button>
 		</div>
 	</div>
-	<br>
+	<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
 </div>
 
 @code
@@ -48,13 +48,18 @@
 	string PasswordType => hide_password ? "password" : "text";
 	void HidePass() => hide_password = !hide_password;
 
+	bool isClick = false;
+	RequestResultDto? resp;
+
 	AuthDto user = new();
 
 	async Task Submit()
 	{
+		isClick = true;
+
 		var helper = new ServerConnector(WebCooker);
-		await helper.DoAuthorization(user);
-		
+		resp = await helper.DoAuthorization(user);
+
 		if (await helper.IsUserAuthorized()) GoToProfile();
 	}
 	void GoToProfile() => PagesNavigation.NavigateTo("/User/Profile");

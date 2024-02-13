@@ -11,7 +11,7 @@
 			</span>
 		</div>
 	}
-	@if (IsWasSendRequest && RequestResult != null)
+	@if (IsWasSendRequest && RequestResult != null && SendToConsole())
 	{
 		@*when server not return any*@
 		@if (RequestResult.ResponseStatusCode == null)
@@ -39,7 +39,7 @@
 				}
 				else
 				{
-					<div class="resp-msg @OpenCloseStyles[1] alert-success">
+					<div class="resp-msg @OpenCloseStyles[1] alert-warning">
 						<h2>@RequestResult.Response.ErrorMessage</h2>
 						<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 							<i class="fas fa-times"></i>
@@ -120,8 +120,6 @@
 	}
 </div>
 
-
-
 @code {
 	[Parameter]
 	public RequestResultDto? RequestResult { get; set; }
@@ -134,9 +132,19 @@
 
 	protected override void OnInitialized()
 	{
+
+	}
+
+	bool SendToConsole()
+	{
 		if (RequestResult != null)
 		{
-			Console.WriteLine(RequestResult.Response.ErrorInfo);
+			string result = string.IsNullOrWhiteSpace(RequestResult.Response.ErrorInfo) ?
+				"Successfuly" :
+				RequestResult.Response.ErrorInfo;
+			Console.WriteLine(result);
+			Console.WriteLine();
 		}
+		return true;
 	}
 }

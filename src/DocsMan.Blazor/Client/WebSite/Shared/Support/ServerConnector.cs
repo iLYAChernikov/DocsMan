@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using AltairCA.Blazor.WebAssembly.Cookie;
+using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.Helpers;
 using DocsMan.Blazor.Shared.OutputData;
 
@@ -57,13 +58,40 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 				using HttpResponseMessage request = await ServerOk.PostAsJsonAsync("Auth/GetToken", auth);
 				request.EnsureSuccessStatusCode();
 				var resp = await request.Content.ReadFromJsonAsync<Response<string>>();
-				if (resp != null && resp.IsSuccess && !string.IsNullOrWhiteSpace(resp.Value))
-				{
-					await SetCookie("JWT_Token", resp.Value);
-					return new(request.StatusCode, new());
-				}
+				if (resp != null)
+					if (resp.IsSuccess && !string.IsNullOrWhiteSpace(resp.Value))
+					{
+						await SetCookie("JWT_Token", resp.Value);
+						return new(request.StatusCode, new());
+					}
+					else
+						return new(request.StatusCode, resp);
 				else
-					return new(HttpStatusCode.BadRequest, new("Ошибка авторизации", "Auth Error"));
+					return new(HttpStatusCode.BadRequest, new("Ошибка авторизации", "Authorization Error"));
+			}
+			catch (HttpRequestException ex)
+			{
+				return new(ex.StatusCode,
+					new("Ошибка запроса", ex.Message));
+			}
+			catch (Exception ex)
+			{
+				return new(HttpStatusCode.BadRequest,
+					new("Ошибка запроса", ex.Message));
+			}
+		}
+
+		public async Task<RequestResultDto> DoRegistration(UserDto user)
+		{
+			try
+			{
+				using HttpResponseMessage request = await ServerOk.PostAsJsonAsync("User/Create", user);
+				request.EnsureSuccessStatusCode();
+				var resp = await request.Content.ReadFromJsonAsync<Response>();
+				if (resp != null)
+					return new(request.StatusCode, resp);
+				else
+					return new(HttpStatusCode.BadRequest, new("Ошибка регистрации", "Reg Error"));
 			}
 			catch (HttpRequestException ex)
 			{

@@ -57,7 +57,7 @@ else
 			if (prof != null && prof.Value != null)
 				name = $"{prof.Value.SurName} {prof.Value.Name[0]}.{prof.Value.LastName[0]}.";
 			else
-				name = "UserName";
+				name = "User_FIO";
 
 			var photo = await new ServerGet<byte[]>(WebCooker)
 			.DoRequest_GET($"GetPersonalPhoto/{id_resp.Value}");

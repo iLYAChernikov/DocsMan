@@ -68,7 +68,7 @@
 			</div>
 		}
 	</div>
-	<br>
+	<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
 </div>
 
 @code
@@ -86,15 +86,21 @@
 	bool isCorrectReg = false;
 	string boxType => isCorrectReg ? "is-correct-registration" : "registration";
 
+	bool isClick = false;
+	RequestResultDto? resp;
+
 	UserDto user = new();
 
 	async Task Submit()
 	{
 		if (!confirmSuccess) return;
 
-		var helper = new ServerPost<UserDto>(WebCooker);
-		var result = await helper.DoRequest_POST("User/Create", user);
+		isClick = true;
 
+		var helper = new ServerConnector(WebCooker);
+		var result = await helper.DoRegistration(user);
+
+		resp = result;
 		if (result.Response.IsSuccess) isCorrectReg = true;
 
 		StateHasChanged();

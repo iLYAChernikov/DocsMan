@@ -107,9 +107,9 @@ namespace DocsMan.App.Interactors
 				var profile = new Profile()
 				{
 					UserId = user.Id,
-					SurName = "User_Surname",
-					Name = "User_Name",
-					LastName = "User_Lastname"
+					SurName = "Surname",
+					Name = "Name",
+					LastName = "Lastname"
 				};
 				await _profileRepos.CreateAsync(profile);
 				await _unitWork.Commit();
