@@ -1,10 +1,10 @@
-@page "/User/Profile"
+@page "/User/Profile/{Email?}"
 @layout MainLayout
 @using DocsMan.Blazor.Shared.DTOs
 
 <PageTitle>Profile</PageTitle>
 
-<h3>Profile</h3>
+<h3 class="page-title">Profile</h3>
 
 @if (loading)
 {
@@ -14,40 +14,112 @@ else
 {
 	@if (profile != null)
 	{
-		<p>FIO</p>
-		<p>@profile.Full_FIO</p>
-		<p>Email</p>
-		<p>@profile.Email</p>
-		<p>Phone</p>
-		<p>@profile.PhoneNumber</p>
+		<div class="profile-block">
+			<div class="photo">
+				<img src="@imageUrl" alt="@profile.Short_FIO">
+			</div>
+			<div class="info">
+				<div class="prop">
+					<h1>ФИО</h1>
+					<h2>@profile.Full_FIO</h2>
+				</div>
+				<div class="prop">
+					<h1>Email</h1>
+					<h2>@profile.Email</h2>
+				</div>
+				<div class="prop">
+					<h1>Дата рождения</h1>
+					<h2>@profile.Birthdate.ToShortDateString()</h2>
+				</div>
+				<div class="prop">
+					<h1>Пол</h1>
+					<h2>@profile.Gender</h2>
+				</div>
+				<div class="prop">
+					<h1>Телефон</h1>
+					<h2>@profile.PhoneNumber</h2>
+				</div>
+				<div class="link">
+					<a href="/User/Groups/@profile.Id">
+						<i class="fas fa-users"></i>
+					</a>
+				</div>
+				<div class="link">
+					<a href="User/Docs/@profile.Id">
+						<i class="fas fa-id-card"></i>
+					</a>
+				</div>
+				<div class="link">
+					<a href="/User/Profile/Settings/@profile.Id">
+						<i class="fas fa-user-cog"></i>
+					</a>
+				</div>
+			</div>
+		</div>
 	}
 }
 
 <ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
 
 @code {
+	[Parameter]
+	public string? Email { get; set; } = string.Empty;
 
 	bool loading = true;
 	bool isClick = false;
 	RequestResultDto? resp;
 	ProfileDto? profile;
+	string imageUrl;
 
 	protected override async void OnInitialized()
 	{
 		isClick = true;
-		var id_resp = await new ServerGet<int>(WebCooker).DoRequest_GET("Auth/GetUserId");
-		if (!id_resp.Response.IsSuccess)
+
+		await GetEmail();
+		await GetProfile();
+
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task GetEmail()
+	{
+		if (string.IsNullOrWhiteSpace(Email))
 		{
-			resp = id_resp;
+			var id_resp = await new ServerGet<string>(WebCooker)
+			.DoRequest_GET("Auth/GetProfileEmail");
+			if (id_resp == null || !id_resp.Response.IsSuccess)
+			{
+				resp = id_resp;
+				return;
+			}
+			else
+				Email = id_resp.Value;
+		}
+	}
+
+	async Task GetProfile()
+	{
+		var req = await new ServerGet<ProfileDto>(WebCooker)
+		.DoRequest_GET($"Profile/GetOneByEmail/{Email}");
+		if (req == null || !req.Response.IsSuccess)
+		{
+			resp = req;
+			return;
 		}
 		else
 		{
-			var req = await new ServerGet<ProfileDto>(WebCooker)
-			.DoRequest_GET($"Profile/GetOneById/{id_resp.Value}");
 			resp = req;
 			profile = req.Value;
+			await GetPhoto();
 		}
-		loading = false;
-		StateHasChanged();
+	}
+
+	async Task GetPhoto()
+	{
+		var photo = await new ServerGet<byte[]>(WebCooker)
+		.DoRequest_GET($"GetPersonalPhoto/{profile.Id}");
+		if (photo != null)
+			imageUrl = CSS_Styles.GetImage(photo.Value);
 	}
 }

@@ -44,7 +44,7 @@ else
 
 	async Task ProfileLoad()
 	{
-		var id_resp = await new ServerGet<int>(WebCooker).DoRequest_GET("Auth/GetUserId");
+		var id_resp = await new ServerGet<int>(WebCooker).DoRequest_GET("Auth/GetProfileId");
 		if (id_resp.Response.IsSuccess)
 		{
 			var prof = await new ServerGet<ProfileDto>(WebCooker)
@@ -52,7 +52,7 @@ else
 			if (prof != null && prof.Value != null)
 				name = prof.Value.Short_FIO;
 			else
-				name = "UserName";
+				name = "User_FIO";
 
 			var photo = await new ServerGet<byte[]>(WebCooker)
 			.DoRequest_GET($"GetPersonalPhoto/{id_resp.Value}");

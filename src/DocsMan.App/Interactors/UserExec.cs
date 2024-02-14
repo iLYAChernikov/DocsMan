@@ -33,14 +33,14 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var data = ( await _userRepos.GetAllAsync() )?
+				var data = (await _userRepos.GetAllAsync())?
 					.Select(x => x.ToDto());
-				if ( data == null )
+				if (data == null)
 					return new("Записи не найдены", "Not found");
 				else
 					return new(data);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -53,15 +53,15 @@ namespace DocsMan.App.Interactors
 				var ent = await _userRepos.GetOneAsync(id);
 				return new(ent.ToDto());
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -71,14 +71,14 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var ent = ( await _userRepos.GetAllAsync() )?
+				var ent = (await _userRepos.GetAllAsync())?
 					.FirstOrDefault(x => x.Email.ToLower() == email.ToLower());
-				if ( ent == null )
+				if (ent == null)
 					return new("Пользователь не найден", "User not exist");
 				else
 					return new(ent.ToDto());
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -88,8 +88,8 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				if ( ( await _userRepos.GetAllAsync() )?
-					.FirstOrDefault(x => x.Email == ent.Email) != null )
+				if ((await _userRepos.GetAllAsync())?
+					.FirstOrDefault(x => x.Email == ent.Email) != null)
 					return new("Ошибка создания, пользователь с такой почтой уже существует", "User even exist");
 
 				var user = ent?.ToEntity();
@@ -116,11 +116,11 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
 			}
@@ -135,15 +135,15 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка удаления", ex.Message);
 			}
@@ -155,23 +155,23 @@ namespace DocsMan.App.Interactors
 			{
 				await _userRepos.GetOneAsync(userId);
 
-				var roles = ( await _userRoles.GetAllBinds() )?
+				var roles = (await _userRoles.GetAllBinds())?
 					.Where(x => x.UserId == userId)?
 					.Select(x => x.Role.ToDto());
-				if ( roles == null )
+				if (roles == null)
 					return new("Записи не найдены", "Not found");
 				else
 					return new(roles);
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -191,11 +191,11 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
 			}
@@ -215,13 +215,43 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка удаления", ex.Message);
+			}
+		}
+
+		public async Task<Response<bool>> IsUserSuperAdmin(int userId)
+		{
+			try
+			{
+				var resp = await GetRoles(userId);
+				if (resp.IsSuccess)
+				{
+					if (resp.Value.FirstOrDefault(x => x.Id == 2) != null)
+						return new(true);
+					else
+						return new(false);
+				}
+				else
+					return new(false);
+
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
 			}
 		}
 	}

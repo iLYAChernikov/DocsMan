@@ -31,7 +31,7 @@ else
 	bool isNotifyNotRead;
 	string name;
 	string imageUrl;
-	bool isAdmin = true;
+	bool isAdmin;
 
 	bool loading = true;
 	bool isUserAuth;
@@ -49,7 +49,7 @@ else
 
 	async Task ProfileLoad()
 	{
-		var id_resp = await new ServerGet<int>(WebCooker).DoRequest_GET("Auth/GetUserId");
+		var id_resp = await new ServerGet<int>(WebCooker).DoRequest_GET("Auth/GetProfileId");
 		if (id_resp.Response.IsSuccess)
 		{
 			var prof = await new ServerGet<ProfileDto>(WebCooker)
@@ -69,6 +69,13 @@ else
 			if (notify != null)
 				isNotifyNotRead = notify.Value;
 			else isNotifyNotRead = false;
+
+			var req = await new ServerGet<bool>(WebCooker)
+			.DoRequest_GET($"Auth/IsAdmin/{prof.Value.UserId}");
+			if (req != null)
+				isAdmin = req.Value;
+			else
+				isAdmin = false;
 		}
 		CheckAuthLinks(isUserAuth);
 		StateHasChanged();

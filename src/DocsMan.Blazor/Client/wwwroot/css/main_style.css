@@ -49,7 +49,7 @@
 }
 
 h3.page-title {
-	font-size: 18px;
+	font-size: 20px;
 	margin: 14px;
 	text-align: center;
 }
@@ -85,10 +85,6 @@ h3.page-title {
 
 .dm-table tr:last-child {
 	border-color: transparent;
-}
-
-.dm-table tr:not(:first-child)>td:first-child {
-	/*text-transform: uppercase;*/
 }
 
 .dm-table td {

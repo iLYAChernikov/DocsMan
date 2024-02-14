@@ -15,13 +15,15 @@ namespace DocsMan.Blazor.Server.Controllers
 	[Route("[controller]")]
 	public class AuthController : Controller
 	{
-		private DocsMan_AuthenticationOptions authOptions;
-		private UserExec _master;
+		private DocsMan_AuthenticationOptions _authOptions;
+		private UserExec _user;
+		private ProfileExec _profile;
 
-		public AuthController(UserExec master, DocsMan_AuthenticationOptions authOptions)
+		public AuthController(UserExec master, DocsMan_AuthenticationOptions authOptions, ProfileExec profile)
 		{
-			_master = master;
-			this.authOptions = authOptions;
+			_authOptions = authOptions;
+			_user = master;
+			_profile = profile;
 		}
 
 		[Authorize]
@@ -30,26 +32,38 @@ namespace DocsMan.Blazor.Server.Controllers
 			User.Identity == null ? false : User.Identity.IsAuthenticated;
 
 		[Authorize]
-		[HttpGet("GetUserId")]
+		[HttpGet("GetProfileId")]
 		public async Task<Response<int>> GetId()
 		{
 			int userId;
 			int.TryParse(User.FindFirstValue(ClaimTypes.UserData), out userId);
-			if (userId <= 0 || !(await _master.GetOne(userId)).IsSuccess)
+			if (userId <= 0 || !(await _user.GetOne(userId)).IsSuccess)
 				return new("Ошибка авторизации", "Id not found");
 			else
-				return new(userId);
+			{
+				var profile = (await _profile.GetAll())?.Value?.FirstOrDefault(x => x.UserId == userId);
+				if (profile != null)
+					return new(profile.Id);
+				else
+					return new("Ошибка авторизации", "Id not found");
+			}
 		}
 
 		[Authorize]
-		[HttpGet("GetUserEmail")]
+		[HttpGet("GetProfileEmail")]
 		public async Task<Response<string>> GetEmail()
 		{
 			string? email = User.FindFirstValue(ClaimTypes.Email);
-			if (email == null || string.IsNullOrWhiteSpace(email) || !(await _master.GetOne(email)).IsSuccess)
+			if (email == null || string.IsNullOrWhiteSpace(email) || !(await _user.GetOne(email)).IsSuccess)
 				return new("Ошибка авторизации", "Email not found");
 			else
 				return new(email);
+		}
+
+		[HttpGet("IsAdmin/{userId}")]
+		public async Task<Response<bool>> IsSuperAdmin(int userId)
+		{
+			return await _user.IsUserSuperAdmin(userId);
 		}
 
 		[HttpPost("GetToken")]
@@ -65,13 +79,13 @@ namespace DocsMan.Blazor.Server.Controllers
 
 					var jwt = new JwtSecurityToken
 						(
-							issuer: authOptions.Issuer,
-							audience: authOptions.Audience,
+							issuer: _authOptions.Issuer,
+							audience: _authOptions.Audience,
 							notBefore: nowTime,
 							claims: result,
-							expires: nowTime.Add(authOptions.LifeTime),
+							expires: nowTime.Add(_authOptions.LifeTime),
 							signingCredentials: new SigningCredentials
-								(authOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
+								(_authOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
 						);
 					var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
@@ -113,7 +127,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		{
 			try
 			{
-				var respUser = await _master.GetOne(email);
+				var respUser = await _user.GetOne(email);
 				if (respUser.IsSuccess)
 					return respUser;
 				else

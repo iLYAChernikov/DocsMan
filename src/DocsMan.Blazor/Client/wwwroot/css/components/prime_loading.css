@@ -19,6 +19,7 @@
 	color: var(--dm-green-sea-l);
 	letter-spacing: 3px;
 	text-transform: uppercase;
+	font-family: 'Open Sans';
 	text-shadow: 0 0 20px var(--dm-green-sea);
 	box-shadow: 0 0 20px rgba(0, 0, 0, .5);
 }
