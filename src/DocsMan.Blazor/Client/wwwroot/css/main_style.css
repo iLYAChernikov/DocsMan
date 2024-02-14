@@ -187,9 +187,23 @@ h3.page-title {
 	margin-bottom: 10px;
 }
 
+.dm-list a.update-list>i {
+	margin: 0 10px;
+	margin-bottom: 5px;
+	scale: 1.1;
+	color: var(--dm-malina);
+	transition: 1s;
+}
+
+.dm-list a.update-list>i:hover {
+	color: var(--dm-green-sea-l);
+	cursor: pointer;
+	transform: rotate(360deg);
+	transition: 1s;
+}
+
 .dm-list a.add-users>i {
 	transition: .5s;
-	margin-bottom: 20px;
 }
 
 .dm-list a.add-users>i:hover {

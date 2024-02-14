@@ -26,9 +26,13 @@ else
 		</div>
 		<button @onclick="@CreateType" class="dm-btn create">Create</button>
 	</div>
-	<div class="dm-list">
-		@if (types != null)
-		{
+
+	@if (types != null)
+	{
+		<div class="dm-list">
+			<a @onclick="@UpdateList" class="update-list">
+				<i class="fas fa-sync-alt"></i>
+			</a>
 			<table class="dm-table">
 				<tr>
 					<td>Title</td>
@@ -48,9 +52,8 @@ else
 					</tr>
 				}
 			</table>
-		}
-	</div>
-
+		</div>
+	}
 }
 
 <ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
@@ -69,6 +72,17 @@ else
 		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker).DoRequest_GET("PersonalDocType/GetAll");
 
 		resp = req;
+		types = req?.Value;
+
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task UpdateList()
+	{
+		isClick = true;
+		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker).DoRequest_GET("PersonalDocType/GetAll");
+
 		types = req?.Value;
 
 		loading = false;

@@ -30,6 +30,9 @@ else
 	@if (roles != null)
 	{
 		<div class="dm-list">
+			<a @onclick="@UpdateRoleList" class="update-list">
+				<i class="fas fa-sync-alt"></i>
+			</a>
 			<table class="dm-table">
 				<tr>
 					<td>Title</td>
@@ -66,6 +69,9 @@ else
 				</a>
 				@if (profiles != null && images != null)
 				{
+					<a @onclick="()=>GetProfiles(chosenRole)" class="update-list">
+						<i class="fas fa-sync-alt"></i>
+					</a>
 					<table class="dm-table">
 						<tr>
 							<td>Photo</td>
@@ -117,6 +123,17 @@ else
 		isClick = true;
 		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker).DoRequest_GET("Role/GetAll");
 		resp = req;
+		roles = req?.Value;
+
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task UpdateRoleList()
+	{
+		isClick = true;
+		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker).DoRequest_GET("Role/GetAll");
+
 		roles = req?.Value;
 
 		loading = false;
