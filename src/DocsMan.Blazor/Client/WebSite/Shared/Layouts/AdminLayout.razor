@@ -24,7 +24,7 @@ else
 }
 
 @code {
-	bool isNotifyNotRead = true;
+	bool isNotifyNotRead;
 	string name;
 	string imageUrl;
 
@@ -58,6 +58,12 @@ else
 			.DoRequest_GET($"GetPersonalPhoto/{id_resp.Value}");
 			if (photo != null)
 				imageUrl = CSS_Styles.GetImage(photo.Value);
+
+			var notify = await new ServerGet<bool>(WebCooker)
+			.DoRequest_GET($"IsAnyNotifyNotRead/{id_resp.Value}");
+			if (notify != null)
+				isNotifyNotRead = notify.Value;
+			else isNotifyNotRead = false;
 		}
 		CheckAuthLinks(isUserAuth);
 		StateHasChanged();

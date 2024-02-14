@@ -51,7 +51,8 @@ namespace DocsMan.Blazor.Server.Controllers
 		[HttpPost("AddPersonalDoc")]
 		public async Task<Response> AddDoc(PersonalDocumentDataDto dto)
 		{
-			if (dto.FileData == null) return new("Нет файла", "Empty file");
+			if (dto.FileData == null)
+				return new("Нет файла", "Empty file");
 
 			return await _master.AddPersonDoc
 				(
@@ -88,6 +89,12 @@ namespace DocsMan.Blazor.Server.Controllers
 				return new(resp.Value.FileData);
 			else
 				return new(resp.ErrorMessage, resp.ErrorInfo);
+		}
+
+		[HttpGet("IsAnyNotifyNotRead/{profileId}")]
+		public async Task<Response<bool>> IsReadNotify(int profileId)
+		{
+			return await _master.IsAnyNotifyNotRead(profileId);
 		}
 	}
 }

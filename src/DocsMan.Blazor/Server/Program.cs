@@ -83,6 +83,7 @@ namespace DocsMan.Blazor
 			//	Binding Repositories
 			builder.Services.AddScoped<IBindingRepository<User_Role>, User_Role_BindRepository>();
 			builder.Services.AddScoped<IBindingRepository<Profile_Document>, Profile_Document_BindRepository>();
+			builder.Services.AddScoped<IBindingRepository<Profile_Notify>, Profile_Notify_BindRepository>();
 
 			//	Interactors
 			builder.Services.AddScoped<RoleExec>();

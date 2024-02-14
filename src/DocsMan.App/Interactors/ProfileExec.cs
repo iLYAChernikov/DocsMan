@@ -4,6 +4,7 @@ using DocsMan.App.Storage.Transaction;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.Helpers;
 using DocsMan.Blazor.Shared.OutputData;
+using DocsMan.Domain.BinderEntity;
 using DocsMan.Domain.Entity;
 
 namespace DocsMan.App.Interactors
@@ -14,6 +15,7 @@ namespace DocsMan.App.Interactors
 		private IRepository<PersonalDocument> _persDocRepos;
 		private IRepository<PersonalDocumentType> _docTypeRepos;
 		private UploadFileExec _fileExec;
+		private IBindingRepository<Profile_Notify> _profileNotifiesRepos;
 		private IUnitWork _unitWork;
 
 		public ProfileExec
@@ -22,13 +24,15 @@ namespace DocsMan.App.Interactors
 			IUnitWork unitWork,
 			IRepository<PersonalDocument> persDocRepos,
 			IRepository<PersonalDocumentType> docTypeRepos,
-			UploadFileExec fileExec)
+			UploadFileExec fileExec,
+			IBindingRepository<Profile_Notify> profileNotifiesRepos)
 		{
 			_profileRepos = profileRepos;
 			_unitWork = unitWork;
 			_persDocRepos = persDocRepos;
 			_docTypeRepos = docTypeRepos;
 			_fileExec = fileExec;
+			_profileNotifiesRepos = profileNotifiesRepos;
 		}
 
 		public async Task<Response> ChangeInfo(ProfileDto dto)
@@ -49,15 +53,15 @@ namespace DocsMan.App.Interactors
 				await _unitWork.Commit();
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка изменения", ex.Message);
 			}
@@ -71,15 +75,15 @@ namespace DocsMan.App.Interactors
 
 				return new(ent.ToDto());
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -89,15 +93,15 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var ent = ( await _profileRepos.GetAllAsync() )?
+				var ent = (await _profileRepos.GetAllAsync())?
 					.FirstOrDefault(x => x.Email.ToLower() == email.ToLower())?
 					.ToDto();
-				if ( ent == null )
+				if (ent == null)
 					return new("Запись не найдена", "Profile not exist");
 				else
 					return new(ent);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -107,14 +111,14 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var data = ( await _profileRepos.GetAllAsync() )?
+				var data = (await _profileRepos.GetAllAsync())?
 					.Select(x => x.ToDto());
-				if ( data == null )
+				if (data == null)
 					return new("Записи не найдены", "Not found");
 				else
 					return new(data);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -124,19 +128,19 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var docs = ( await _persDocRepos.GetAllAsync() )?
+				var docs = (await _persDocRepos.GetAllAsync())?
 					.Where(x => x.ProfileId == profileId)
 					.Select(x => x.ToDto());
-				if ( docs == null )
+				if (docs == null)
 					return new("Записи не найдены", "Not found");
 				else
 					return new(docs);
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -152,7 +156,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var respNewFile = await _fileExec.AddFile(fileName, storagePath, fileStream);
-				if ( !respNewFile.IsSuccess )
+				if (!respNewFile.IsSuccess)
 					return new(respNewFile.ErrorMessage, respNewFile.ErrorInfo);
 
 				PersonalDocument doc = new()
@@ -167,11 +171,11 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
 			}
@@ -190,15 +194,15 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка удаления", ex.Message);
 			}
@@ -211,7 +215,7 @@ namespace DocsMan.App.Interactors
 				var profile = await _profileRepos.GetOneAsync(profileId);
 				var doc = await _persDocRepos.GetOneAsync(profileId, typeId);
 				var resp = await _fileExec.DownloadFile(doc.FileId, storagePath);
-				if ( !resp.IsSuccess )
+				if (!resp.IsSuccess)
 					return new(resp.ErrorMessage, resp.ErrorInfo);
 
 				return new
@@ -224,15 +228,49 @@ namespace DocsMan.App.Interactors
 						}
 					);
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response<bool>> IsAnyNotifyNotRead(int profileId)
+		{
+			try
+			{
+				var profile = await _profileRepos.GetOneAsync(profileId);
+				var binds = await _profileNotifiesRepos.GetAllBinds();
+				if (binds != null)
+				{
+					var user_notifies = binds.Where(x => x.ProfileId == profileId);
+					if (user_notifies != null)
+					{
+						bool result = user_notifies.Any(x => x.IsRead == false);
+						return new(result);
+					}
+					else
+						return new(false);
+				}
+				else
+					return new(false);
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
