@@ -78,6 +78,7 @@ else
 		await GetEmail();
 		await GetProfile();
 
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
 	}
@@ -87,7 +88,7 @@ else
 		if (string.IsNullOrWhiteSpace(Email))
 		{
 			var id_resp = await new ServerGet<string>(WebCooker)
-			.DoRequest_GET("Auth/GetProfileEmail");
+			.DoRequest_GET("Auth/GetEmail");
 			if (id_resp == null || !id_resp.Response.IsSuccess)
 			{
 				resp = id_resp;

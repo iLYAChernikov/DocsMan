@@ -80,6 +80,7 @@ else
 			}
 		}
 
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
 	}
@@ -100,7 +101,7 @@ else
 	async Task<bool> IsAdminCheck()
 	{
 		var req = await new ServerGet<bool>(WebCooker)
-		.DoRequest_GET($"Auth/IsAdmin/{profile.UserId}");
+		.DoRequest_GET("Auth/IsAdmin");
 		if (req != null)
 			return req.Value;
 		else
@@ -140,6 +141,7 @@ else
 		resp = await new ServerPost<ProfileDto>(WebCooker)
 		.DoRequest_POST("Profile/ChangeInfo", profile);
 
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
 	}

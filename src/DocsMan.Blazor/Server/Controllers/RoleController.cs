@@ -46,7 +46,7 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.GetOne(title);
 		}
 
-		[HttpGet("GetUsers/{roleId}")]
+		[HttpGet("GetProfiles/{roleId}")]
 		public async Task<Response<IEnumerable<ProfileDto?>?>> GetUsers(int roleId)
 		{
 			return await _master.GetUsers(roleId);

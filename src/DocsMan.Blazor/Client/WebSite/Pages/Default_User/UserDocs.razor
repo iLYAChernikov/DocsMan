@@ -1,4 +1,4 @@
-@page "/User/Docs"
+@page "/User/Docs/{ProfileId:int?}"
 @layout MainLayout
 @using DocsMan.Blazor.Shared.DTOs
 
@@ -45,6 +45,8 @@ else
 <ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
 
 @code {
+	[Parameter]
+	public int ProfileId { get; set; } = 0;
 
 	bool loading = true;
 	bool isClick = false;
@@ -54,20 +56,55 @@ else
 	protected override async void OnInitialized()
 	{
 		isClick = true;
-		var id_resp = await new ServerGet<int>(WebCooker)
-		.DoRequest_GET("Auth/GetUserId");
-		if (!id_resp.Response.IsSuccess)
+		if (ProfileId <= 0)
 		{
-			resp = id_resp;
+			ProfileId = await GetProfileId();
 		}
 		else
 		{
-			var req = await new ServerGet<IEnumerable<PersonalDocumentDto>>(WebCooker)
-			.DoRequest_GET($"Profile/GetPersonalDocs/{id_resp.Value}");
-			resp = req;
-			docs = req.Value;
+			if (ProfileId != await GetProfileId() && !await IsAdminCheck())
+			{
+				PagesNavigation.NavigateTo("/User/Docs");
+			}
 		}
+		var req = await new ServerGet<IEnumerable<PersonalDocumentDto>>(WebCooker)
+		.DoRequest_GET($"Profile/GetPersonalDocs/{ProfileId}");
+
+		resp = req;
+		docs = req.Value;
+
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
+	}
+
+	async Task<int> GetProfileId()
+	{
+		var id_resp = await new ServerGet<int>(WebCooker)
+		.DoRequest_GET("Auth/GetProfileId");
+		if (id_resp.Response.IsSuccess)
+			return id_resp.Value;
+		else
+		{
+			resp = id_resp;
+			return 0;
+		}
+	}
+
+	async Task<bool> IsAdminCheck()
+	{
+		var prof = await new ServerGet<ProfileDto>(WebCooker)
+		.DoRequest_GET($"Profile/GetOneById/{ProfileId}");
+		if (prof == null || !prof.Response.IsSuccess)
+		{
+			resp = prof;
+			return false;
+		}
+		var req = await new ServerGet<bool>(WebCooker)
+		.DoRequest_GET("Auth/IsAdmin");
+		if (req != null)
+			return req.Value;
+		else
+			return false;
 	}
 }

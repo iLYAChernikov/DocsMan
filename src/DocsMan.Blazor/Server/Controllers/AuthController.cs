@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DocsMan.Blazor.Server.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class AuthController : Controller
@@ -26,22 +27,38 @@ namespace DocsMan.Blazor.Server.Controllers
 			_profile = profile;
 		}
 
-		[Authorize]
 		[HttpGet("Check")]
-		public bool CheckAuth() =>
-			User.Identity == null ? false : User.Identity.IsAuthenticated;
+		public async Task<bool> CheckAuth()
+		{
+			if (User.Identity != null && User.Identity.IsAuthenticated)
+			{
+				var check = await GetProfileId();
+				return check.IsSuccess;
+			}
+			else
+				return false;
+		}
 
-		[Authorize]
-		[HttpGet("GetProfileId")]
-		public async Task<Response<int>> GetId()
+		[HttpGet("GetUserId")]
+		public async Task<Response<int>> GetUserId()
 		{
 			int userId;
 			int.TryParse(User.FindFirstValue(ClaimTypes.UserData), out userId);
 			if (userId <= 0 || !(await _user.GetOne(userId)).IsSuccess)
 				return new("Ошибка авторизации", "Id not found");
 			else
+				return new(userId);
+		}
+
+		[HttpGet("GetProfileId")]
+		public async Task<Response<int>> GetProfileId()
+		{
+			var id_resp = await GetUserId();
+			if (!id_resp.IsSuccess)
+				return new("Ошибка авторизации", "Id not found");
+			else
 			{
-				var profile = (await _profile.GetAll())?.Value?.FirstOrDefault(x => x.UserId == userId);
+				var profile = (await _profile.GetAll())?.Value?.FirstOrDefault(x => x.UserId == id_resp.Value);
 				if (profile != null)
 					return new(profile.Id);
 				else
@@ -49,8 +66,7 @@ namespace DocsMan.Blazor.Server.Controllers
 			}
 		}
 
-		[Authorize]
-		[HttpGet("GetProfileEmail")]
+		[HttpGet("GetEmail")]
 		public async Task<Response<string>> GetEmail()
 		{
 			string? email = User.FindFirstValue(ClaimTypes.Email);
@@ -60,12 +76,17 @@ namespace DocsMan.Blazor.Server.Controllers
 				return new(email);
 		}
 
-		[HttpGet("IsAdmin/{userId}")]
-		public async Task<Response<bool>> IsSuperAdmin(int userId)
+		[HttpGet("IsAdmin")]
+		public async Task<Response<bool>> IsSuperAdmin()
 		{
-			return await _user.IsUserSuperAdmin(userId);
+			var resp = await GetUserId();
+			if (resp.IsSuccess)
+				return await _user.IsUserSuperAdmin(resp.Value);
+			else
+				return new(resp.ErrorMessage, resp.ErrorInfo);
 		}
 
+		[AllowAnonymous]
 		[HttpPost("GetToken")]
 		public async Task<Response<string>> GetToken(AuthDto auth)
 		{

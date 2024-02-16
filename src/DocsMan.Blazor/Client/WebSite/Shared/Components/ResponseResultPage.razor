@@ -11,7 +11,7 @@
 			</span>
 		</div>
 	}
-	@if (IsWasSendRequest && RequestResult != null && SendToConsole())
+	@if (IsWasSendRequest && RequestResult != null)
 	{
 		@*when server not return any*@
 		@if (RequestResult.ResponseStatusCode == null)
@@ -24,7 +24,7 @@
 			</div>
 		}
 		else @*return successful*@
-		@if ((int)RequestResult.ResponseStatusCode >= 200 && (int)RequestResult.ResponseStatusCode <= 299)
+		@if ((int) RequestResult.ResponseStatusCode >= 200 && (int) RequestResult.ResponseStatusCode <= 299)
 		{
 			@if (RequestResult.ResponseStatusCode == HttpStatusCode.OK)
 			{
@@ -58,7 +58,7 @@
 			}
 		}
 		else @*return information*@
-		@if ((int)RequestResult.ResponseStatusCode >= 100 && (int)RequestResult.ResponseStatusCode <= 199)
+		@if ((int) RequestResult.ResponseStatusCode >= 100 && (int) RequestResult.ResponseStatusCode <= 199)
 		{
 			<div class="resp-msg @OpenCloseStyles[1] alert-info">
 				<h2>@RequestResult.Response.ErrorMessage</h2>
@@ -68,7 +68,7 @@
 			</div>
 		}
 		else @*return redirect*@
-		@if ((int)RequestResult.ResponseStatusCode >= 300 && (int)RequestResult.ResponseStatusCode <= 399)
+		@if ((int) RequestResult.ResponseStatusCode >= 300 && (int) RequestResult.ResponseStatusCode <= 399)
 		{
 			<div class="resp-msg @OpenCloseStyles[1] alert-warning">
 				<h2>@RequestResult.Response.ErrorMessage</h2>
@@ -78,7 +78,7 @@
 			</div>
 		}
 		else @*return client & server errors*@
-		@if ((int)RequestResult.ResponseStatusCode >= 400 && (int)RequestResult.ResponseStatusCode <= 599)
+		@if ((int) RequestResult.ResponseStatusCode >= 400 && (int) RequestResult.ResponseStatusCode <= 599)
 		{
 			@if (RequestResult.ResponseStatusCode == HttpStatusCode.Unauthorized)
 			{
@@ -128,23 +128,52 @@
 	[Parameter]
 	public List<string> OpenCloseStyles { get; set; }
 
+	System.Timers.Timer _timer = new();
+	RequestResultDto? oldRequest;
+
 	void ChangeCloseStyle(int id) => OpenCloseStyles[id] = "close";
+
+	void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+	{
+		IsWasSendRequest = false;
+		StateHasChanged();
+	}
+
+	protected override void OnParametersSet()
+	{
+		_timer.Interval = 3000;
+		_timer.Elapsed += OnTimedEvent;
+		_timer.Enabled = true;
+		_timer.AutoReset = false;
+
+		if (RequestResult != null && oldRequest != RequestResult)
+		{
+			oldRequest = RequestResult;
+			SendToConsole();
+		}
+	}
 
 	protected override void OnInitialized()
 	{
 
 	}
 
-	bool SendToConsole()
+	@inject IJSRuntime JSRuntime
+	async void SendToConsole()
 	{
-		if (RequestResult != null)
+		string result;
+		string color;
+		if (string.IsNullOrWhiteSpace(RequestResult.Response.ErrorInfo))
 		{
-			string result = string.IsNullOrWhiteSpace(RequestResult.Response.ErrorInfo) ?
-				"Successfuly" :
-				RequestResult.Response.ErrorInfo;
-			Console.WriteLine(result);
-			Console.WriteLine();
+			result = "Successfuly";
+			color = "green";
 		}
-		return true;
+		else
+		{
+			result = RequestResult.Response.ErrorInfo;
+			color = "red";
+		}		 
+		await JSRuntime.InvokeVoidAsync("console.log", $"%c{result}", $"color:{color}");
+		Console.WriteLine();
 	}
 }

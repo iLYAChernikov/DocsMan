@@ -60,8 +60,8 @@
 		var helper = new ServerConnector(WebCooker);
 		resp = await helper.DoAuthorization(user);
 
-		if (await helper.IsUserAuthorized()) GoToProfile();
+		if (await helper.IsUserAuthorized()) GoToHome();
 	}
-	void GoToProfile() => PagesNavigation.NavigateTo("/User/Profile");
+	void GoToHome() => PagesNavigation.NavigateTo("/");
 	void GoToReg() => PagesNavigation.NavigateTo("/User/Registration");
 }

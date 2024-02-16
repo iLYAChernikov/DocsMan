@@ -69,11 +69,13 @@ else
 	protected override async void OnInitialized()
 	{
 		isClick = true;
-		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker).DoRequest_GET("PersonalDocType/GetAll");
+		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker)
+		.DoRequest_GET("PersonalDocType/GetAll");
 
 		resp = req;
 		types = req?.Value;
 
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
 	}
@@ -81,10 +83,12 @@ else
 	async Task UpdateList()
 	{
 		isClick = true;
-		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker).DoRequest_GET("PersonalDocType/GetAll");
+		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker)
+		.DoRequest_GET("PersonalDocType/GetAll");
 
 		types = req?.Value;
 
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
 	}
@@ -99,23 +103,25 @@ else
 		.DoRequest_POST($"PersonalDocType/Create", newType);
 
 		resp = req;
-		loading = false;
 
+		await Task.Delay(500);
+		loading = false;
 		StateHasChanged();
 	}
 
-	async Task DeleteType(int type)
+	async Task DeleteType(int typeId)
 	{
 		resp = null;
 		isClick = true;
 		loading = true;
 
 		var req = await new ServerDelete(WebCooker)
-		.DoRequest_DELETE($"PersonalDocType/Delete/{type}");
+		.DoRequest_DELETE($"PersonalDocType/Delete/{typeId}");
 
 		resp = req;
-		loading = false;
 
+		await Task.Delay(500);
+		loading = false;
 		StateHasChanged();
 	}
 }

@@ -3,3 +3,36 @@
 <div class="global-page">
 	@Body
 </div>
+
+@code{
+	bool isUserAuth;
+
+	protected override async void OnInitialized()
+	{
+		isUserAuth = await new ServerConnector(WebCooker).IsUserAuthorized();
+		CheckAuthLinks();
+	}
+
+	bool CheckCurrentPath(string path) =>
+	PagesNavigation.Uri.ToLower() == PagesNavigation.BaseUri.ToLower() + path.ToLower();
+	void GoAuthorizing() => PagesNavigation.NavigateTo("/User/Authorization");
+	void GoRegistration() => PagesNavigation.NavigateTo("/User/Registration");
+	void GoToHome() => PagesNavigation.NavigateTo("/");
+	void CheckAuthLinks()
+	{	
+		if (!isUserAuth)
+			GoAuthorizing();
+		if (CheckCurrentPath("User/Authorization"))
+			if (isUserAuth)
+				GoToHome();
+			else
+				GoAuthorizing();
+		if (CheckCurrentPath("User/Registration"))
+			if (isUserAuth)
+				GoToHome();
+			else
+				GoRegistration();
+		if (CheckCurrentPath(PagesNavigation.BaseUri) && isUserAuth)
+			GoToHome();
+	}
+}

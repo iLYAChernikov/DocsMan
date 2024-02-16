@@ -30,7 +30,7 @@ else
 	@if (roles != null)
 	{
 		<div class="dm-list">
-			<a @onclick="@UpdateRoleList" class="update-list">
+			<a @onclick="@LoadRoleList" class="update-list">
 				<i class="fas fa-sync-alt"></i>
 			</a>
 			<table class="dm-table">
@@ -46,12 +46,12 @@ else
 						<td>@item.Title</td>
 						<td>@item.Description</td>
 						<td>
-							<a @onclick="()=>GetProfiles(item)" class="link-icon">
+							<a @onclick="() => GetProfiles(item)" class="link-icon">
 								<i class="fas fa-user-friends"></i>
 							</a>
 						</td>
 						<td>
-							<a @onclick="()=>DeleteRole(item.Id)" class="delete-icon">
+							<a @onclick="() => DeleteRole(item.Id)" class="delete-icon">
 								<i class="fas fa-trash"></i>
 							</a>
 						</td>
@@ -69,7 +69,7 @@ else
 				</a>
 				@if (profiles != null && images != null)
 				{
-					<a @onclick="()=>GetProfiles(chosenRole)" class="update-list">
+					<a @onclick="() => GetProfiles(chosenRole)" class="update-list">
 						<i class="fas fa-sync-alt"></i>
 					</a>
 					<table class="dm-table">
@@ -102,7 +102,6 @@ else
 			</div>
 		}
 	}
-
 }
 
 <ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
@@ -118,24 +117,21 @@ else
 	List<string>? images;
 	RoleDto newRole = new();
 
-	protected override async void OnInitialized()
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadRoleList();
+	}
+
+	async Task LoadRoleList()
 	{
 		isClick = true;
-		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker).DoRequest_GET("Role/GetAll");
+		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker)
+		.DoRequest_GET("Role/GetAll");
+
 		resp = req;
 		roles = req?.Value;
 
-		loading = false;
-		StateHasChanged();
-	}
-
-	async Task UpdateRoleList()
-	{
-		isClick = true;
-		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker).DoRequest_GET("Role/GetAll");
-
-		roles = req?.Value;
-
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
 	}
@@ -147,11 +143,13 @@ else
 		loading = true;
 
 		var req = await new ServerGet<IEnumerable<ProfileDto>>(WebCooker)
-		.DoRequest_GET($"Role/GetUsers/{role.Id}");
+		.DoRequest_GET($"Role/GetProfiles/{role.Id}");
+
 		resp = req;
 		profiles = req.Value?.ToList();
 		await GetPhotos();
 
+		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
 	}
@@ -180,8 +178,9 @@ else
 		.DoRequest_POST($"Role/Create", newRole);
 
 		resp = req;
-		loading = false;
 
+		await Task.Delay(500);
+		loading = false;
 		StateHasChanged();
 	}
 
@@ -195,8 +194,9 @@ else
 		.DoRequest_DELETE($"Role/Delete/{roleId}");
 
 		resp = req;
-		loading = false;
 
+		await Task.Delay(500);
+		loading = false;
 		StateHasChanged();
 	}
 }

@@ -1,4 +1,4 @@
-@page "/User/Groups"
+@page "/User/Groups/{ProfileId:int?}"
 @layout MainLayout
 
 <PageTitle>UserGroups</PageTitle>
@@ -6,5 +6,6 @@
 <h3 class="page-title">UserGroups</h3>
 
 @code {
-
+	[Parameter]
+	public int ProfileId { get; set; } = 0;
 }
