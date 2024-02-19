@@ -121,6 +121,7 @@ i:has(.nav-button) {
 	min-width: 52px;
 	max-width: 52px;
 	color: #fff;
+	padding: 16px 20px;
 }
 
 .nav-dark-header-menu-list:not(:has(>ul)):hover {
@@ -129,6 +130,7 @@ i:has(.nav-button) {
 
 .nav-dark-header-menu-list:has(>ul) {
 	min-width: 200px;
+	padding: 16px 50px;
 }
 
 .nav-dark-header-menu-list:hover {
@@ -170,8 +172,6 @@ i:has(.nav-button) {
 	border-top: 2px solid var(--dm-malina-d);
 }
 
-.nav-dark-submenu-list {}
-
 .nav-dark-submenu-list:last-child {
 	border-bottom: 2px solid var(--dm-malina-d);
 }
@@ -189,7 +189,7 @@ i:has(.nav-button) {
 	color: var(--dm-siren-d);
 	position: absolute;
 	top: 18px;
-	left: 170px;
+	right: 10px;
 	transform: scale(0.8);
 }
 

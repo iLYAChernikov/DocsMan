@@ -36,13 +36,37 @@ namespace DocsMan.Adapter
 
 		private List<Role> defaultRoles = new()
 		{
-			new Role(){ Id = 1, Title = "user",         Description = "default system user"         },
-			new Role(){ Id = 2, Title = "superAdmin",   Description = "control system"     }
+			new (){ Id = 1, Title = "user",         Description = "default user"             },
+			new (){ Id = 2, Title = "superAdmin",   Description = "control system user"      }
 		};
 
 		private List<PersonalDocumentType> personalDocumentTypes = new()
 		{
-			new PersonalDocumentType(){ Id = 1, Title = "Фото", Description = "фото профиля, аватарка" }
+			new (){ Id = 1, Title = "Фото", Description = "фото профиля, аватарка" }
+		};
+
+		private User superUser = new()
+		{
+			Id = 1,
+			Email = "admin",
+			Password = "123"
+		};
+
+		private List<User_Role> superUserRoles = new()
+		{
+			new (){ UserId = 1, RoleId = 1 },
+			new (){ UserId = 1, RoleId = 2 }
+		};
+
+		private Profile superUserProfile = new()
+		{
+			Id = 1,
+			UserId = 1,
+			Gender = Gender.Man,
+			Birthdate = new DateTime(2002, 11, 20),
+			SurName = "SuperAdmin",
+			Name = "Chief",
+			LastName = "Qwerty"
 		};
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -68,6 +92,9 @@ namespace DocsMan.Adapter
 
 			modelBuilder.Entity<Role>().HasData(defaultRoles);
 			modelBuilder.Entity<PersonalDocumentType>().HasData(personalDocumentTypes);
+			modelBuilder.Entity<User>().HasData(superUser);
+			modelBuilder.Entity<User_Role>().HasData(superUserRoles);
+			modelBuilder.Entity<Profile>().HasData(superUserProfile);
 		}
 	}
 }

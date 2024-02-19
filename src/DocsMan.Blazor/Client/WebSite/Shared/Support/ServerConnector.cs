@@ -110,6 +110,9 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 			await RemoveCookie("JWT_Token");
 			ServerOk.DefaultRequestHeaders.Authorization = null;
 		}
+
+		public static string DoDownload(string path) =>
+			ServerOk.BaseAddress + path;
 	}
 
 	public class ServerGet<Output_T> : ServerConnector

@@ -187,8 +187,8 @@ namespace DocsMan.App.Interactors
 			{
 				var doc = await _persDocRepos.GetOneAsync(profileId, typeId);
 
-				await _fileExec.DeleteFile(doc.FileId, storagePath);
 				await _persDocRepos.DeleteAsync(doc.ProfileId, doc.TypeId);
+				await _fileExec.DeleteFile(doc.FileId, storagePath);
 
 				await _unitWork.Commit();
 

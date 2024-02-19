@@ -36,7 +36,7 @@ else
 		CheckAuthLinks();
 		await ProfileLoad();
 
-		Thread.Sleep(1000);
+		await Task.Delay(500);
 		loading = false;
 
 		StateHasChanged();
@@ -58,13 +58,13 @@ else
 
 			//	load profile photo
 			var photo = await new ServerGet<byte[]>(WebCooker)
-			.DoRequest_GET($"GetPersonalPhoto/{id_resp.Value}");
+			.DoRequest_GET($"Profile/GetPersonalPhoto/{id_resp.Value}");
 			if (photo != null)
 				imageUrl = CSS_Styles.GetImage(photo.Value);
 
 			//	check notifies
 			var notify = await new ServerGet<bool>(WebCooker)
-			.DoRequest_GET($"IsAnyNotifyNotRead/{id_resp.Value}");
+			.DoRequest_GET($"Profile/IsAnyNotifyNotRead/{id_resp.Value}");
 			if (notify != null)
 				isNotifyNotRead = notify.Value;
 			else isNotifyNotRead = false;

@@ -45,7 +45,7 @@ else
 					</a>
 				</div>
 				<div class="link">
-					<a href="User/Docs/@profile.Id">
+					<a href="/User/Docs/@profile.Id">
 						<i class="fas fa-id-card"></i>
 					</a>
 				</div>
@@ -119,7 +119,7 @@ else
 	async Task GetPhoto()
 	{
 		var photo = await new ServerGet<byte[]>(WebCooker)
-		.DoRequest_GET($"GetPersonalPhoto/{profile.Id}");
+		.DoRequest_GET($"Profile/GetPersonalPhoto/{profile.Id}");
 		if (photo != null)
 			imageUrl = CSS_Styles.GetImage(photo.Value);
 	}

@@ -5,7 +5,10 @@
 <PageTitle>UserSettings</PageTitle>
 
 <h3 class="page-title">UserSettings</h3>
-
+@if (IsAdmin)
+{
+	<h3 class="page-title">Admin View</h3>
+}
 @if (loading)
 {
 	<SpinnerLoading />
@@ -57,6 +60,7 @@ else
 @code {
 	[Parameter]
 	public int ProfileId { get; set; } = 0;
+	bool IsAdmin;
 
 	bool loading = true;
 	bool isClick = false;
@@ -78,6 +82,7 @@ else
 			{
 				PagesNavigation.NavigateTo("/User/Profile/Settings");
 			}
+            IsAdmin = await IsAdminCheck();
 		}
 
 		await Task.Delay(500);
@@ -127,7 +132,7 @@ else
 	async Task GetPhoto()
 	{
 		var photo = await new ServerGet<byte[]>(WebCooker)
-		.DoRequest_GET($"GetPersonalPhoto/{profile.Id}");
+		.DoRequest_GET($"Profile/GetPersonalPhoto/{profile.Id}");
 		if (photo != null)
 			imageUrl = CSS_Styles.GetImage(photo.Value);
 	}

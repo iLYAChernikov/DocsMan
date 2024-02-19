@@ -124,6 +124,7 @@ h3.page-title {
 
 /*#region Blocks*/
 
+/*#region Add*/
 .dm-add-new {
 	margin-bottom: 30px;
 }
@@ -148,7 +149,8 @@ h3.page-title {
 }
 
 .set-data input,
-.set-data-file input {
+.set-data-file input,
+.set-data select {
 	margin-top: 10px;
 	margin-left: 20px;
 	padding: 10px 20px;
@@ -171,6 +173,9 @@ h3.page-title {
 	margin: 10px 30px;
 }
 
+/*#endregion*/
+
+/*#region List*/
 .dm-list {
 	text-align: center;
 }
@@ -208,6 +213,10 @@ h3.page-title {
 	transform: scale(1.1);
 }
 
+/*#endregion*/
+
+/*#region Button*/
+
 .dm-btn {
 	margin-left: 50px;
 	padding: 10px 20px;
@@ -234,5 +243,7 @@ h3.page-title {
 .dm-btn.delete:hover {
 	background-color: var(--dm-malina-d);
 }
+
+/*#endregion*/
 
 /*#endregion*/

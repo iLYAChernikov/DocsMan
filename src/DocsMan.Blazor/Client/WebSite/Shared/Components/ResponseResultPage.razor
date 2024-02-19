@@ -136,12 +136,13 @@
 	void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
 	{
 		IsWasSendRequest = false;
+		RequestResult = null;
 		StateHasChanged();
 	}
 
 	protected override void OnParametersSet()
 	{
-		_timer.Interval = 3000;
+		_timer.Interval = 8000;
 		_timer.Elapsed += OnTimedEvent;
 		_timer.Enabled = true;
 		_timer.AutoReset = false;
@@ -165,7 +166,7 @@
 		string color;
 		if (string.IsNullOrWhiteSpace(RequestResult.Response.ErrorInfo))
 		{
-			result = "Successfuly";
+			result = "Successfully";
 			color = "green";
 		}
 		else

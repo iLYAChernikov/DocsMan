@@ -64,9 +64,12 @@ else
 		{
 			<div class="dm-list">
 				<h3>Chosen role: @chosenRole.Title</h3>
-				<a class="add-users">
-					<i class="fas fa-user-plus"></i>
-				</a>
+				@if ( chosenRole.Id != 1 )
+				{
+					<a class="add-users">
+						<i class="fas fa-user-plus"></i>
+					</a>
+				}
 				@if (profiles != null && images != null)
 				{
 					<a @onclick="() => GetProfiles(chosenRole)" class="update-list">
@@ -90,9 +93,12 @@ else
 									<td>@profiles[i].Full_FIO</td>
 									<td>@profiles[i].Email</td>
 									<td>
-										<a class="delete-icon">
-											<i class="fas fa-user-minus"></i>
-										</a>
+										@if (chosenRole.Id != 1 && !(chosenRole.Id == 2 && profiles[i].UserId == 1))
+										{
+											<a class="delete-icon">
+												<i class="fas fa-user-minus"></i>
+											</a>
+										}
 									</td>
 								</tr>
 							}
