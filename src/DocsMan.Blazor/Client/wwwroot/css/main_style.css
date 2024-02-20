@@ -54,6 +54,22 @@ h3.page-title {
 	text-align: center;
 }
 
+.logout {
+	width: 400px;
+	margin: 0 auto;
+	margin-top: 10%;
+	text-align: center;
+}
+
+.logout button {
+	font-style: italic;
+	margin: 10px;
+}
+
+.logout h3 {
+	font-size: 26px;
+}
+
 /*#region Tables*/
 
 .dm-table {
