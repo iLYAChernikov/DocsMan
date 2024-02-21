@@ -77,24 +77,24 @@
 
 .alert-success {
 	color: #3c763d;
-	background-color: #dff0d8;
+	background: #dff0d8;
 	border-color: #aedea8;
 }
 
 .alert-info {
 	color: #31708f;
-	background-color: #d9edf7;
+	background: #d9edf7;
 	border-color: #bce8f1;
 }
 
 .alert-warning {
 	color: #8a6d3b;
-	background-color: #fcf8e3;
+	background: #fcf8e3;
 	border-color: #efddb9;
 }
 
 .alert-danger {
 	color: #a94442;
-	background-color: #f2dede;
+	background: #f2dede;
 	border-color: #ebccd1;
 }

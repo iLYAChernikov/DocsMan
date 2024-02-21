@@ -4,7 +4,7 @@
 	width: 100%;
 	min-height: 52px;
 	max-height: 52px;
-	background: #333;
+	background: var(--dm-dark-main);
 	display: flex;
 	position: fixed;
 	top: 0;
@@ -134,7 +134,7 @@ i:has(.nav-button) {
 }
 
 .nav-dark-header-menu-list:hover {
-	background-color: var(--dm-dark);
+	background: var(--dm-dark);
 }
 
 .nav-dark-header-menu-list:hover>a {
@@ -142,7 +142,7 @@ i:has(.nav-button) {
 }
 
 .nav-dark-header-menu-list.open {
-	background-color: var(--dm-dark);
+	background: var(--dm-dark);
 }
 
 .nav-dark-header-menu-list.open>.title {
@@ -177,7 +177,7 @@ i:has(.nav-button) {
 }
 
 .nav-dark-submenu-list:hover {
-	background-color: var(--dm-green-sea);
+	background: var(--dm-green-sea);
 }
 
 .nav-dark-submenu-list:hover>a {

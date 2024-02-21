@@ -21,7 +21,7 @@
 .profile-block .info {
 	width: 50%;
 	border-radius: 10px;
-	background-color: #eee;
+	background: #eee;
 	margin: auto;
 }
 
@@ -60,7 +60,7 @@
 	padding: 8px 14px;
 	border: 2px solid var(--dm-green-sea);
 	border-radius: 10px;
-	background-color: #fff;
+	background: #fff;
 	outline: none;
 	letter-spacing: 1px;
 	display: table;

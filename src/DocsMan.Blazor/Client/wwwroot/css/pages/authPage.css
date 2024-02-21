@@ -130,7 +130,7 @@
 	color: #222;
 	font-weight: bold;
 	border: 2px solid var(--dm-siren);
-	background-color: var(--dm-green-sea-l);
+	background: var(--dm-green-sea-l);
 	cursor: pointer;
 	transition: .5s;
 	box-shadow: rgba(var(--dm-dark), 0.75) 0px 15px 5px;

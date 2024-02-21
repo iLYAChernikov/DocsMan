@@ -1,6 +1,7 @@
 /*Colors*/
 :root {
 	--dm-dark: #222;
+	--dm-dark-main: #333;
 	--dm-dark-l: #2d2d2d;
 	--dm-main-paper: #e3e3e3;
 	--dm-light: #ccc;
@@ -75,14 +76,14 @@ h3.page-title {
 .dm-table {
 	border-collapse: collapse;
 	border-radius: 10px;
-	background-color: #eee;
+	background: #eee;
 	width: 100%;
 	margin: 10px;
 	font-size: 16px;
 }
 
 .dm-table tr:first-child {
-	background-color: #4f46c344;
+	background: #4f46c344;
 	font-weight: bold;
 }
 
@@ -173,7 +174,7 @@ h3.page-title {
 	border-radius: 10px;
 	min-width: 200px;
 	outline: none;
-	background-color: #fff;
+	background: #fff;
 }
 
 .set-data select:hover,
@@ -240,7 +241,7 @@ h3.page-title {
 	font-weight: bold;
 	border-radius: 15px;
 	border-color: transparent;
-	background-color: var(--dm-siren-d);
+	background: var(--dm-siren-d);
 	color: #fff;
 	transition: .5s;
 }
@@ -252,12 +253,12 @@ h3.page-title {
 }
 
 .dm-btn.create:hover {
-	background-color: var(--dm-green-sea);
+	background: var(--dm-green-sea);
 	color: var(--dm-dark);
 }
 
 .dm-btn.delete:hover {
-	background-color: var(--dm-malina-d);
+	background: var(--dm-malina-d);
 }
 
 /*#endregion*/
