@@ -193,10 +193,17 @@ i:has(.nav-button) {
 	transform: scale(0.8);
 }
 
-.menu-profile-photo img {
+.menu-profile-photo {
 	position: absolute;
 	left: 10px;
 	top: 6px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: var(--dm-main-paper);
+}
+
+.menu-profile-photo img {
 	height: 40px;
 	width: 40px;
 	border-radius: 50%;

@@ -22,12 +22,12 @@
 
 		<li class="nav-dark-header-menu-list @GetMenuType(profileMenu)" @onclick="()=>OpenSubmenu(profileMenu)">
 
-			<span class="menu-profile-photo">
+			<div class="menu-profile-photo">
 				<img src="@PhotoUrl" alt="@UserName Photo">
-			</span>
+			</div>
 
 			<a class="title">@UserName</a>
-				<span class="caret-icon">
+				<div class="caret-icon">
 				@if (profileMenu.IsOpen)
 				{
 					<i class="fas fa-angle-up"></i>
@@ -36,14 +36,14 @@
 				{
 					<i class="fas fa-angle-down"></i>
 				}
-				</span>
+				</div>
 			<ul class="nav-dark-submenu @GetMenuType(profileMenu)">
 				@foreach (var sub in profileMenu.Submenus)
 				{
 					<li class="nav-dark-submenu-list">
-						<span class="submenu-icon">
+						<div class="submenu-icon">
 							<i class="@sub.Icon"></i>
-						</span>
+						</div>
 						<a class="nav-link" href="@sub.HrefUrl">
 							@sub.Title
 						</a>
