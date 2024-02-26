@@ -1,124 +1,160 @@
 @page "/User/Files"
 @layout MainLayout
+@using DocsMan.Blazor.Shared.DTOs
 
 <PageTitle>FilesManager</PageTitle>
 
 <h3 class="page-title">FilesManager</h3>
 
-<div class="fm-tool-box">
-	<div class="file-box">
-		<ul>
-			<li>
-				<i class="fas fa-file-upload"></i>
-			</li>
-			<li>
-				<i class="fas fa-pen"></i>
-			</li>
-			<li>
-				<i class="fas fa-file-download"></i>
-			</li>
-			<li>
-				<i class="fas fa-trash-alt"></i>
-			</li>
-			<li>
-				<i class="fas fa-history"></i>
-			</li>
-			<li>
-				<i class="fas fa-info"></i>
-			</li>
-		</ul>
-	</div>
-	<div class="folder-box">
-		<ul>
-			<li>
-				<i class="fas fa-folder-plus"></i>
-			</li>
-			<li>
-				<i class="fas fa-edit"></i>
-			</li>
-			<li>
-				<i class="fas fa-folder-minus"></i>
-			</li>
-			<li>
-				<i class="fas fa-info"></i>
-			</li>
-		</ul>
+<div class="fm-box">
+	<div class="fm-tools">
+
+		<div class="file-tool">
+			<ul>
+				<li @onclick="()=>ChangeStyle(0)" class="tool @toolList[0].BlockStyle">
+					<i class="fas fa-file-upload"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(1)" class="tool @toolList[1].BlockStyle">
+					<i class="fas fa-pen"></i>
+				</li>
+				<li class="tool @toolList[2].BlockStyle">
+					<i class="fas fa-file-download"></i>
+				</li>
+				<li class="tool @toolList[3].BlockStyle">
+					<i class="fas fa-trash-alt"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(4)" class="tool @toolList[4].BlockStyle">
+					<i class="fas fa-history"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(5)" class="tool @toolList[5].BlockStyle">
+					<i class="fas fa-info"></i>
+				</li>
+			</ul>
+		</div>
+
+		<div class="folder-tool">
+			<ul>
+				<li class="tool @toolList[6].BlockStyle">
+					<i class="fas fa-folder-plus"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(7)" class="tool @toolList[7].BlockStyle">
+					<i class="fas fa-edit"></i>
+				</li>
+				<li class="tool @toolList[8].BlockStyle">
+					<i class="fas fa-folder-minus"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(9)" class="tool @toolList[9].BlockStyle">
+					<i class="fas fa-info"></i>
+				</li>
+			</ul>
+		</div>
+
 	</div>
 
-</div>
+	<div class="fm-workspace">
 
-<div class="fm-space-box">
-	<ul>
-		<li>
-			<i class="fas fa-file-word"></i>
-			<div class="doc-name">
-				<p>testText.docx_lalalalalala</p>
+		<div class="fm-docslist">
+			<ul>
+				@foreach ( var item in docs )
+				{
+					<li @onclick="()=>SelectDoc(item)" class="document @item.Style.BlockStyle">
+						<i class="fas fa-file-word"></i>
+						<div class="doc-name">
+							<p>@item.Document.Name@item.Document.FileType</p>
+						</div>
+					</li>
+				}
+			</ul>
+		</div>
+		@if (selectedDoc != null)
+		{
+			<div class="fm-info @toolList[5].BlockStyle">
+
+				<label for="name">DocName:</label>
+					<p id="name">@selectedDoc.Name</p>
+				<label for="type">DocType:</label>
+					<p id="type">@selectedDoc.FileType</p>
+				<label for="desc">DocDesc:</label>
+					<p id="desc">@selectedDoc.Description</p>
+				<label for="size">DocSize:</label>
+					<p id="size">16 Mb</p>
+				
 			</div>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-			<div class="doc-name">
-				<input type="text" value="testText.docx_lalalalalala"
-					onkeydown="this.style.width=((this.value.length+1)*8)+'px';">
-			</div>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-		<li>
-			<i class="fas fa-file-word"></i>
-		</li>
-	</ul>
+		}
+		</div>
+
 </div>
 
 @code {
+	protected override void OnInitialized()
+	{
+		docs.ForEach(x => x.Style.IsDisabled = false);
+	}
 
+	List<ToggleStyleCSS> toolList = new()
+	{
+		new("", "open", ""), new("", "open", "disabled"),
+		new("", "", "disabled"), new("", "", "disabled"),
+		new("", "open", "disabled"), new("", "open", "disabled"),
+		new("", "", ""), new("", "open", "disabled"),
+		new("", "", "disabled"), new("", "open", "disabled"),
+	};
+	void ChangeStyle(int id)
+	{
+		if (selectedDoc != null)
+			toolList[id].IsOpen = !toolList[id].IsOpen;
+	}
+
+	DocumentDto selectedDoc;
+
+	void SelectDoc((DocumentDto Document, ToggleStyleCSS Style) doc)
+	{
+		for (int i = 0; i < docs.Count; i++)
+		{
+			if ( docs[i].Document.Id != doc.Document.Id )
+				docs[i].Style.IsOpen = false;
+			else
+				doc.Style.IsOpen = !doc.Style.IsOpen;
+		}
+		if ( doc.Style.IsOpen )
+		{
+			selectedDoc = doc.Document;
+			for ( int i = 1; i <= 5; i++ )
+				toolList[i].IsDisabled = false;
+		}
+		else
+		{
+			selectedDoc = null;
+			toolList.ForEach(x => { x.IsOpen = false; x.IsDisabled = true; });
+		}
+	}
+
+	List<(DocumentDto Document, ToggleStyleCSS Style)> docs = new()
+	{
+		new(
+			new DocumentDto()
+			{ Id = 1, Name = "name1", FileType = ".txt", Description = "none"},
+			new ToggleStyleCSS("", "selected", "")
+			),
+		new(
+			new DocumentDto()
+			{ Id = 71, Name = "name2", FileType = ".doc", Description = "Proident officia ipsum nulla magna laborum labore adipisicing excepteur quis reprehenderit laboris."},
+			new ToggleStyleCSS("", "selected", "")
+		),
+		new(
+			new DocumentDto()
+			{ Id = 44, Name = "name3", FileType = ".txt", Description = "none"},
+			new ToggleStyleCSS("", "selected", "")
+		),
+		new(
+			new DocumentDto()
+			{ Id = 31, Name = "name4", FileType = ".docx", Description = "none"},
+			new ToggleStyleCSS("", "selected", "")
+		),
+		new(
+			new DocumentDto()
+			{ Id = 21, Name = "Laboris_culpa_nisi_culpa_amet", FileType = ".pdf", Description = "Anim labore elit adipisicing incididunt exercitation veniam exercitation aute ullamco tempor." },
+			new ToggleStyleCSS("", "selected", "")
+		)
+	};
 }

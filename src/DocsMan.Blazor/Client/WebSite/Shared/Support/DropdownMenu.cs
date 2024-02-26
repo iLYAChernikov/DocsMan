@@ -15,6 +15,22 @@ public class SubMenu
 	public string HrefUrl { get; set; } = string.Empty;
 }
 
+public class ToggleStyleCSS
+{
+	private string _defaultStyle;
+	private string _openStyle;
+	private string _disabledStyle;
+	public ToggleStyleCSS(string defaultStyle, string openStyle, string disabledStyle)
+	{
+		_defaultStyle = defaultStyle;
+		_openStyle = openStyle;
+		_disabledStyle = disabledStyle;
+	}
+	public string BlockStyle => IsDisabled ? _disabledStyle : IsOpen ? _openStyle : _defaultStyle;
+	public bool IsOpen { get; set; } = false;
+	public bool IsDisabled { get; set; } = true;
+}
+
 public static class CSS_Styles
 {
 	public static List<string> OpenCloseStyles => new() { "", "" };
