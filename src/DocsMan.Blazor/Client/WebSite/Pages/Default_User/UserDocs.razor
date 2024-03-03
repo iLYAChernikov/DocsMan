@@ -98,6 +98,7 @@ else
 
 	protected override async void OnInitialized()
 	{
+		loading = true;
 		if (ProfileId <= 0)
 		{
 			ProfileId = await GetProfileId();
@@ -143,8 +144,14 @@ else
 
 	async Task LoadDocsList()
 	{
+		loading = true;
+
 		await GetTypes();
 		await GetDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
 	}
 
 	async Task GetDocs()
@@ -177,7 +184,7 @@ else
 			document.FileName = file.Name;
 			using (var ms = new MemoryStream())
 			{
-				await file.OpenReadStream().CopyToAsync(ms);
+				await file.OpenReadStream(maxAllowedSize: 20480000).CopyToAsync(ms);
 				document.FileData = ms.ToArray();
 			}
 		}
@@ -189,19 +196,29 @@ else
 			return;
 
 		isClick = true;
+		loading = true;
 
 		document.OwnerId = ProfileId;
 		document.PersonalDocumentTypeId = types.FirstOrDefault(x => x.Title == chosen_type).Id;
 
 		resp = await new ServerPost<PersonalDocumentDataDto>(WebCooker)
 		.DoRequest_POST("Profile/AddPersonalDoc", document);
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
 	}
 
 	async Task DeleteDoc(int profileId, int typeId)
 	{
 		isClick = true;
+		loading = true;
 		resp = await new ServerDelete(WebCooker)
 		.DoRequest_DELETE($"Profile/DeletePersonalDoc/{profileId}/{typeId}");
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
 	}
 
 	async Task DownloadDoc( int profileId, int typeId )

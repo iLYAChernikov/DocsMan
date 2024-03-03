@@ -166,10 +166,17 @@ namespace DocsMan.App.Interactors
 					FileId = respNewFile.Value.FileId,
 					Text = textDoc
 				};
-				await _persDocRepos.CreateAsync(doc);
-				await _unitWork.Commit();
-
-				return new();
+				try
+				{
+					await _persDocRepos.CreateAsync(doc);
+					await _unitWork.Commit();
+					return new();
+				}
+				catch (Exception ex)
+				{
+					await _fileExec.DeleteFile(respNewFile.Value.FileId, storagePath);
+					return new("Ошибка создания", ex.Message);
+				}
 			}
 			catch (ArgumentNullException ex)
 			{

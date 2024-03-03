@@ -70,6 +70,7 @@ else
 
 	protected override async void OnInitialized()
 	{
+		loading = true;
 		if (ProfileId <= 0)
 		{
 			ProfileId = await GetProfileId();
@@ -82,7 +83,7 @@ else
 			{
 				PagesNavigation.NavigateTo("/User/Profile/Settings");
 			}
-            IsAdmin = await IsAdminCheck();
+			IsAdmin = await IsAdminCheck();
 		}
 
 		await Task.Delay(500);

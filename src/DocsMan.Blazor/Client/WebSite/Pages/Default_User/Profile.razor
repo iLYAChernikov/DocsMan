@@ -74,6 +74,7 @@ else
 	protected override async void OnInitialized()
 	{
 		isClick = true;
+		loading = true;
 
 		await GetEmail();
 		await GetProfile();

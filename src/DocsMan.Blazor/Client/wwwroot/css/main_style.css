@@ -160,14 +160,12 @@ h3.page-title {
 
 .set-data label,
 .set-data input,
-.set-data-file input,
 .set-data select {
 	font-size: 16px;
 	border: 2px transparent solid;
 }
 
 .set-data input,
-.set-data-file input,
 .set-data select {
 	margin-top: 10px;
 	margin-left: 20px;
@@ -181,8 +179,7 @@ h3.page-title {
 .set-data select:hover,
 .set-data select:focus,
 .set-data input:hover,
-.set-data input:focus,
-.set-data-file input:hover {
+.set-data input:focus {
 	border: 2px var(--dm-siren-d) solid;
 	cursor: pointer;
 }
