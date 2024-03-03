@@ -73,6 +73,40 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetDocs(int profileId, string storagePath)
+		{
+			try
+			{
+				List<DocumentDto> documents = new();
+				var docs = (await _bindProfileDoc.GetAllBinds())
+					.Where(x => x.ProfileId == profileId && !x.Document.IsDeleted)
+					.Select(x => x.Document);
+				foreach ( var item in docs )
+				{
+					var dto = item.ToDto();
+					var resp = await _fileExec.GetSizeFile(item.FileId, storagePath);
+					if (!resp.IsSuccess)
+						dto.FileSize = "0?";
+					else
+						dto.FileSize = resp.Value;
+					documents.Add(dto);
+				}
+				return new(documents);
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
 		public async Task<Response> HideDocument(int profileId, int documentId)
 		{
 			try

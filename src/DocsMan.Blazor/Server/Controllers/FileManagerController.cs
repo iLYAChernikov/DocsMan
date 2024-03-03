@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DocsMan.Blazor.Server.Controllers
 {
+	[ApiController]
+	[Route("[controller]")]
 	public class FileManagerController : ControllerBase
 	{
 		private FileManagerExec _master;
@@ -22,10 +24,12 @@ namespace DocsMan.Blazor.Server.Controllers
 		[HttpPost("AddDocument")]
 		public async Task<Response> AddDoc(DataFile file)
 		{
-			if ( file.FileData == null ) return new("Нет файла", "Empty file");
+			if (file.FileData == null)
+				return new("Нет файла", "Empty file");
 
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.AddDocument
 				(
@@ -35,11 +39,22 @@ namespace DocsMan.Blazor.Server.Controllers
 				);
 		}
 
+		[HttpGet("GetDocs")]
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetAllDocs()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetDocs(ident.Value, PathStorage.Files_Dir);
+		}
+
 		[HttpDelete("HideDocument/{docId}")]
 		public async Task<Response> HideDoc(int docId)
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.HideDocument(ident.Value, docId);
 		}
@@ -48,7 +63,8 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response> RenameDoc(DocumentDto dto)
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.RenameDocument(ident.Value, dto.Id, dto.Name, dto.Description);
 		}
@@ -56,10 +72,12 @@ namespace DocsMan.Blazor.Server.Controllers
 		[HttpPost("ChangeFile")]
 		public async Task<Response> ChangeFile(DataFile file)
 		{
-			if ( file.FileData == null ) return new("Нет файла", "Empty file");
+			if (file.FileData == null)
+				return new("Нет файла", "Empty file");
 
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.ChangeFile
 				(
@@ -73,7 +91,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<ActionResult> DownloadDoc(int docId)
 		{
 			var resp = await _master.DownloadFile(docId, PathStorage.Files_Dir);
-			if ( resp.IsSuccess && resp.Value?.FileData != null )
+			if (resp.IsSuccess && resp.Value?.FileData != null)
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
@@ -83,7 +101,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<ActionResult> DownloadHistory(DocumentHistoryDto dto)
 		{
 			var resp = await _master.DownloadHistoryFile(dto, PathStorage.Files_Dir);
-			if ( resp.IsSuccess && resp.Value?.FileData != null )
+			if (resp.IsSuccess && resp.Value?.FileData != null)
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");

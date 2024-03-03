@@ -8,7 +8,11 @@
 
 <div class="fm-box">
 	<div class="fm-tools">
-
+		<ul>
+			<li @onclick="LoadDocs" class="tool-update">
+				<i class="fas fa-sync-alt"></i>
+			</li>
+		</ul>
 		<div class="file-tool">
 			<ul>
 				<li @onclick="()=>ChangeStyle(0)" class="tool @toolList[0].BlockStyle">
@@ -52,43 +56,102 @@
 	</div>
 
 	<div class="fm-workspace">
-
-		<div class="fm-docslist">
-			<ul>
-				@foreach ( var item in docs )
-				{
-					<li @onclick="()=>SelectDoc(item)" class="document @item.Style.BlockStyle">
-						<i class="fas fa-file-word"></i>
-						<div class="doc-name">
-							<p>@item.Document.Name@item.Document.FileType</p>
-						</div>
-					</li>
-				}
-			</ul>
-		</div>
-		@if (selectedDoc != null)
+		@if (loading)
 		{
-			<div class="fm-info @toolList[5].BlockStyle">
-
-				<label for="name">DocName:</label>
-					<p id="name">@selectedDoc.Name</p>
-				<label for="type">DocType:</label>
-					<p id="type">@selectedDoc.FileType</p>
-				<label for="desc">DocDesc:</label>
-					<p id="desc">@selectedDoc.Description</p>
-				<label for="size">DocSize:</label>
-					<p id="size">16 Mb</p>
-				
-			</div>
+			<SpinnerLoading />
 		}
-		</div>
+		else
+		{
+			<div class="fm-upload @toolList[0].BlockStyle">
+				<div class="dm-add-new">
+					<div class="set-data">
+						<label for="o-file">Upload File</label>
+						<br>
+						<InputFile OnChange="OnInputFile" id="o-file"></InputFile>
+						<button @onclick="@SendFile" class="dm-btn create">Create Document</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="fm-docslist">
+				<ul>
+					@foreach (var item in docs)
+					{
+						<li @onclick="() => SelectDoc(item)" class="document @item.Style.BlockStyle">
+							<i class="fas fa-file-word"></i>
+							<div class="doc-name">
+								@item.Document.Name@item.Document.FileType
+							</div>
+						</li>
+					}
+				</ul>
+			</div>
+			@if (selectedDoc != null)
+			{
+				<div class="fm-info @toolList[5].BlockStyle">
+
+					<label for="name">DocName:</label>
+					<p id="name">@selectedDoc.Name</p>
+					<label for="type">DocType:</label>
+					<p id="type">@selectedDoc.FileType</p>
+					<label for="desc">DocDesc:</label>
+					<p id="desc">@selectedDoc.Description</p>
+					<label for="size">DocSize:</label>
+					<p id="size">@selectedDoc.FileSize</p>
+
+				</div>
+			}
+		}
+	</div>
+	
 
 </div>
 
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
 @code {
-	protected override void OnInitialized()
+
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+
+	protected override async void OnInitialized()
 	{
-		docs.ForEach(x => x.Style.IsDisabled = false);
+		loading = true;
+
+		toolList[0].IsDisabled = false;
+		toolList[6].IsDisabled = false;
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+	
+	List<(DocumentDto Document, ToggleStyleCSS Style)> docs = new();
+	async Task LoadDocs()
+	{
+		isClick = true;
+		loading = true;
+
+		var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
+			.DoRequest_GET("FileManager/GetDocs");
+
+		docs = new();
+		if (req.Response.IsSuccess)
+			if (req.Value != null)
+			{
+				foreach (var item in req.Value)
+				{
+					docs.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+				}
+				docs.ForEach(x => x.Style.IsDisabled = false);
+			}
+		resp = req;
+
+		await Task.Delay(500);
+		loading = false;
 	}
 
 	List<ToggleStyleCSS> toolList = new()
@@ -101,12 +164,14 @@
 	};
 	void ChangeStyle(int id)
 	{
+		if (id == 0 || id == 6)
+			toolList[id].IsOpen = !toolList[id].IsOpen;
+		else
 		if (selectedDoc != null)
 			toolList[id].IsOpen = !toolList[id].IsOpen;
 	}
 
 	DocumentDto selectedDoc;
-
 	void SelectDoc((DocumentDto Document, ToggleStyleCSS Style) doc)
 	{
 		for (int i = 0; i < docs.Count; i++)
@@ -125,36 +190,49 @@
 		else
 		{
 			selectedDoc = null;
-			toolList.ForEach(x => { x.IsOpen = false; x.IsDisabled = true; });
+			for (int i = 1; i <= 5; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
 		}
 	}
 
-	List<(DocumentDto Document, ToggleStyleCSS Style)> docs = new()
+	bool fileUploaded = false;
+	DataFile newFile = new();
+	async Task OnInputFile(InputFileChangeEventArgs e)
 	{
-		new(
-			new DocumentDto()
-			{ Id = 1, Name = "name1", FileType = ".txt", Description = "none"},
-			new ToggleStyleCSS("", "selected", "")
-			),
-		new(
-			new DocumentDto()
-			{ Id = 71, Name = "name2", FileType = ".doc", Description = "Proident officia ipsum nulla magna laborum labore adipisicing excepteur quis reprehenderit laboris."},
-			new ToggleStyleCSS("", "selected", "")
-		),
-		new(
-			new DocumentDto()
-			{ Id = 44, Name = "name3", FileType = ".txt", Description = "none"},
-			new ToggleStyleCSS("", "selected", "")
-		),
-		new(
-			new DocumentDto()
-			{ Id = 31, Name = "name4", FileType = ".docx", Description = "none"},
-			new ToggleStyleCSS("", "selected", "")
-		),
-		new(
-			new DocumentDto()
-			{ Id = 21, Name = "Laboris_culpa_nisi_culpa_amet", FileType = ".pdf", Description = "Anim labore elit adipisicing incididunt exercitation veniam exercitation aute ullamco tempor." },
-			new ToggleStyleCSS("", "selected", "")
-		)
-	};
+		var file = e.GetMultipleFiles().FirstOrDefault();
+		if (file == null)
+		{
+			fileUploaded = false;
+			return;
+		}
+		else
+		{
+			fileUploaded = true;
+			newFile.FileName = file.Name;
+			using (var ms = new MemoryStream())
+			{
+				await file.OpenReadStream(maxAllowedSize: 102400000).CopyToAsync(ms);
+				newFile.FileData = ms.ToArray();
+			}
+		}
+	}
+
+	async Task SendFile()
+	{
+		if (!fileUploaded)
+			return;
+
+		isClick = true;
+		loading = true;
+
+		resp = await new ServerPost<DataFile>(WebCooker)
+		.DoRequest_POST("FileManager/AddDocument", newFile);
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
 }
