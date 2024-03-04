@@ -33,21 +33,24 @@
 				<li @onclick="()=>ChangeStyle(5)" class="tool @toolList[5].BlockStyle">
 					<i class="fas fa-info"></i>
 				</li>
+				<li @onclick="()=>ChangeStyle(6)" class="tool @toolList[6].BlockStyle">
+					<i class="fa-solid fa-users"></i>
+				</li>
 			</ul>
 		</div>
 
 		<div class="folder-tool">
 			<ul>
-				<li class="tool @toolList[6].BlockStyle">
+				<li class="tool @toolList[7].BlockStyle">
 					<i class="fas fa-folder-plus"></i>
 				</li>
-				<li @onclick="()=>ChangeStyle(7)" class="tool @toolList[7].BlockStyle">
+				<li @onclick="()=>ChangeStyle(8)" class="tool @toolList[8].BlockStyle">
 					<i class="fas fa-edit"></i>
 				</li>
-				<li class="tool @toolList[8].BlockStyle">
+				<li class="tool @toolList[9].BlockStyle">
 					<i class="fas fa-folder-minus"></i>
 				</li>
-				<li @onclick="()=>ChangeStyle(9)" class="tool @toolList[9].BlockStyle">
+				<li @onclick="()=>ChangeStyle(10)" class="tool @toolList[10].BlockStyle">
 					<i class="fas fa-info"></i>
 				</li>
 			</ul>
@@ -100,10 +103,25 @@
 					<p id="size">@selectedDoc.FileSize</p>
 
 				</div>
+
+				<div class="fm-history @toolList[4].BlockStyle">
+					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ad aliquam eum qui amet, beatae voluptate
+						numquam totam debitis sunt non aliquid, quae optio magnam suscipit! Harum consequatur quos sint.</p>
+
+				</div>
+
+				<div class="fm-change @toolList[1].BlockStyle">
+					<p>Elit amet mollit irure exercitation nisi nulla ut excepteur culpa do consequat ad aute.</p>
+				</div>
+
+				<div class="fm-share @toolList[6].BlockStyle">
+					<p>Duis duis mollit nulla fugiat proident labore laborum consectetur commodo enim labore mollit et.</p>
+
+				</div>
 			}
 		}
 	</div>
-	
+
 
 </div>
 
@@ -120,7 +138,7 @@
 		loading = true;
 
 		toolList[0].IsDisabled = false;
-		toolList[6].IsDisabled = false;
+		toolList[7].IsDisabled = false;
 
 		await LoadDocs();
 
@@ -128,7 +146,7 @@
 		loading = false;
 		StateHasChanged();
 	}
-	
+
 	List<(DocumentDto Document, ToggleStyleCSS Style)> docs = new();
 	async Task LoadDocs()
 	{
@@ -136,7 +154,7 @@
 		loading = true;
 
 		var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
-			.DoRequest_GET("FileManager/GetDocs");
+		.DoRequest_GET("FileManager/GetDocs");
 
 		docs = new();
 		if (req.Response.IsSuccess)
@@ -156,41 +174,59 @@
 
 	List<ToggleStyleCSS> toolList = new()
 	{
+		//	upload file			change
 		new("", "open", ""), new("", "open", "disabled"),
+		//	download			delete
 		new("", "", "disabled"), new("", "", "disabled"),
+		//	history 			info
 		new("", "open", "disabled"), new("", "open", "disabled"),
+		//	peoples access
+		new("", "open", "disabled"),
+
+		//	add folder			change
 		new("", "", ""), new("", "open", "disabled"),
+		//	delete folder		info
 		new("", "", "disabled"), new("", "open", "disabled"),
 	};
 	void ChangeStyle(int id)
 	{
-		if (id == 0 || id == 6)
+		isClick = false;
+		if (id == 0 || id == 7)
 			toolList[id].IsOpen = !toolList[id].IsOpen;
 		else
 		if (selectedDoc != null)
-			toolList[id].IsOpen = !toolList[id].IsOpen;
+		{
+			for (int i = 1; i <= 6; i++)
+			{
+				if (i != id)
+					toolList[i].IsOpen = false;
+				else
+					toolList[id].IsOpen = !toolList[id].IsOpen;
+			}
+		}
 	}
 
 	DocumentDto selectedDoc;
 	void SelectDoc((DocumentDto Document, ToggleStyleCSS Style) doc)
 	{
+		isClick = false;
 		for (int i = 0; i < docs.Count; i++)
 		{
-			if ( docs[i].Document.Id != doc.Document.Id )
+			if (docs[i].Document.Id != doc.Document.Id)
 				docs[i].Style.IsOpen = false;
 			else
 				doc.Style.IsOpen = !doc.Style.IsOpen;
 		}
-		if ( doc.Style.IsOpen )
+		if (doc.Style.IsOpen)
 		{
 			selectedDoc = doc.Document;
-			for ( int i = 1; i <= 5; i++ )
+			for (int i = 1; i <= 6; i++)
 				toolList[i].IsDisabled = false;
 		}
 		else
 		{
 			selectedDoc = null;
-			for (int i = 1; i <= 5; i++)
+			for (int i = 1; i <= 6; i++)
 			{
 				toolList[i].IsOpen = false;
 				toolList[i].IsDisabled = true;
