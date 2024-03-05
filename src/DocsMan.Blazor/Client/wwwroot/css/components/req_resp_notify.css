@@ -70,9 +70,13 @@
 	font-style: italic;
 }
 
-.resp-msg>h2::before {
-	content: 'Ответ получен: ';
+.resp-msg>h2>span {
 	color: #333;
+	font-family: 'Open Sans';
+	font-weight: bold;
+	font-style: italic;
+	font-size: 12px;
+	margin-right: 5px;
 }
 
 .alert-success {

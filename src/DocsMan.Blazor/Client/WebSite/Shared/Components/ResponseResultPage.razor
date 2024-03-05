@@ -17,7 +17,10 @@
 		@if (RequestResult.ResponseStatusCode == null)
 		{
 			<div class="resp-msg @OpenCloseStyles[1] alert-danger">
-				<h2>Сервер не подключен, отключен или доступ к нему невозможен, пожалуйста, подождите</h2>
+				<h2>
+					<span>Ответ получен:</span>
+					Сервер не подключен, отключен или доступ к нему невозможен, пожалуйста, подождите
+				</h2>
 				<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 					<i class="fas fa-times"></i>
 				</span>
@@ -31,7 +34,10 @@
 				if (RequestResult.Response.IsSuccess)
 				{
 					<div class="resp-msg @OpenCloseStyles[1] alert-success">
-						<h2>Успешно</h2>
+						<h2>
+							<span>Ответ получен:</span>
+							Успешно
+						</h2>
 						<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 							<i class="fas fa-times"></i>
 						</span>
@@ -40,7 +46,10 @@
 				else
 				{
 					<div class="resp-msg @OpenCloseStyles[1] alert-warning">
-						<h2>@RequestResult.Response.ErrorMessage</h2>
+						<h2>
+							<span>Ответ получен:</span>
+							@RequestResult.Response.ErrorMessage
+						</h2>
 						<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 							<i class="fas fa-times"></i>
 						</span>
@@ -50,7 +59,10 @@
 			else
 			{
 				<div class="resp-msg @OpenCloseStyles[1] alert-warning">
-					<h2>@RequestResult.Response.ErrorMessage</h2>
+					<h2>
+						<span>Ответ получен:</span>
+						@RequestResult.Response.ErrorMessage
+					</h2>
 					<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 						<i class="fas fa-times"></i>
 					</span>
@@ -61,7 +73,10 @@
 		@if ((int) RequestResult.ResponseStatusCode >= 100 && (int) RequestResult.ResponseStatusCode <= 199)
 		{
 			<div class="resp-msg @OpenCloseStyles[1] alert-info">
-				<h2>@RequestResult.Response.ErrorMessage</h2>
+				<h2>
+					<span>Ответ получен:</span>
+					@RequestResult.Response.ErrorMessage
+				</h2>
 				<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 					<i class="fas fa-times"></i>
 				</span>
@@ -71,7 +86,10 @@
 		@if ((int) RequestResult.ResponseStatusCode >= 300 && (int) RequestResult.ResponseStatusCode <= 399)
 		{
 			<div class="resp-msg @OpenCloseStyles[1] alert-warning">
-				<h2>@RequestResult.Response.ErrorMessage</h2>
+				<h2>
+					<span>Ответ получен:</span>
+					@RequestResult.Response.ErrorMessage
+				</h2>
 				<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 					<i class="fas fa-times"></i>
 				</span>
@@ -84,6 +102,7 @@
 			{
 				<div class="resp-msg @OpenCloseStyles[1] alert-danger">
 					<h2>
+						<span>Ответ получен:</span>
 						Вы не авторизованы или Ваша сессия завершена, пожалуйста, авторизуйтесь
 						<br>
 						@RequestResult.Response.ErrorMessage
@@ -98,6 +117,7 @@
 			{
 				<div class="resp-msg @OpenCloseStyles[1] alert-danger">
 					<h2>
+						<span>Ответ получен:</span>
 						У Вас нет доступа, пожалуйста, обратитесь к администратору
 						<br>
 						@RequestResult.Response.ErrorMessage
@@ -110,7 +130,10 @@
 			else
 			{
 				<div class="resp-msg @OpenCloseStyles[1] alert-danger">
-					<h2>@RequestResult.Response.ErrorMessage</h2>
+					<h2>
+						<span>Ответ получен:</span>
+						@RequestResult.Response.ErrorMessage
+					</h2>
 					<span @onclick="()=>ChangeCloseStyle(1)" class="cls-btn">
 						<i class="fas fa-times"></i>
 					</span>
