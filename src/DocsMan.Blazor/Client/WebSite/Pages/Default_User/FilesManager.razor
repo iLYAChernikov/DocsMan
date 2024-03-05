@@ -76,7 +76,7 @@
 				</div>
 			</div>
 
-			<div class="fm-docslist">
+			<div class="fm-docslist @docListStyle">
 				<ul>
 					@foreach (var item in docs)
 					{
@@ -105,9 +105,25 @@
 				</div>
 
 				<div class="fm-history @toolList[4].BlockStyle">
-					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ad aliquam eum qui amet, beatae voluptate
-						numquam totam debitis sunt non aliquid, quae optio magnam suscipit! Harum consequatur quos sint.</p>
-
+					@if (loadHist)
+					{
+						<SpinnerLoading />
+					}
+					else
+					{
+						@if (history != null)
+						{
+							foreach (var item in history)
+							{
+								<label for="datetime">DateTime</label>
+								<h3 id="datetime">
+									@item.DateTimeOfChanges.ToShortDateString() @item.DateTimeOfChanges.ToShortTimeString()
+								</h3>
+								<label for="hdesc">Description</label>
+								<h3 id="hdesc">@item.Description</h3>
+							}
+						}
+					}
 				</div>
 
 				<div class="fm-change @toolList[1].BlockStyle">
@@ -188,7 +204,8 @@
 		//	delete folder		info
 		new("", "", "disabled"), new("", "open", "disabled"),
 	};
-	void ChangeStyle(int id)
+	string docListStyle = "";
+	async Task ChangeStyle(int id)
 	{
 		isClick = false;
 		if (id == 0 || id == 7)
@@ -203,8 +220,31 @@
 				else
 					toolList[id].IsOpen = !toolList[id].IsOpen;
 			}
+			if (id == 4)
+				await LoadHistory();
+
+			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
 		}
 	}
+
+	List<DocumentHistoryDto> history;
+	bool loadHist = false;
+	async Task LoadHistory()
+	{
+		if (selectedDoc != null)
+		{
+			loadHist = true;
+
+			var req = await new ServerGet<IEnumerable<DocumentHistoryDto>?>(WebCooker)
+			.DoRequest_GET($"FileManager/GetHistory/{selectedDoc.Id}");
+			history = req.Value.ToList();
+
+			await Task.Delay(500);
+			loadHist = false;
+			StateHasChanged();
+		}
+	}
+
 
 	DocumentDto selectedDoc;
 	void SelectDoc((DocumentDto Document, ToggleStyleCSS Style) doc)

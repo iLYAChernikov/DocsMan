@@ -49,6 +49,12 @@ namespace DocsMan.Blazor.Server.Controllers
 				return await _master.GetDocs(ident.Value, PathStorage.Files_Dir);
 		}
 
+		[HttpGet("GetHistory/{docId}")]
+		public async Task<Response<IEnumerable<DocumentHistoryDto>?>> GetDocHistory(int docId)
+		{
+			return await _master.GetHistory(docId);
+		}
+
 		[HttpDelete("HideDocument/{docId}")]
 		public async Task<Response> HideDoc(int docId)
 		{

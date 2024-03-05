@@ -4,7 +4,7 @@
 
 .fm-workspace {
 	display: grid;
-	grid-template-columns: auto-fill 300px;
+	grid-template-columns: auto 300px;
 	grid-template-rows: 150px auto-fill;
 
 	align-content: stretch;
@@ -116,8 +116,12 @@
 	background: var(--dm-light);
 	height: 100vh;
 	padding: 20px 40px;
-	grid-column: 1;
+	grid-column: span 2;
 	grid-row: span 2;
+}
+
+.fm-docslist.open {
+	grid-column: 1;
 }
 
 .fm-docslist ul {

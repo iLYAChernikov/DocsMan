@@ -254,7 +254,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<DocumentHistoryDto?>?>> GetHistory(int documentId)
+		public async Task<Response<IEnumerable<DocumentHistoryDto>?>> GetHistory(int documentId)
 		{
 			return await _historyExec.GetDocumentHistory(documentId);
 		}

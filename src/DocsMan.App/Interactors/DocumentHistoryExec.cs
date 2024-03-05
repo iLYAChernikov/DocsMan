@@ -50,7 +50,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<DocumentHistoryDto?>?>> GetDocumentHistory(int documentId)
+		public async Task<Response<IEnumerable<DocumentHistoryDto>?>> GetDocumentHistory(int documentId)
 		{
 			try
 			{
