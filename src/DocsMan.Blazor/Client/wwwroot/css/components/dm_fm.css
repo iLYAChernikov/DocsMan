@@ -235,19 +235,30 @@
 	margin-left: 10px;
 }
 
+.fm-history p:nth-child(3n) {
+	margin-bottom: 20px;
+	border-bottom: 1px var(--dm-light) solid;
+	width: 80%;
+	text-align: center;
+}
+
 .fm-history p {
 	font-size: 18px;
 	padding: 10px 20px;
 	margin-left: 30px;
 }
 
-.fm-history a {
-	text-decoration: none;
+.fm-history p i {
+	scale: 1.2;
+	color: var(--dm-siren-d);
+	transition: .5s;
 }
 
-.fm-history a::after{
-	content: '';
-	border-bottom: 2px red solid;
+.fm-history p i:hover {
+	cursor: pointer;
+	transform: scale(1.1);
+	color: var(--dm-malina);
+	transition: .5s;
 }
 
 

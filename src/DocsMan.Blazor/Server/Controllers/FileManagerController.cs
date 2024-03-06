@@ -51,6 +51,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				return await _master.GetDocs(ident.Value, PathStorage.Files_Dir);
 		}
 
+		[HttpGet("GetTrash")]
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetTrash()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetTrash(ident.Value, PathStorage.Files_Dir);
+		}
+
 		[HttpGet("GetHistory/{docId}")]
 		public async Task<Response<IEnumerable<DocumentHistoryDto>?>> GetDocHistory(int docId)
 		{
@@ -65,6 +75,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				return ident;
 
 			return await _master.HideDocument(ident.Value, docId);
+		}
+
+		[HttpDelete("ReturnDocument/{docId}")]
+		public async Task<Response> ReturnDoc(int docId)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.ReturnDocument(ident.Value, docId);
 		}
 
 		[HttpPost("RenameDocument")]

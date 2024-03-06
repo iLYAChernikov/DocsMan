@@ -85,21 +85,32 @@
 	margin-left: -20px;
 }
 
-.profile-block .link {
+.profile-block .info .link {
 	display: inline;
-	padding-left: 20%;
+	margin-right: 20%;
+}
+
+.profile-block .info .link:nth-child(6) {
+	margin-left: 25%;
 }
 
 .profile-block .link>a>i {
-	padding: 0 20px;
 	color: #000;
-	transform: scale(1.3);
+	scale: 1.5;
+	transition: .5s;
+	margin-bottom: 20px;
+}
+
+.profile-block .info .link>a>i:hover {
+	color: var(--dm-green-sea);
+	cursor: pointer;
+	transform: scale(1.1);
 	transition: .5s;
 }
 
-.profile-block .link>a>i:hover {
-	color: #0fc9b9;
-	cursor: pointer;
-	transform: scale(1.5);
-	transition: .5s;
+.profile-block .info button {
+	position: relative;
+	top: 0;
+	left: 33%;
+	margin-bottom: 20px;
 }

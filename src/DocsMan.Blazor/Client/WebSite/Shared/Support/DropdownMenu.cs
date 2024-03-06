@@ -88,6 +88,12 @@ public static class SideBarNavMenuList
 			Icon = "fas fa-folder-open",
 			HrefUrl = "User/Files"
 		},
+		new ()
+		{
+			Title = "Trash",
+			Icon = "fa-solid fa-trash-arrow-up",
+			HrefUrl = "User/Trash"
+		},
 	};
 
 	public static List<SubMenu> adminMenu = new()

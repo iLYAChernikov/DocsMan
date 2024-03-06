@@ -1,10 +1,10 @@
-@page "/User/Files"
+@page "/User/Trash"
 @layout MainLayout
 @using DocsMan.Blazor.Shared.DTOs
 
-<PageTitle>FilesManager</PageTitle>
+<PageTitle>TrashManager</PageTitle>
 
-<h3 class="page-title">FilesManager</h3>
+<h3 class="page-title">TrashManager</h3>
 
 <div class="fm-box">
 	<div class="fm-tools">
@@ -14,44 +14,21 @@
 			</li>
 		</ul>
 		<div class="file-tool">
-			<ul>
-				<li @onclick="()=>ChangeStyle(0)" class="tool @toolList[0].BlockStyle">
-					<i class="fa-solid fa-cloud-arrow-up"></i>
-				</li>
-				<li @onclick="()=>ChangeStyle(1)" class="tool @toolList[1].BlockStyle">
-					<i class="fas fa-pen"></i>
-				</li>
-				<li @onclick="DownloadDoc" class="tool @toolList[2].BlockStyle">
+			<ul>				
+				<li @onclick="DownloadDoc" class="tool @toolList[0].BlockStyle">
 					<i class="fa-solid fa-download"></i>
 				</li>
-				<li @onclick="HideDoc" class="tool @toolList[3].BlockStyle">
-					<i class="fas fa-trash-alt"></i>
+				<li @onclick="ReturnDoc" class="tool @toolList[1].BlockStyle">
+					<i style="transform: scaleX(-1)" class="fa-solid fa-turn-up"></i>
 				</li>
-				<li @onclick="()=>ChangeStyle(4)" class="tool @toolList[4].BlockStyle">
+				<li @onclick="()=>ChangeStyle(2)" class="tool @toolList[2].BlockStyle">
 					<i class="fa-solid fa-clock-rotate-left"></i>
 				</li>
-				<li @onclick="()=>ChangeStyle(5)" class="tool @toolList[5].BlockStyle">
+				<li @onclick="()=>ChangeStyle(3)" class="tool @toolList[3].BlockStyle">
 					<i class="fas fa-info"></i>
 				</li>
-				<li @onclick="()=>ChangeStyle(6)" class="tool @toolList[6].BlockStyle">
+				<li @onclick="()=>ChangeStyle(4)" class="tool @toolList[4].BlockStyle">
 					<i class="fa-solid fa-share-nodes"></i>
-				</li>
-			</ul>
-		</div>
-
-		<div class="folder-tool">
-			<ul>
-				<li class="tool @toolList[7].BlockStyle">
-					<i class="fas fa-folder-plus"></i>
-				</li>
-				<li @onclick="()=>ChangeStyle(8)" class="tool @toolList[8].BlockStyle">
-					<i class="fas fa-edit"></i>
-				</li>
-				<li class="tool @toolList[9].BlockStyle">
-					<i class="fas fa-folder-minus"></i>
-				</li>
-				<li @onclick="()=>ChangeStyle(10)" class="tool @toolList[10].BlockStyle">
-					<i class="fas fa-info"></i>
 				</li>
 			</ul>
 		</div>
@@ -65,17 +42,6 @@
 		}
 		else
 		{
-			<div class="fm-upload @toolList[0].BlockStyle">
-				<div class="dm-add-new">
-					<div class="set-data">
-						<label for="o-file">Upload File</label>
-						<br>
-						<InputFile OnChange="OnInputFile" id="o-file"></InputFile>
-						<button @onclick="@SendFile" class="dm-btn create">Create Document</button>
-					</div>
-				</div>
-			</div>
-
 			<div class="fm-docslist @docListStyle">
 				<ul>
 					@foreach (var item in docs)
@@ -91,7 +57,7 @@
 			</div>
 			@if (selectedDoc != null)
 			{
-				<div class="fm-info @toolList[5].BlockStyle">
+				<div class="fm-info @toolList[3].BlockStyle">
 
 					<label for="name">DocName:</label>
 					<p id="name">@selectedDoc.Name</p>
@@ -104,7 +70,7 @@
 
 				</div>
 
-				<div class="fm-history @toolList[4].BlockStyle">
+				<div class="fm-history @toolList[2].BlockStyle">
 					@if (loadHist)
 					{
 						<SpinnerLoading />
@@ -130,11 +96,7 @@
 					}
 				</div>
 
-				<div class="fm-change @toolList[1].BlockStyle">
-					<p>Elit amet mollit irure exercitation nisi nulla ut excepteur culpa do consequat ad aute.</p>
-				</div>
-
-				<div class="fm-share @toolList[6].BlockStyle">
+				<div class="fm-share @toolList[4].BlockStyle">
 					<p>Duis duis mollit nulla fugiat proident labore laborum consectetur commodo enim labore mollit et.</p>
 
 				</div>
@@ -157,9 +119,6 @@
 	{
 		loading = true;
 
-		toolList[0].IsDisabled = false;
-		toolList[7].IsDisabled = false;
-
 		await LoadDocs();
 
 		await Task.Delay(500);
@@ -174,7 +133,7 @@
 		loading = true;
 
 		var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
-		.DoRequest_GET("FileManager/GetDocs");
+		.DoRequest_GET("FileManager/GetTrash");
 
 		docs = new();
 		if (req.Response.IsSuccess)
@@ -194,38 +153,29 @@
 	}
 
 	List<ToggleStyleCSS> toolList = new()
-	{
-		//	upload file			change
-		new("", "open", ""), new("", "open", "disabled"),
-		//	download			delete
+{		
+		//	download			return
 		new("", "", "disabled"), new("", "", "disabled"),
 		//	history 			info
 		new("", "open", "disabled"), new("", "open", "disabled"),
 		//	peoples access
-		new("", "open", "disabled"),
-
-		//	add folder			change
-		new("", "", ""), new("", "open", "disabled"),
-		//	delete folder		info
-		new("", "", "disabled"), new("", "open", "disabled"),
+		new("", "open", "disabled")
 	};
 	string docListStyle = "";
 	async Task ChangeStyle(int id)
 	{
 		isClick = false;
-		if (id == 0 || id == 7)
-			toolList[id].IsOpen = !toolList[id].IsOpen;
-		else
+
 		if (selectedDoc != null)
 		{
-			for (int i = 1; i <= 6; i++)
+			for (int i = 0; i <= 4; i++)
 			{
 				if (i != id)
 					toolList[i].IsOpen = false;
 				else
 					toolList[id].IsOpen = !toolList[id].IsOpen;
 			}
-			if (id == 4)
+			if (id == 2)
 				await LoadHistory();
 
 			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
@@ -265,61 +215,21 @@
 		if (doc.Style.IsOpen)
 		{
 			selectedDoc = doc.Document;
-			for (int i = 1; i <= 6; i++)
+			for (int i = 0; i <= 4; i++)
 				toolList[i].IsDisabled = false;
 
-			if (toolList[4].IsOpen)
+			if (toolList[2].IsOpen)
 				await LoadHistory();
 		}
 		else
 		{
 			selectedDoc = null;
-			for (int i = 1; i <= 6; i++)
+			for (int i = 0; i <= 4; i++)
 			{
 				toolList[i].IsOpen = false;
 				toolList[i].IsDisabled = true;
 			}
 		}
-	}
-
-	bool fileUploaded = false;
-	DataFile newFile = new();
-	async Task OnInputFile(InputFileChangeEventArgs e)
-	{
-		var file = e.GetMultipleFiles().FirstOrDefault();
-		if (file == null)
-		{
-			fileUploaded = false;
-			return;
-		}
-		else
-		{
-			fileUploaded = true;
-			newFile.FileName = file.Name;
-			using (var ms = new MemoryStream())
-			{
-				await file.OpenReadStream(maxAllowedSize: 102400000).CopyToAsync(ms);
-				newFile.FileData = ms.ToArray();
-			}
-		}
-	}
-
-	async Task SendFile()
-	{
-		if (!fileUploaded)
-			return;
-
-		isClick = true;
-		loading = true;
-
-		resp = await new ServerPost<DataFile>(WebCooker)
-		.DoRequest_POST("FileManager/AddDocument", newFile);
-
-		await LoadDocs();
-
-		await Task.Delay(500);
-		loading = false;
-		StateHasChanged();
 	}
 
 	void DownloadDoc()
@@ -336,14 +246,14 @@
 		ServerConnector.DoDownload($"FileManager/DownloadHistoryFile/{id}/{time}"));
 	}
 
-	async Task HideDoc()
+	async Task ReturnDoc()
 	{
 		if (selectedDoc != null)
 		{
 			loading = true;
 
 			var req = await new ServerDelete(WebCooker)
-			.DoRequest_DELETE($"FileManager/HideDocument/{selectedDoc.Id}");
+			.DoRequest_DELETE($"FileManager/ReturnDocument/{selectedDoc.Id}");
 			resp = req;
 
 			await LoadDocs();
