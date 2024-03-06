@@ -251,7 +251,7 @@
 
 
 	DocumentDto selectedDoc;
-	void SelectDoc((DocumentDto Document, ToggleStyleCSS Style) doc)
+	async void SelectDoc((DocumentDto Document, ToggleStyleCSS Style) doc)
 	{
 		isClick = false;
 		for (int i = 0; i < docs.Count; i++)
@@ -266,6 +266,9 @@
 			selectedDoc = doc.Document;
 			for (int i = 1; i <= 6; i++)
 				toolList[i].IsDisabled = false;
+
+			if (toolList[4].IsOpen)
+				await LoadHistory();
 		}
 		else
 		{

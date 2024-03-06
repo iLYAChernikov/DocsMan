@@ -24,7 +24,7 @@ namespace DocsMan.App.Interactors
 		{
 			var howNow = DateTime.Now;
 			string name = GetOnlyFileName(fileName);
-			string tempName = $"{name}_{howNow.Day}.{howNow.Month}.{howNow.Year}_{howNow.Hour}.{howNow.Minute}.{howNow.Second}";
+			string tempName = $"{name}_{howNow.ToShortDateString()}_{howNow.Hour:D2}.{howNow.Minute:D2}.{howNow.Second:D2}";
 			return tempName + GetOnlyFileResolution(fileName);
 		}
 

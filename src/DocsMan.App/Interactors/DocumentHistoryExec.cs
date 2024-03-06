@@ -34,7 +34,7 @@ namespace DocsMan.App.Interactors
 					Description = description
 				};
 				var now = DateTime.Now;
-				history.DateTimeOfChanges = $"{now.ToShortDateString()} {now.ToShortTimeString()}";
+				history.DateTimeOfChanges = $"{now.ToShortDateString()} {now.ToLongTimeString()}";
 
 				await _historyRepos.CreateAsync(history);
 				await _unitWork.Commit();
