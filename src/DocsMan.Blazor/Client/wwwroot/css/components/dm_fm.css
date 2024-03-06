@@ -195,11 +195,16 @@
 	padding-top: 20px;
 	grid-column: 2;
 	grid-row: 1 / 3;
-	width: 100%;
 }
 
 .fm-info.open {
 	display: block;
+}
+
+.fm-info label {
+	font-size: 16px;
+	padding: 10px 20px;
+	margin-left: 10px;
 }
 
 .fm-info p {
@@ -209,19 +214,13 @@
 	word-break: keep-all;
 }
 
-.fm-info label {
-	font-size: 16px;
-	padding: 10px 20px;
-	margin-left: 10px;
-}
-
 /*#endregion*/
 
 /*#region FM History*/
 
 .fm-history {
 	display: none;
-	border: 1px blue solid;
+	padding-top: 20px;
 	grid-column: 2;
 	grid-row: 1 / 3;
 }
@@ -230,13 +229,34 @@
 	display: block;
 }
 
+.fm-history label {
+	font-size: 16px;
+	padding: 10px 20px;
+	margin-left: 10px;
+}
+
+.fm-history p {
+	font-size: 18px;
+	padding: 10px 20px;
+	margin-left: 30px;
+}
+
+.fm-history a {
+	text-decoration: none;
+}
+
+.fm-history a::after{
+	content: '';
+	border-bottom: 2px red solid;
+}
+
+
 /*#endregion*/
 
 /*#region FM Change*/
 
 .fm-change {
 	display: none;
-	border: 1px orangered solid;
 	grid-column: 2;
 	grid-row: 1 / 3;
 }
@@ -251,7 +271,6 @@
 
 .fm-share {
 	display: none;
-	border: 1px greenyellow solid;
 	grid-column: 2;
 	grid-row: 1 / 3;
 }

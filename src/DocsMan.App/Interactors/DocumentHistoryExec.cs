@@ -31,9 +31,10 @@ namespace DocsMan.App.Interactors
 				{
 					DocumentId = documentId,
 					FileId = fileId,
-					Description = description,
-					DateTimeOfChanges = DateTime.Now
+					Description = description
 				};
+				var now = DateTime.Now;
+				history.DateTimeOfChanges = $"{now.ToShortDateString()} {now.ToShortTimeString()}";
 
 				await _historyRepos.CreateAsync(history);
 				await _unitWork.Commit();
@@ -68,7 +69,7 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<DataFile>> DownloadFile(int documentId, DateTime dateTime, string storagePath)
+		public async Task<Response<DataFile>> DownloadFile(int documentId, string dateTime, string storagePath)
 		{
 			try
 			{

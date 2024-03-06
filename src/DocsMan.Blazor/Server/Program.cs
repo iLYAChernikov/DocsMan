@@ -75,8 +75,8 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<IRepository<PersonalDocumentType>, GenericRepository<PersonalDocumentType>>();
 			builder.Services.AddScoped<IRepository<UploadFile>, GenericRepository<UploadFile>>();
 			builder.Services.AddScoped<IRepository<Document>, GenericRepository<Document>>();
-			builder.Services.AddScoped<IRepository<DocumentHistory>, GenericRepository<DocumentHistory>>();
 
+			builder.Services.AddScoped<IRepository<DocumentHistory>, DocumentHistoryRepository>();
 			builder.Services.AddScoped<IRepository<Profile>, ProfileRepository>();
 			builder.Services.AddScoped<IRepository<PersonalDocument>, PersonalDocumentRepository>();
 

@@ -21,7 +21,7 @@
 				<li @onclick="()=>ChangeStyle(1)" class="tool @toolList[1].BlockStyle">
 					<i class="fas fa-pen"></i>
 				</li>
-				<li class="tool @toolList[2].BlockStyle">
+				<li @onclick="DownloadDoc" class="tool @toolList[2].BlockStyle">
 					<i class="fas fa-file-download"></i>
 				</li>
 				<li class="tool @toolList[3].BlockStyle">
@@ -115,12 +115,16 @@
 						{
 							foreach (var item in history)
 							{
-								<label for="datetime">DateTime</label>
-								<h3 id="datetime">
-									@item.DateTimeOfChanges.ToShortDateString() @item.DateTimeOfChanges.ToShortTimeString()
-								</h3>
-								<label for="hdesc">Description</label>
-								<h3 id="hdesc">@item.Description</h3>
+								<label for="datetime">DateTime Change:</label>
+								<p id="datetime">
+									@item.DateTimeOfChanges
+								</p>
+								<label for="hdesc">Description:</label>
+								<p id="hdesc">@item.Description</p>
+								<label for="hload">Download:</label>
+								<a @onclick="()=>DownloadHistory(item.DocumentId, item.DateTimeOfChanges)" id="hload">
+									<i class="fas fa-file-download"></i>
+								</a>
 							}
 						}
 					}
@@ -310,5 +314,19 @@
 		await Task.Delay(500);
 		loading = false;
 		StateHasChanged();
+	}
+
+	void DownloadDoc()
+	{
+		if (selectedDoc != null)
+		{
+			PagesNavigation.NavigateTo(
+				ServerConnector.DoDownload($"FileManager/DownloadDocument/{selectedDoc.Id}"));
+		}
+	}
+	void DownloadHistory(int id, string time)
+	{
+		PagesNavigation.NavigateTo(
+		ServerConnector.DoDownload($"FileManager/DownloadHistoryFile/{id}/{time}"));
 	}
 }

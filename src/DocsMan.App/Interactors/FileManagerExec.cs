@@ -78,14 +78,14 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				List<DocumentDto> documents = new();
-				var docs = (await _bindProfileDoc.GetAllBinds())
+				var docs = ( await _bindProfileDoc.GetAllBinds() )
 					.Where(x => x.ProfileId == profileId && !x.Document.IsDeleted)
 					.Select(x => x.Document);
 				foreach ( var item in docs )
 				{
 					var dto = item.ToDto();
 					var resp = await _fileExec.GetSizeFile(item.FileId, storagePath);
-					if (!resp.IsSuccess)
+					if ( !resp.IsSuccess )
 						dto.FileSize = "0?";
 					else
 						dto.FileSize = resp.Value;
@@ -93,15 +93,15 @@ namespace DocsMan.App.Interactors
 				}
 				return new(documents);
 			}
-			catch (ArgumentNullException ex)
+			catch ( ArgumentNullException ex )
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch (NullReferenceException ex)
+			catch ( NullReferenceException ex )
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch (Exception ex)
+			catch ( Exception ex )
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -230,15 +230,11 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<DataFile>> DownloadHistoryFile(DocumentHistoryDto dto, string storagePath)
+		public async Task<Response<DataFile>> DownloadHistoryFile(int documentId, string timeChange, string storagePath)
 		{
 			try
 			{
-				var ent = dto.ToEntity();
-				if ( ent == null )
-					return new("Пустые входные данные", "Null input data");
-
-				return await _historyExec.DownloadFile(ent.DocumentId, ent.DateTimeOfChanges, storagePath);
+				return await _historyExec.DownloadFile(documentId, timeChange, storagePath);
 			}
 			catch ( ArgumentNullException ex )
 			{
