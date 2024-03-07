@@ -131,7 +131,27 @@
 				</div>
 
 				<div class="fm-change @toolList[1].BlockStyle">
-					<p>Elit amet mollit irure exercitation nisi nulla ut excepteur culpa do consequat ad aute.</p>
+					<div class="dm-add-new">
+						<div class="set-data">
+							<label for="o-file">Change File</label>
+							<br>
+							<InputFile OnChange="OnChangeFile" id="o-file"></InputFile>
+						</div>
+						<button @onclick="@ChangeFile" class="dm-btn create">Change File</button>
+					</div>
+					<div class="dm-add-new">
+						<div class="set-data">
+							<label for="cname">Name:</label>
+							<br>
+							<InputText @bind-Value="selectedDoc.Name" id="cname"></InputText>
+						</div>
+						<div class="set-data">
+							<label for="cdesc">Description:</label>
+							<br>
+							<InputText @bind-Value="selectedDoc.Description" id="cdesc"></InputText>
+						</div>
+						<button @onclick="@ChangeInfo" class="dm-btn create">Change Info</button>
+					</div>
 				</div>
 
 				<div class="fm-share @toolList[6].BlockStyle">
@@ -186,8 +206,10 @@
 				}
 				docs.ForEach(x => x.Style.IsDisabled = false);
 			}
-		resp = req;
 		selectedDoc = null;
+		toolList.ForEach(x => x.IsDisabled = true);
+		toolList[0].IsDisabled = false;
+		toolList[7].IsDisabled = false;
 
 		await Task.Delay(500);
 		loading = false;
@@ -225,10 +247,10 @@
 				else
 					toolList[id].IsOpen = !toolList[id].IsOpen;
 			}
+			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+
 			if (id == 4)
 				await LoadHistory();
-
-			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
 		}
 	}
 
@@ -304,6 +326,28 @@
 		}
 	}
 
+	bool fileChanged = false;
+	DataFile changeFile = new();
+	async Task OnChangeFile(InputFileChangeEventArgs e)
+	{
+		var file = e.GetMultipleFiles().FirstOrDefault();
+		if (file == null)
+		{
+			fileChanged = false;
+			return;
+		}
+		else
+		{
+			fileChanged = true;
+			changeFile.FileName = file.Name;
+			using (var ms = new MemoryStream())
+			{
+				await file.OpenReadStream(maxAllowedSize: 102400000).CopyToAsync(ms);
+				changeFile.FileData = ms.ToArray();
+			}
+		}
+	}
+
 	async Task SendFile()
 	{
 		if (!fileUploaded)
@@ -314,6 +358,43 @@
 
 		resp = await new ServerPost<DataFile>(WebCooker)
 		.DoRequest_POST("FileManager/AddDocument", newFile);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		fileUploaded = false;
+		StateHasChanged();
+	}
+
+	async Task ChangeFile()
+	{
+		if (!fileChanged)
+			return;
+
+		isClick = true;
+		loading = true;
+
+		changeFile.OwnerId = selectedDoc.Id;
+
+		resp = await new ServerPost<DataFile>(WebCooker)
+			.DoRequest_POST("FileManager/ChangeFile", changeFile);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		fileChanged = false;
+		StateHasChanged();
+	}
+
+	async Task ChangeInfo()
+	{
+		isClick = true;
+		loading = true;
+
+		resp = await new ServerPost<DocumentDto>(WebCooker)
+			.DoRequest_POST("FileManager/RenameDocument", selectedDoc);
 
 		await LoadDocs();
 

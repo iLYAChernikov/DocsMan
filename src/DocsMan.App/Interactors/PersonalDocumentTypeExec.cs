@@ -22,14 +22,14 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var data = ( await _repos.GetAllAsync() )?
+				var data = (await _repos.GetAllAsync())?
 					.Select(x => x.ToDto());
-				if ( data == null )
+				if (data == null)
 					return new("Записи не найдены", "Not found");
 				else
 					return new(data);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -39,17 +39,17 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				return new(( await _repos.GetOneAsync(id) ).ToDto());
+				return new((await _repos.GetOneAsync(id)).ToDto());
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -59,14 +59,14 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var ent = ( await _repos.GetAllAsync() )?
+				var ent = (await _repos.GetAllAsync())?
 					.FirstOrDefault(x => x.Title.ToLower() == title.ToLower());
-				if ( ent == null )
+				if (ent == null)
 					return new("Запись не найдена", "Personal Doc Type not exist");
 				else
 					return new(ent.ToDto());
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -81,11 +81,11 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
 			}
@@ -95,7 +95,7 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				if ( id == 1 )
+				if (id == 1)
 					return new("Запрещено удалять этот тип", "Forbidden delete this type");
 
 				await _repos.DeleteAsync(id);
@@ -103,15 +103,15 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка удаления", ex.Message);
 			}

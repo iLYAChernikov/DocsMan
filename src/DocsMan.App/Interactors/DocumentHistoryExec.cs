@@ -41,11 +41,11 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
 			}
@@ -55,15 +55,15 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
-				var data = ( await _historyRepos.GetAllAsync() )?
+				var data = (await _historyRepos.GetAllAsync())?
 					.Where(x => x.DocumentId == documentId)?
 					.Select(x => x.ToDto());
-				if ( data == null )
+				if (data == null)
 					return new("Записи не найдены", "Not found");
 				else
 					return new(data);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -76,7 +76,7 @@ namespace DocsMan.App.Interactors
 				var doc = await _docRepos.GetOneAsync(documentId);
 				var history = await _historyRepos.GetOneAsync(documentId, dateTime);
 				var resp = await _fileExec.DownloadFile(history.FileId, storagePath);
-				if ( !resp.IsSuccess )
+				if (!resp.IsSuccess)
 					return new(resp.ErrorMessage, resp.ErrorInfo);
 
 				DataFile dataFile = new()
@@ -88,15 +88,15 @@ namespace DocsMan.App.Interactors
 
 				return new(dataFile);
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}

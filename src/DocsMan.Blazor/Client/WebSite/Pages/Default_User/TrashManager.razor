@@ -14,12 +14,15 @@
 			</li>
 		</ul>
 		<div class="file-tool">
-			<ul>				
+			<ul>
 				<li @onclick="DownloadDoc" class="tool @toolList[0].BlockStyle">
 					<i class="fa-solid fa-download"></i>
 				</li>
 				<li @onclick="ReturnDoc" class="tool @toolList[1].BlockStyle">
 					<i style="transform: scaleX(-1)" class="fa-solid fa-turn-up"></i>
+				</li>
+				<li @onclick="DeleteDoc" class="tool @toolList[5].BlockStyle">
+					<i class="fa-solid fa-dumpster-fire"></i>
 				</li>
 				<li @onclick="()=>ChangeStyle(2)" class="tool @toolList[2].BlockStyle">
 					<i class="fa-solid fa-clock-rotate-left"></i>
@@ -145,8 +148,8 @@
 				}
 				docs.ForEach(x => x.Style.IsDisabled = false);
 			}
-		resp = req;
 		selectedDoc = null;
+		toolList.ForEach(x => x.IsDisabled = true);
 
 		await Task.Delay(500);
 		loading = false;
@@ -158,8 +161,8 @@
 		new("", "", "disabled"), new("", "", "disabled"),
 		//	history 			info
 		new("", "open", "disabled"), new("", "open", "disabled"),
-		//	peoples access
-		new("", "open", "disabled")
+		//	peoples access			delete
+		new("", "open", "disabled"), new("", "", "disabled"),
 	};
 	string docListStyle = "";
 	async Task ChangeStyle(int id)
@@ -168,17 +171,17 @@
 
 		if (selectedDoc != null)
 		{
-			for (int i = 0; i <= 4; i++)
+			for (int i = 0; i <= 5; i++)
 			{
 				if (i != id)
 					toolList[i].IsOpen = false;
 				else
 					toolList[id].IsOpen = !toolList[id].IsOpen;
 			}
+			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+
 			if (id == 2)
 				await LoadHistory();
-
-			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
 		}
 	}
 
@@ -191,7 +194,7 @@
 			loadHist = true;
 
 			var req = await new ServerGet<IEnumerable<DocumentHistoryDto>?>(WebCooker)
-			.DoRequest_GET($"FileManager/GetHistory/{selectedDoc.Id}");
+		.DoRequest_GET($"FileManager/GetHistory/{selectedDoc.Id}");
 			history = req.Value.ToList();
 
 			await Task.Delay(500);
@@ -215,7 +218,7 @@
 		if (doc.Style.IsOpen)
 		{
 			selectedDoc = doc.Document;
-			for (int i = 0; i <= 4; i++)
+			for (int i = 0; i <= 5; i++)
 				toolList[i].IsDisabled = false;
 
 			if (toolList[2].IsOpen)
@@ -224,7 +227,7 @@
 		else
 		{
 			selectedDoc = null;
-			for (int i = 0; i <= 4; i++)
+			for (int i = 0; i <= 5; i++)
 			{
 				toolList[i].IsOpen = false;
 				toolList[i].IsDisabled = true;
@@ -254,6 +257,24 @@
 
 			var req = await new ServerDelete(WebCooker)
 			.DoRequest_DELETE($"FileManager/ReturnDocument/{selectedDoc.Id}");
+			resp = req;
+
+			await LoadDocs();
+
+			await Task.Delay(500);
+			loading = false;
+			StateHasChanged();
+		}
+	}
+
+	async Task DeleteDoc()
+	{
+		if (selectedDoc != null)
+		{
+			loading = true;
+
+			var req = await new ServerDelete(WebCooker)
+			.DoRequest_DELETE($"FileManager/DeleteDocument/{selectedDoc.Id}");
 			resp = req;
 
 			await LoadDocs();

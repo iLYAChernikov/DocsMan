@@ -34,7 +34,7 @@ namespace DocsMan.App.Interactors
 			{
 				var profile = await _profileRepos.GetOneAsync(profileId);
 				var respFile = await _fileExec.AddFile(fileName, storagePath, fileStream);
-				if ( !respFile.IsSuccess )
+				if (!respFile.IsSuccess)
 					return new(respFile.ErrorMessage, respFile.ErrorInfo);
 				var file = respFile.Value;
 				Document doc = new()
@@ -59,15 +59,15 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
 			}
@@ -78,14 +78,14 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				List<DocumentDto> documents = new();
-				var docs = ( await _bindProfileDoc.GetAllBinds() )
+				var docs = (await _bindProfileDoc.GetAllBinds())
 					.Where(x => x.ProfileId == profileId && !x.Document.IsDeleted)
 					.Select(x => x.Document);
-				foreach ( var item in docs )
+				foreach (var item in docs)
 				{
 					var dto = item.ToDto();
 					var resp = await _fileExec.GetSizeFile(item.FileId, storagePath);
-					if ( !resp.IsSuccess )
+					if (!resp.IsSuccess)
 						dto.FileSize = "0?";
 					else
 						dto.FileSize = resp.Value;
@@ -93,15 +93,15 @@ namespace DocsMan.App.Interactors
 				}
 				return new(documents);
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -141,6 +141,35 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
+		public async Task<Response> DeleteDocument(int documentId, string storagePath)
+		{
+			try
+			{
+				var history = await GetHistory(documentId);
+				if (!history.IsSuccess)
+					return history;
+
+				foreach (var item in history.Value)
+				{
+					await _fileExec.DeleteFile(item.FileId, storagePath);
+				}
+
+				return new();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка удаления", ex.Message);
+			}
+		}
+
 		public async Task<Response> HideDocument(int profileId, int documentId)
 		{
 			try
@@ -154,17 +183,17 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
-				return new("Ошибка получения", ex.Message);
+				return new("Ошибка изменения", ex.Message);
 			}
 		}
 
@@ -211,15 +240,15 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка изменения", ex.Message);
 			}
@@ -232,7 +261,7 @@ namespace DocsMan.App.Interactors
 				var doc = await _docRepos.GetOneAsync(documentId);
 				var profile = await _profileRepos.GetOneAsync(profileId);
 				var respFile = await _fileExec.AddFile(fileName, storagePath, fileStream);
-				if ( !respFile.IsSuccess )
+				if (!respFile.IsSuccess)
 					return new(respFile.ErrorMessage, respFile.ErrorInfo);
 
 				var file = respFile.Value;
@@ -245,15 +274,15 @@ namespace DocsMan.App.Interactors
 
 				return new();
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -265,7 +294,7 @@ namespace DocsMan.App.Interactors
 			{
 				var doc = await _docRepos.GetOneAsync(documentId);
 				var resp = await _fileExec.DownloadFile(doc.FileId, storagePath);
-				if ( !resp.IsSuccess )
+				if (!resp.IsSuccess)
 					return new(resp.ErrorMessage, resp.ErrorInfo);
 
 				DataFile dataFile = new()
@@ -277,15 +306,15 @@ namespace DocsMan.App.Interactors
 
 				return new(dataFile);
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}
@@ -297,15 +326,15 @@ namespace DocsMan.App.Interactors
 			{
 				return await _historyExec.DownloadFile(documentId, timeChange, storagePath);
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}

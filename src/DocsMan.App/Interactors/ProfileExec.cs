@@ -175,6 +175,7 @@ namespace DocsMan.App.Interactors
 				catch (Exception ex)
 				{
 					await _fileExec.DeleteFile(respNewFile.Value.FileId, storagePath);
+					await _unitWork.Commit();
 					return new("Ошибка создания", ex.Message);
 				}
 			}

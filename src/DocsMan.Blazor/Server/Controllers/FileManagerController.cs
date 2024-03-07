@@ -87,6 +87,12 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.ReturnDocument(ident.Value, docId);
 		}
 
+		[HttpDelete("DeleteDocument/{docId}")]
+		public async Task<Response> DeleteDoc(int docId)
+		{
+			return await _master.DeleteDocument(docId, PathStorage.Files_Dir);
+		}
+
 		[HttpPost("RenameDocument")]
 		public async Task<Response> RenameDoc(DocumentDto dto)
 		{

@@ -143,6 +143,7 @@ h3.page-title {
 /*#region Blocks*/
 
 /*#region Add*/
+
 .dm-add-new {
 	margin-bottom: 30px;
 }
@@ -191,6 +192,7 @@ h3.page-title {
 /*#endregion*/
 
 /*#region List*/
+
 .dm-list {
 	text-align: center;
 }

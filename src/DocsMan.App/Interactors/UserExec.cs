@@ -207,7 +207,7 @@ namespace DocsMan.App.Interactors
 			{
 				if (roleId == 1 || (roleId == 2 && userId == 1))
 					return new("Запрещено удалять эту роль", "Forbidden delete this role");
-				
+
 				await _userRoles.DeleteBindAsync(
 					new()
 					{
