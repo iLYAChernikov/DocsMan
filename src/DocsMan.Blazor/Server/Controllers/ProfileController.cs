@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DocsMan.App.Interactors;
 using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Blazor.Shared.DTOs;
@@ -14,10 +15,12 @@ namespace DocsMan.Blazor.Server.Controllers
 	public class ProfileController : ControllerBase
 	{
 		private ProfileExec _master;
+		private AuthExec _auth;
 
-		public ProfileController(ProfileExec master)
+		public ProfileController(ProfileExec master, AuthExec auth)
 		{
 			_master = master;
+			_auth = auth;
 		}
 
 		[HttpPost("ChangeInfo")]
@@ -103,6 +106,16 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response<bool>> IsReadNotify(int profileId)
 		{
 			return await _master.IsAnyNotifyNotRead(profileId);
+		}
+
+		[HttpGet("GetNotify")]
+		public async Task<Response<IEnumerable<(NotificationDto? Notify, bool IsRead)>?>> GetNotifications()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetNotifications(ident.Value);
 		}
 	}
 }
