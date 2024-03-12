@@ -13,7 +13,6 @@ namespace DocsMan.App.Interactors
 	{
 		private IRepository<Profile> _profileRepos;
 		private IRepository<PersonalDocument> _persDocRepos;
-		private IRepository<PersonalDocumentType> _docTypeRepos;
 		private UploadFileExec _fileExec;
 		private IBindingRepository<Profile_Notify> _profileNotifiesRepos;
 		private IUnitWork _unitWork;
@@ -23,14 +22,12 @@ namespace DocsMan.App.Interactors
 			IRepository<Profile> profileRepos,
 			IUnitWork unitWork,
 			IRepository<PersonalDocument> persDocRepos,
-			IRepository<PersonalDocumentType> docTypeRepos,
 			UploadFileExec fileExec,
 			IBindingRepository<Profile_Notify> profileNotifiesRepos)
 		{
 			_profileRepos = profileRepos;
 			_unitWork = unitWork;
 			_persDocRepos = persDocRepos;
-			_docTypeRepos = docTypeRepos;
 			_fileExec = fileExec;
 			_profileNotifiesRepos = profileNotifiesRepos;
 		}
@@ -112,6 +109,24 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var data = (await _profileRepos.GetAllAsync())?
+					.Select(x => x.ToDto());
+				if (data == null)
+					return new("Записи не найдены", "Not found");
+				else
+					return new(data);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response<IEnumerable<ProfileDto?>?>> GetFind(string findLine)
+		{
+			try
+			{
+				var data = (await _profileRepos.GetAllAsync())?
+					.Where(x => x.ToDto().Full_FIO.Contains(findLine) || x.Email.Contains(findLine))
 					.Select(x => x.ToDto());
 				if (data == null)
 					return new("Записи не найдены", "Not found");
@@ -269,6 +284,28 @@ namespace DocsMan.App.Interactors
 				}
 				else
 					return new(false);
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response<IEnumerable<NotificationDto>?>> GetNotifications(int profileId)
+		{
+			try
+			{
+				return new((await _profileNotifiesRepos.GetAllBinds())?
+					.Where(x => x.ProfileId == profileId)?
+					.Select(x => x.Notification.ToDto()));
 			}
 			catch (ArgumentNullException ex)
 			{

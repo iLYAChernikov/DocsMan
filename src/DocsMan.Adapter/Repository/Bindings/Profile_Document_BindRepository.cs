@@ -15,14 +15,14 @@ namespace DocsMan.Adapter.Repository.Bindings
 
 		public async Task CreateBindAsync(Profile_Document? bind)
 		{
-			if ( bind == null || bind.ProfileId <= 0 || bind.DocumentId <= 0 )
+			if (bind == null || bind.ProfileId <= 0 || bind.DocumentId <= 0)
 				throw new ArgumentNullException("Null input data");
 			await _context.Profile_Documents.AddAsync(bind);
 		}
 
 		public async Task DeleteBindAsync(Profile_Document? bind)
 		{
-			if ( bind == null || bind.ProfileId <= 0 || bind.DocumentId <= 0 )
+			if (bind == null || bind.ProfileId <= 0 || bind.DocumentId <= 0)
 				throw new ArgumentNullException("Null input data");
 			_context.Profile_Documents.Remove(bind);
 		}
@@ -31,6 +31,7 @@ namespace DocsMan.Adapter.Repository.Bindings
 		{
 			return _context.Profile_Documents
 				.Include(x => x.Profile)
+				.ThenInclude(x => x.User)
 				.Include(x => x.Document);
 		}
 	}

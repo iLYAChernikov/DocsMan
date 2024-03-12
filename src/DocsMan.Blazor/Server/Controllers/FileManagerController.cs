@@ -1,15 +1,15 @@
+using System.Security.Claims;
 using DocsMan.App.Interactors;
 using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.Helpers;
 using DocsMan.Blazor.Shared.OutputData;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-using System.Security.Claims;
 
 namespace DocsMan.Blazor.Server.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class FileManagerController : ControllerBase
@@ -26,11 +26,11 @@ namespace DocsMan.Blazor.Server.Controllers
 		[HttpPost("AddDocument")]
 		public async Task<Response> AddDoc(DataFile file)
 		{
-			if ( file.FileData == null )
+			if (file.FileData == null)
 				return new("Нет файла", "Empty file");
 
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess )
+			if (!ident.IsSuccess)
 				return ident;
 
 			return await _master.AddDocument
@@ -45,7 +45,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response<IEnumerable<DocumentDto>?>> GetAllDocs()
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess )
+			if (!ident.IsSuccess)
 				return new(ident.ErrorMessage, ident.ErrorInfo);
 			else
 				return await _master.GetDocs(ident.Value, PathStorage.Files_Dir);
@@ -71,7 +71,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response> HideDoc(int docId)
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess )
+			if (!ident.IsSuccess)
 				return ident;
 
 			return await _master.HideDocument(ident.Value, docId);
@@ -97,7 +97,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response> RenameDoc(DocumentDto dto)
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess )
+			if (!ident.IsSuccess)
 				return ident;
 
 			return await _master.RenameDocument(ident.Value, dto.Id, dto.Name, dto.Description);
@@ -106,11 +106,11 @@ namespace DocsMan.Blazor.Server.Controllers
 		[HttpPost("ChangeFile")]
 		public async Task<Response> ChangeFile(DataFile file)
 		{
-			if ( file.FileData == null )
+			if (file.FileData == null)
 				return new("Нет файла", "Empty file");
 
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess )
+			if (!ident.IsSuccess)
 				return ident;
 
 			return await _master.ChangeFile
@@ -125,7 +125,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<ActionResult> DownloadDoc(int docId)
 		{
 			var resp = await _master.DownloadFile(docId, PathStorage.Files_Dir);
-			if ( resp.IsSuccess && resp.Value?.FileData != null )
+			if (resp.IsSuccess && resp.Value?.FileData != null)
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
@@ -135,10 +135,28 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<ActionResult> DownloadHistory(int docId, string time)
 		{
 			var resp = await _master.DownloadHistoryFile(docId, time, PathStorage.Files_Dir);
-			if ( resp.IsSuccess && resp.Value?.FileData != null )
+			if (resp.IsSuccess && resp.Value?.FileData != null)
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
+		}
+
+		[HttpGet("GetSharedProfiles/{docId}")]
+		public async Task<Response<IEnumerable<ProfileDto>?>> GetShare(int docId)
+		{
+			return await _master.GetSharedProfiles(docId);
+		}
+
+		[HttpDelete("ShareDocument/{profileId}/{docId}")]
+		public async Task<Response> ShareDoc(int profileId, int docId)
+		{
+			return await _master.ShareDocument(profileId, docId);
+		}
+
+		[HttpDelete("DeleteShareDocument/{profileId}/{docId}")]
+		public async Task<Response> DelShareDoc(int profileId, int docId)
+		{
+			return await _master.DeleteShareDocument(profileId, docId);
 		}
 	}
 }

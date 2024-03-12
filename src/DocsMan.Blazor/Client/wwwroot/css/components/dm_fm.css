@@ -4,7 +4,7 @@
 
 .fm-workspace {
 	display: grid;
-	grid-template-columns: auto 360px;
+	grid-template-columns: auto 400px;
 	grid-template-rows: 150px auto-fill;
 
 	align-content: stretch;
@@ -204,13 +204,13 @@
 .fm-info label {
 	font-size: 16px;
 	padding: 10px 20px;
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .fm-info p {
 	font-size: 18px;
 	padding: 10px 20px;
-	margin-left: 30px;
+	margin-left: 40px;
 	word-break: keep-all;
 }
 
@@ -234,7 +234,7 @@
 .fm-history label {
 	font-size: 16px;
 	padding: 10px 20px;
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .fm-history p:nth-child(3n) {
@@ -247,7 +247,7 @@
 .fm-history p {
 	font-size: 18px;
 	padding: 10px 20px;
-	margin-left: 30px;
+	margin-left: 40px;
 }
 
 .fm-history p i {

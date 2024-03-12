@@ -31,7 +31,7 @@
 					<i class="fas fa-info"></i>
 				</li>
 				<li @onclick="()=>ChangeStyle(4)" class="tool @toolList[4].BlockStyle">
-					<i class="fa-solid fa-share-nodes"></i>
+					<i class="fa-solid fa-link"></i>
 				</li>
 			</ul>
 		</div>
@@ -100,8 +100,104 @@
 				</div>
 
 				<div class="fm-share @toolList[4].BlockStyle">
-					<p>Duis duis mollit nulla fugiat proident labore laborum consectetur commodo enim labore mollit et.</p>
+					<div style="margin-top:20px;">
+						@if (loadShare)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesShare != null)
+							{
+								<label style="margin-left:30px;">Есть доступ:</label>
+								<table style="width:360px; margin-left:20px; margin-top:10px;" class="dm-table">
+									<tr>
+										<td>Photo</td>
+										<td>FIO</td>
+										<td>Email</td>
+										<td>Delete</td>
+									</tr>
+									@if (profilesShare.Count > 0)
+									{
+										@foreach (var item in profilesShare)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													@if (item.Profile.Id != profilesShare.First().Profile.Id)
+													{
+														<a @onclick="() => DeleteShare(item.Profile.Id)" class="delete-icon">
+															<i class="fas fa-user-minus"></i>
+														</a>
+													}
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
 
+					<div style="padding-top:20px; border-top:1px #ccc solid; margin-top:20px;">
+						<label style="margin-left:30px;">Раздать доступ:</label>
+						<div style="margin-top:20px;" class="dm-add-new">
+							<div class="set-data">
+								<label for="find">FIO/Email:</label>
+								<br>
+								<InputText @bind-Value="findLine" id="find"></InputText>
+							</div>
+							<button style="margin-top:20px;" @onclick="@FindProfiles" class="dm-btn create">Find Users</button>
+						</div>
+						@if (loadUsers)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesFind != null)
+							{
+								<table style="width:360px; margin-left:20px; margin-top:30px;" class="dm-table">
+									<tr>
+										<td>Photo</td>
+										<td>FIO</td>
+										<td>Email</td>
+										<td>Share</td>
+									</tr>
+									@if (profilesFind.Count > 0)
+									{
+										@foreach (var item in profilesFind)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													<a @onclick="()=>CreateShare(item.Profile.Id)" class="link-icon">
+														<i class="fas fa-user-plus"></i>
+													</a>
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
 				</div>
 			}
 		}
@@ -182,6 +278,8 @@
 
 			if (id == 2)
 				await LoadHistory();
+			if (id == 4)
+				await LoadShareProfiles();
 		}
 	}
 
@@ -223,6 +321,8 @@
 
 			if (toolList[2].IsOpen)
 				await LoadHistory();
+			if (toolList[4].IsOpen)
+				await LoadShareProfiles();
 		}
 		else
 		{
@@ -282,6 +382,91 @@
 			await Task.Delay(500);
 			loading = false;
 			StateHasChanged();
+		}
+	}
+
+	bool loadShare = false;
+	bool loadUsers = false;
+	List<(ProfileDto Profile, string Image)> profilesShare;
+	List<(ProfileDto Profile, string Image)> profilesFind;
+
+	async Task LoadShareProfiles()
+	{
+		if (selectedDoc != null)
+		{
+			isClick = true;
+			loadShare = true;
+
+			profilesShare = new();
+
+			var req = await new ServerGet<IEnumerable<ProfileDto>?>(WebCooker)
+			.DoRequest_GET($"FileManager/GetSharedProfiles/{selectedDoc.Id}");
+			foreach (var item in req.Value.ToList())
+			{
+				string photo = CSS_Styles.GetImage(
+					(await new ServerGet<byte[]>(WebCooker)
+					.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value);
+
+				profilesShare.Add((item, photo));
+			}
+
+			await Task.Delay(500);
+			loadShare = false;
+			StateHasChanged();
+		}
+	}
+
+	async Task DeleteShare(int profileId)
+	{
+		if (selectedDoc != null)
+		{
+			resp = await new ServerDelete(WebCooker)
+				.DoRequest_DELETE($"FileManager/DeleteShareDocument/{profileId}/{selectedDoc.Id}");
+
+			await LoadShareProfiles();
+		}
+	}
+
+	string findLine = string.Empty;
+	async Task FindProfiles()
+	{
+		if (!string.IsNullOrWhiteSpace(findLine))
+		{
+			isClick = true;
+			loadUsers = true;
+
+			profilesFind = new();
+
+			var req = await new ServerGet<IEnumerable<ProfileDto>?>(WebCooker)
+		.DoRequest_GET($"Profile/GetFind/{findLine}");
+			resp = req;
+			foreach (var item in req.Value.ToList())
+			{
+				string photo = CSS_Styles.GetImage(
+					(await new ServerGet<byte[]>(WebCooker)
+					.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value);
+
+				profilesFind.Add((item, photo));
+			}
+
+			await Task.Delay(500);
+			loadUsers = false;
+			Console.WriteLine(profilesFind.Count);
+			StateHasChanged();
+		}
+	}
+
+	async Task CreateShare(int profileId)
+	{
+		Console.WriteLine(profileId);
+
+		if (selectedDoc != null)
+		{
+			isClick = true;
+			resp = await new ServerDelete(WebCooker)
+			.DoRequest_DELETE($"FileManager/ShareDocument/{profileId}/{selectedDoc.Id}");
+
+			await LoadShareProfiles();
 		}
 	}
 }

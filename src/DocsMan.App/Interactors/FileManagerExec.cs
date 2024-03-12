@@ -18,7 +18,10 @@ namespace DocsMan.App.Interactors
 		private DocumentHistoryExec _historyExec;
 		private UploadFileExec _fileExec;
 
-		public FileManagerExec(IRepository<Document> docRepos, UploadFileExec fileExec, IUnitWork unitWork, IRepository<Profile> profileRepos, IBindingRepository<Profile_Document> bindProfileDoc, DocumentHistoryExec historyExec)
+		public FileManagerExec(
+			IRepository<Document> docRepos, UploadFileExec fileExec,
+			IUnitWork unitWork, IRepository<Profile> profileRepos,
+			IBindingRepository<Profile_Document> bindProfileDoc, DocumentHistoryExec historyExec)
 		{
 			_docRepos = docRepos;
 			_fileExec = fileExec;
@@ -48,7 +51,7 @@ namespace DocsMan.App.Interactors
 				await _docRepos.CreateAsync(doc);
 				await _unitWork.Commit();
 
-				await _historyExec.AddHistory(doc.Id, file.FileId, $"Загрузка файла - {profile.Email}");
+				await _historyExec.AddHistory(doc.Id, file.FileId, $"Загрузка файла - by \"{profile.Email}\"");
 				await _bindProfileDoc.CreateBindAsync(
 					new()
 					{
@@ -179,7 +182,7 @@ namespace DocsMan.App.Interactors
 				doc.IsDeleted = true;
 				await _unitWork.Commit();
 
-				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Удаление файла - {profile.Email}");
+				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Удаление файла - by \"{profile.Email}\"");
 
 				return new();
 			}
@@ -206,7 +209,7 @@ namespace DocsMan.App.Interactors
 				doc.IsDeleted = false;
 				await _unitWork.Commit();
 
-				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Восстановление файла - {profile.Email}");
+				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Восстановление файла - by \"{profile.Email}\"");
 
 				return new();
 			}
@@ -224,19 +227,96 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
+		public async Task<Response<IEnumerable<ProfileDto>?>> GetSharedProfiles(int documentId)
+		{
+			try
+			{
+				return new(((await _bindProfileDoc.GetAllBinds())?
+					.Where(x => x.DocumentId == documentId))?
+					.Select(x => x.Profile?.ToDto()));
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response> ShareDocument(int profileId, int documentId)
+		{
+			try
+			{
+				await _bindProfileDoc.CreateBindAsync(
+					new()
+					{
+						ProfileId = profileId,
+						DocumentId = documentId
+					});
+				await _unitWork.Commit();
+
+				return new();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка создания", ex.Message);
+			}
+		}
+
+		public async Task<Response> DeleteShareDocument(int profileId, int documentId)
+		{
+			try
+			{
+				await _bindProfileDoc.DeleteBindAsync(
+					new()
+					{
+						ProfileId = profileId,
+						DocumentId = documentId
+					});
+				await _unitWork.Commit();
+
+				return new();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка удаления", ex.Message);
+			}
+		}
+
 		public async Task<Response> RenameDocument(int profileId, int documentId, string name, string? description)
 		{
 			try
 			{
 				var doc = await _docRepos.GetOneAsync(documentId);
 				var profile = await _profileRepos.GetOneAsync(profileId);
-				var oldName = doc.Name;
 				doc.Name = name;
 				doc.Description = description;
 
 				await _unitWork.Commit();
 
-				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Переименование файла: {oldName} => {doc.Name} - {profile.Email}");
+				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Изменение файла - by \"{profile.Email}\"");
 
 				return new();
 			}
@@ -270,7 +350,7 @@ namespace DocsMan.App.Interactors
 
 				await _unitWork.Commit();
 
-				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Замена файла - {profile.Email}");
+				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Замена файла - by \"{profile.Email}\"");
 
 				return new();
 			}

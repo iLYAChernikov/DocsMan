@@ -3,10 +3,12 @@ using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.Helpers;
 using DocsMan.Blazor.Shared.OutputData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocsMan.Blazor.Server.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class ProfileController : ControllerBase
@@ -40,6 +42,12 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response<IEnumerable<ProfileDto?>?>> GetAll()
 		{
 			return await _master.GetAll();
+		}
+
+		[HttpGet("GetFind/{line}")]
+		public async Task<Response<IEnumerable<ProfileDto?>?>> GetAll(string line)
+		{
+			return await _master.GetFind(line);
 		}
 
 		[HttpGet("GetPersonalDocs/{id}")]
