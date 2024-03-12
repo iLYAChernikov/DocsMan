@@ -22,20 +22,20 @@ else
 
 					@if (item.IsRead)
 					{
-						<div class="point" @onclick="()=>ForgetNotify(item.Notify.Id)">
+						<div class="point" @onclick="()=>ForgetNotify(item.Id)">
 							<i class="fa-regular fa-circle"></i>
 						</div>
 					}
 					else
 					{
-						<div class="point" @onclick="()=>ReadNotify(item.Notify.Id)">
+						<div class="point" @onclick="()=>ReadNotify(item.Id)">
 							<i class="fa-solid fa-circle"></i>
 						</div>
 					}
 
-					<h3>@item.Notify.Title</h3>
-					<p>@item.Notify.Description</p>
-					<p>@item.Notify.DateTime.ToShortDateString() @item.Notify.DateTime.ToLongTimeString()</p>
+					<h3>@item.Title</h3>
+					<p>@item.Description</p>
+					<p>@item.DateTime.ToShortDateString() @item.DateTime.ToLongTimeString()</p>
 				</div>
 			}
 		}
@@ -61,27 +61,13 @@ else
 		StateHasChanged();
 	}
 
-	List<(NotificationDto Notify, bool IsRead)> messages = new()
-	{
-		(new()
-			{
-				Title = "About file",
-				Description = "More words",
-				DateTime = new DateTime(2024,02,20,18,52,08)
-			}, true),
-		(new()
-			{
-				Title = "Was deleted and kirdik",
-				Description = "Velit pariatur nostrud deserunt et officia mollit velit duis fugiat magna aliqua nostrud.",
-				DateTime = DateTime.Now
-			}, false)
-	};
+	IEnumerable<NotificationDto>? messages;
 
 	async Task LoadNotify()
 	{
-		var req = await new ServerGet<IEnumerable<(NotificationDto Notify, bool IsRead)>>(WebCooker)
+		var req = await new ServerGet<IEnumerable<NotificationDto>?>(WebCooker)
 		.DoRequest_GET("Profile/GetNotify");
-		messages = req.Value.ToList();
+		messages = req.Value;
 
 		StateHasChanged();
 	}

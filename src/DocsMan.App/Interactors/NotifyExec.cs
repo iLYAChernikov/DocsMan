@@ -27,14 +27,15 @@ namespace DocsMan.App.Interactors
 			_unitWork = unitWork;
 		}
 
-		public async Task<Response> CreateNotify(NotificationDto dto)
+		public async Task<Response<int>> CreateNotify(NotificationDto dto)
 		{
 			try
 			{
-				await _notifyRepos.CreateAsync(dto?.ToEntity());
+				var notify = dto?.ToEntity();
+				await _notifyRepos.CreateAsync(notify);
 				await _unitWork.Commit();
 
-				return new();
+				return new(notify.Id);
 			}
 			catch (ArgumentNullException ex)
 			{

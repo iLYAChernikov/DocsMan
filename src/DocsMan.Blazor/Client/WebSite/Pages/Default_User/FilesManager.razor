@@ -605,15 +605,12 @@
 
 			await Task.Delay(500);
 			loadUsers = false;
-			Console.WriteLine(profilesFind.Count);
 			StateHasChanged();
 		}
 	}
 
 	async Task CreateShare(int profileId)
 	{
-		Console.WriteLine(profileId);
-
 		if (selectedDoc != null)
 		{
 			isClick = true;

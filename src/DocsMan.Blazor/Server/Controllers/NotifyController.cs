@@ -23,7 +23,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		}
 
 		[HttpPost("Create")]
-		public async Task<Response> Create(NotificationDto dto)
+		public async Task<Response<int>> Create(NotificationDto dto)
 		{
 			return await _master.CreateNotify(dto);
 		}

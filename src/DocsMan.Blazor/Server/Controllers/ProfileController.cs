@@ -109,7 +109,7 @@ namespace DocsMan.Blazor.Server.Controllers
 		}
 
 		[HttpGet("GetNotify")]
-		public async Task<Response<IEnumerable<(NotificationDto? Notify, bool IsRead)>?>> GetNotifications()
+		public async Task<Response<IEnumerable<NotificationDto>?>> GetNotifications()
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
 			if (!ident.IsSuccess)

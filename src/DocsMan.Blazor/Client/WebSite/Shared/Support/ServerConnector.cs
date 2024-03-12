@@ -175,6 +175,32 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 					new("Ошибка запроса", ex.Message));
 			}
 		}
+
+		public async Task<RequestResultDto<int>> DoRequest_POST_int(string path, Input_T inputData)
+		{
+			try
+			{
+				if (!await IsUserAuthorized())
+					return new(HttpStatusCode.Unauthorized,
+						new("Вы не Авторизованы или время Вашей Сессии истекло. \nВойдите в систему еще раз", "Auth Request Error"));
+
+				using var request = await ServerOk.PostAsJsonAsync(path, inputData);
+				request.EnsureSuccessStatusCode();
+
+				var resp = await request.Content.ReadFromJsonAsync<Response<int>>();
+				return new(request.StatusCode, resp);
+			}
+			catch (HttpRequestException ex)
+			{
+				return new(ex.StatusCode,
+					new("Ошибка запроса", ex.Message));
+			}
+			catch (Exception ex)
+			{
+				return new(HttpStatusCode.BadRequest,
+					new("Ошибка запроса", ex.Message));
+			}
+		}
 	}
 
 	public class ServerDelete : ServerConnector

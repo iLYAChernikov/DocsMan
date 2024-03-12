@@ -299,14 +299,20 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
-		public async Task<Response<IEnumerable<(NotificationDto? Notify, bool IsRead)>?>> GetNotifications(int profileId)
+		public async Task<Response<IEnumerable<NotificationDto>?>> GetNotifications(int profileId)
 		{
 			try
 			{
 				var binds = (await _profileNotifiesRepos.GetAllBinds())?
 					.Where(x => x.ProfileId == profileId);
-				return new(binds?
-					.Select(x => (x.Notification.ToDto(), x.IsRead)));
+				List<NotificationDto> mas = new();
+				foreach (var item in binds)
+				{
+					var notify = item.Notification.ToDto();
+					notify.IsRead = item.IsRead;
+					mas.Add(notify);
+				}
+				return new(mas);
 			}
 			catch (ArgumentNullException ex)
 			{
