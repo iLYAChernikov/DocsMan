@@ -82,6 +82,7 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.DeletePersonDoc(profileId, typeId, PathStorage.PersonalDocs_Dir);
 		}
 
+		[AllowAnonymous]
 		[HttpGet("DownloadPersonalDoc/{profileId}/{typeId}")]
 		public async Task<ActionResult> Download(int profileId, int typeId)
 		{

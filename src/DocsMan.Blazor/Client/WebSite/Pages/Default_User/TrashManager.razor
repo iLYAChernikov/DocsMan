@@ -246,7 +246,9 @@
 			}
 		selectedDoc = null;
 		toolList.ForEach(x => x.IsDisabled = true);
-
+		toolList.ForEach(x => x.IsOpen = false);
+		docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+		
 		await Task.Delay(500);
 		loading = false;
 	}

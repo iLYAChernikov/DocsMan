@@ -121,6 +121,7 @@ namespace DocsMan.Blazor.Server.Controllers
 				);
 		}
 
+		[AllowAnonymous]
 		[HttpGet("DownloadDocument/{docId}")]
 		public async Task<ActionResult> DownloadDoc(int docId)
 		{
@@ -131,6 +132,7 @@ namespace DocsMan.Blazor.Server.Controllers
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
 		}
 
+		[AllowAnonymous]
 		[HttpGet("DownloadHistoryFile/{docId}/{time}")]
 		public async Task<ActionResult> DownloadHistory(int docId, string time)
 		{

@@ -17,11 +17,13 @@ namespace DocsMan.App.Interactors
 		private IBindingRepository<Profile_Document> _bindProfileDoc;
 		private DocumentHistoryExec _historyExec;
 		private UploadFileExec _fileExec;
+		private NotifyExec _notifyExec;
 
 		public FileManagerExec(
 			IRepository<Document> docRepos, UploadFileExec fileExec,
 			IUnitWork unitWork, IRepository<Profile> profileRepos,
-			IBindingRepository<Profile_Document> bindProfileDoc, DocumentHistoryExec historyExec)
+			IBindingRepository<Profile_Document> bindProfileDoc, DocumentHistoryExec historyExec,
+			NotifyExec notifyExec)
 		{
 			_docRepos = docRepos;
 			_fileExec = fileExec;
@@ -29,6 +31,7 @@ namespace DocsMan.App.Interactors
 			_profileRepos = profileRepos;
 			_bindProfileDoc = bindProfileDoc;
 			_historyExec = historyExec;
+			_notifyExec = notifyExec;
 		}
 
 		public async Task<Response> AddDocument(int profileId, string fileName, string storagePath, Stream fileStream, string description)
@@ -148,6 +151,12 @@ namespace DocsMan.App.Interactors
 		{
 			try
 			{
+				var doc = await _docRepos.GetOneAsync(documentId);
+				string docName = doc.Name + doc.FileType;
+				var profiles = (await _bindProfileDoc.GetAllBinds())?
+						.Where(x => x.DocumentId == documentId)
+						.Select(x => x.ProfileId).ToList();
+
 				var history = await GetHistory(documentId);
 				if (!history.IsSuccess)
 					return history;
@@ -155,6 +164,21 @@ namespace DocsMan.App.Interactors
 				foreach (var item in history.Value)
 				{
 					await _fileExec.DeleteFile(item.FileId, storagePath);
+				}
+
+				Notification alert = new()
+				{
+					Title = "Destruction document",
+					Description = $"Document \"{docName}\" was destruction forever",
+					DateTime = DateTime.Now
+				};
+				var req = await _notifyExec.CreateNotify(alert.ToDto());
+				if (req.IsSuccess)
+				{
+					foreach (var id in profiles)
+					{
+						await _notifyExec.CreateBindNotify(id, req.Value);
+					}
 				}
 
 				return new();
@@ -184,6 +208,25 @@ namespace DocsMan.App.Interactors
 
 				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Удаление файла - by \"{profile.Email}\"");
 
+				Notification alert = new()
+				{
+					Title = "Delete document",
+					Description = $"Document \"{doc?.Name + doc?.FileType}\" was moved to the Trash",
+					DateTime = DateTime.Now
+				};
+				var req = await _notifyExec.CreateNotify(alert.ToDto());
+				if (req.IsSuccess)
+				{
+					var profiles = (await _bindProfileDoc.GetAllBinds())?
+						.Where(x => x.DocumentId == documentId)
+						.Select(x => x.ProfileId);
+
+					foreach (var id in profiles)
+					{
+						await _notifyExec.CreateBindNotify(id, req.Value);
+					}
+				}
+
 				return new();
 			}
 			catch (ArgumentNullException ex)
@@ -210,6 +253,25 @@ namespace DocsMan.App.Interactors
 				await _unitWork.Commit();
 
 				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Восстановление файла - by \"{profile.Email}\"");
+
+				Notification alert = new()
+				{
+					Title = "Return document",
+					Description = $"Document \"{doc?.Name + doc?.FileType}\" was returned to the FileManager",
+					DateTime = DateTime.Now
+				};
+				var req = await _notifyExec.CreateNotify(alert.ToDto());
+				if (req.IsSuccess)
+				{
+					var profiles = (await _bindProfileDoc.GetAllBinds())?
+						.Where(x => x.DocumentId == documentId)
+						.Select(x => x.ProfileId);
+
+					foreach (var id in profiles)
+					{
+						await _notifyExec.CreateBindNotify(id, req.Value);
+					}
+				}
 
 				return new();
 			}
@@ -261,6 +323,20 @@ namespace DocsMan.App.Interactors
 					});
 				await _unitWork.Commit();
 
+				var doc = (await _bindProfileDoc.GetAllBinds())?
+					.FirstOrDefault(x => x.ProfileId == profileId && x.DocumentId == documentId)?
+					.Document;
+
+				Notification alert = new()
+				{
+					Title = "Share document",
+					Description = $"You have been given access to the document \"{doc?.Name + doc?.FileType}\"",
+					DateTime = DateTime.Now
+				};
+				var req = await _notifyExec.CreateNotify(alert.ToDto());
+				if (req.IsSuccess)
+					await _notifyExec.CreateBindNotify(profileId, req.Value);
+
 				return new();
 			}
 			catch (ArgumentNullException ex)
@@ -310,13 +386,36 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var doc = await _docRepos.GetOneAsync(documentId);
+				string oldName = doc.Name;
 				var profile = await _profileRepos.GetOneAsync(profileId);
 				doc.Name = name;
 				doc.Description = description;
 
 				await _unitWork.Commit();
 
-				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Изменение файла - by \"{profile.Email}\"");
+				await _historyExec.AddHistory(doc.Id, doc.FileId, $"Изменение документа - by \"{profile.Email}\"");
+
+				if (oldName != name)
+				{
+					Notification alert = new()
+					{
+						Title = "Rename document",
+						Description = $"Document \"{oldName + doc?.FileType}\" was rename to \"{name + doc?.FileType}\"",
+						DateTime = DateTime.Now
+					};
+					var req = await _notifyExec.CreateNotify(alert.ToDto());
+					if (req.IsSuccess)
+					{
+						var profiles = (await _bindProfileDoc.GetAllBinds())?
+							.Where(x => x.DocumentId == documentId)
+							.Select(x => x.ProfileId);
+
+						foreach (var id in profiles)
+						{
+							await _notifyExec.CreateBindNotify(id, req.Value);
+						}
+					}
+				}
 
 				return new();
 			}

@@ -12,18 +12,15 @@ namespace DocsMan.App.Interactors
 	{
 		private IRepository<Notification> _notifyRepos;
 		private IBindingRepository<Profile_Notify> _notifyBind;
-		private IRepository<Profile> _profileRepos;
 		private IUnitWork _unitWork;
 
 		public NotifyExec(
 			IRepository<Notification> notifyRepos,
 			IBindingRepository<Profile_Notify> notifyBind,
-			IRepository<Profile> profileRepos,
 			IUnitWork unitWork)
 		{
 			_notifyRepos = notifyRepos;
 			_notifyBind = notifyBind;
-			_profileRepos = profileRepos;
 			_unitWork = unitWork;
 		}
 
