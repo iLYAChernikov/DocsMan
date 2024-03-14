@@ -14,13 +14,13 @@
 
 		<div class="form-group">
 			<label class="label-for-input" for="Email">Email:</label>
-			<InputText @bind-Value="user.Email" id="Email" class="form-control-text" placeholder="Email address" />
+			<InputText @bind-Value="user.Email" id="Email" class="form-control-text" placeholder="Email address" tabindex="1" />
 		</div>
 		<br>
 		<div class="form-group">
 			<label class="label-for-input" for="Pass">Пароль:</label>
 			<InputText @bind-Value="user.Password" type="@PasswordType" id="Pass" class="form-control-text"
-				placeholder="Password" />
+				placeholder="Password" tabindex="2" />
 
 			<span @onclick="HidePass" class="eye-pass-icon">
 				@if (hide_password)
@@ -35,8 +35,8 @@
 		</div>
 		<br>
 		<div class="button-group">
-			<button class="btn-auth" @onclick=Submit>Войти</button>
-			<button class="btn-auth" @onclick=GoToReg>Регистрация</button>
+			<button tabindex="3" class="btn-auth" @onclick=Submit>Войти</button>
+			<button tabindex="4" class="btn-auth" @onclick=GoToReg>Регистрация</button>
 		</div>
 	</div>
 	<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />

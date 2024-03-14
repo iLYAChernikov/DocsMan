@@ -24,16 +24,17 @@
 }
 
 .form-box.registration {
-	height: 360px;
+	height: 450px;
 }
 
 .form-box.is-correct-registration {
 	height: 150px;
 }
 
-.form-box>h1 {
+.form-box h1 {
 	margin-top: -10px;
 	margin-bottom: 10px;
+	outline: none;
 }
 
 .form-group {
@@ -49,7 +50,7 @@
 }
 
 .button-group.registration {
-	margin-top: -20px;
+	margin-top: -10px;
 }
 
 .label-for-input {
@@ -59,7 +60,7 @@
 
 .confirm-alert {
 	margin-top: -10px;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 	animation: breath 5s linear infinite;
 	font-size: 16px;
 }
@@ -126,7 +127,16 @@
 	padding: 10px;
 }
 
-.btn-auth:hover {
+.btn-auth.disabled {
+	pointer-events: none;
+	filter: grayscale(100%);
+	cursor: default;
+	opacity: 0.8;
+	user-select: none;
+}
+
+.btn-auth:hover,
+.btn-auth:focus {
 	color: #222;
 	font-weight: bold;
 	border: 2px solid var(--dm-siren);
@@ -134,4 +144,67 @@
 	cursor: pointer;
 	transition: .5s;
 	box-shadow: rgba(var(--dm-dark), 0.75) 0px 15px 5px;
+}
+
+.check-privacy p label,
+.check-privacy p a {
+	font-family: 'Open Sans';
+	font-size: 14px;
+}
+
+.check-privacy p a {
+	color: var(--dm-green-sea);
+	letter-spacing: 1px;
+	transition: .5s;
+}
+
+.check-privacy p a:hover {
+	color: var(--dm-malina);
+	transition: .5s;
+}
+
+.check-privacy .custom {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+}
+
+.check-privacy .custom+label {
+	display: inline-flex;
+	align-items: center;
+	user-select: none;
+}
+
+.check-privacy .custom+label::before {
+	content: '';
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	flex-shrink: 0;
+	flex-grow: 0;
+	border: 1px solid var(--dm-siren);
+	border-radius: 0.25em;
+	margin-right: 0.5em;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 50% 50%;
+	transition: .5s;
+}
+
+.check-privacy .custom:checked+label::before {
+	border-color: var(--dm-green-sea);
+	background-color: var(--dm-siren);
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+	transition: .5s;
+}
+
+.check-privacy .custom:not(:disabled):not(:checked)+label:hover::before {
+	cursor: pointer;
+	border-color: var(--dm-malina);
+	transition: .5s;
+}
+
+.check-privacy .custom+label:hover {
+	cursor: pointer;
+	transition: .5s;
 }

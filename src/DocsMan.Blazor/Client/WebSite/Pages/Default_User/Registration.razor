@@ -16,13 +16,13 @@
 		{
 			<div class="form-group">
 				<label class="label-for-input" for="Email">Email:</label>
-				<InputText @bind-Value="user.Email" id="Email" class="form-control-text" placeholder="Email address" />
+				<InputText @bind-Value="user.Email" id="Email" class="form-control-text" placeholder="Email address" tabindex="1"/>
 			</div>
 			<br>
 			<div class="form-group">
 				<label class="label-for-input" for="Pass">Пароль:</label>
 				<InputText @bind-Value="user.Password" type="@PasswordType" id="Pass" class="form-control-text"
-					placeholder="Password" />
+					placeholder="Password" tabindex="2"/>
 				<span @onclick="HidePass" class="eye-pass-icon">
 					@if (hide_password)
 					{
@@ -38,7 +38,7 @@
 			<div class="form-group registration">
 				<label class="label-for-input" for="ConfirmPass">Подтвердите пароль:</label>
 				<InputText @bind-Value="confirmPass" type="@ConfirmType" id="ConfirmPass" class="form-control-text"
-					placeholder="Confirm Password" />
+					placeholder="Confirm Password" tabindex="3"/>
 				<span @onclick="HideConfirm" class="eye-pass-icon">
 					@if (hide_confirm)
 					{
@@ -54,17 +54,26 @@
 					<br>
 					<div class="set-center-text confirm-alert"></div>
 				}
+				<div class="check-privacy">
+					<p>
+						<InputCheckbox class="custom" id="privacy" @bind-Value="checkPrivacy" />
+						<label for="privacy">Я согласен с</label>						
+						<a href="/docs/Privacy policy DocsMan.pdf">
+							политикой обработки персональных данных и политикой конфиденциальности
+						</a>
+					</p>
+				</div>
 			</div>
 			<br>
 			<div class="button-group registration">
-				<button class="btn-auth" @onclick=Submit>Регистрация</button>
+				<button tabindex="4" class="btn-auth @btnStyle" @onclick=Submit>Регистрация</button>
 			</div>
 		}
 		else
 		{
 			<br>
 			<div class="button-group">
-				<button class="btn-auth" @onclick=GoToAuth>Авторизация</button>
+				<button tabindex="0" class="btn-auth" @onclick=GoToAuth>Авторизация</button>
 			</div>
 		}
 	</div>
@@ -85,6 +94,9 @@
 
 	bool isCorrectReg = false;
 	string boxType => isCorrectReg ? "is-correct-registration" : "registration";
+
+	bool checkPrivacy = false;
+	string btnStyle => checkPrivacy ? "" : "disabled";
 
 	bool isClick = false;
 	RequestResultDto? resp;
