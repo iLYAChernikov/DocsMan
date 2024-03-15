@@ -7,7 +7,7 @@ namespace DocsMan.Domain.Entity
 			get => _typeId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id типа личного документа");
 				_typeId = value;
 			}
@@ -19,7 +19,7 @@ namespace DocsMan.Domain.Entity
 			get => _profileId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id профиля");
 				_profileId = value;
 			}
@@ -31,7 +31,7 @@ namespace DocsMan.Domain.Entity
 			get => _text;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения текста личного документа");
 				_text = value;
 			}
@@ -42,7 +42,7 @@ namespace DocsMan.Domain.Entity
 			get => _fileId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id файла");
 				_fileId = value;
 			}

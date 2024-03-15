@@ -18,6 +18,7 @@ namespace DocsMan.Blazor.Server.Controllers
 			_master = master;
 		}
 
+		[AllowAnonymous]
 		[HttpPost("Create")]
 		public async Task<Response> Create(UserDto user)
 		{

@@ -7,7 +7,7 @@ namespace DocsMan.Domain.Entity
 			get => _documentId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id документа");
 				_documentId = value;
 			}
@@ -19,7 +19,7 @@ namespace DocsMan.Domain.Entity
 			get => _fileId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id файла");
 				_fileId = value;
 			}
@@ -31,7 +31,7 @@ namespace DocsMan.Domain.Entity
 			get => _datetime;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения даты-времени истории");
 				_datetime = value;
 			}

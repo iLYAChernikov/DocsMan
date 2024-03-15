@@ -10,7 +10,8 @@ namespace DocsMan.App.Mappers
 			{
 				Id = ent.Id,
 				Name = ent.Name,
-				Description = ent.Description
+				Description = ent.Description,
+				IsDeleted = ent.IsDeleted
 			};
 
 		public static Folder? ToEntity(this FolderDto dto) =>
@@ -18,7 +19,8 @@ namespace DocsMan.App.Mappers
 			{
 				Id = dto.Id,
 				Name = dto.Name,
-				Description = dto.Description
+				Description = dto.Description,
+				IsDeleted = dto.IsDeleted
 			};
 	}
 }

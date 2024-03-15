@@ -7,7 +7,7 @@ namespace DocsMan.Domain.Entity
 			get => _id;
 			set
 			{
-				if ( value < 0 )
+				if (value < 0)
 					throw new ArgumentNullException("Ошибка заполнения id группы");
 				_id = value;
 			}
@@ -17,7 +17,7 @@ namespace DocsMan.Domain.Entity
 			get => _title;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения названия группы");
 				_title = value;
 			}
