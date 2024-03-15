@@ -41,6 +41,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				);
 		}
 
+		[HttpPost("CreateFolder")]
+		public async Task<Response> AddFolder(FolderDto dto)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.CreateFolder(ident.Value, dto);
+		}
+
 		[HttpGet("GetDocs")]
 		public async Task<Response<IEnumerable<DocumentDto>?>> GetAllDocs()
 		{
@@ -49,6 +59,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				return new(ident.ErrorMessage, ident.ErrorInfo);
 			else
 				return await _master.GetDocs(ident.Value, PathStorage.Files_Dir);
+		}
+
+		[HttpGet("GetFolders")]
+		public async Task<Response<IEnumerable<FolderDto>?>> GetAllFolders()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetFolders(ident.Value, PathStorage.Files_Dir);
 		}
 
 		[HttpGet("GetTrash")]
@@ -75,6 +95,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				return ident;
 
 			return await _master.HideDocument(ident.Value, docId);
+		}
+
+		[HttpDelete("HideFolder/{folderId}")]
+		public async Task<Response> HideFolder(int folderId)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.HideFolder(ident.Value, folderId);
 		}
 
 		[HttpDelete("ReturnDocument/{docId}")]
@@ -121,6 +151,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				);
 		}
 
+		[HttpPost("ChangeFolder")]
+		public async Task<Response> ChangeFolder(FolderDto dto)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.ChangeFolder(ident.Value, dto.Id, dto.Name, dto.Description);
+		}
+
 		[AllowAnonymous]
 		[HttpGet("DownloadDocument/{docId}")]
 		public async Task<ActionResult> DownloadDoc(int docId)
@@ -149,6 +189,12 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.GetSharedProfiles(docId);
 		}
 
+		[HttpGet("GetSharedProfilesFolder/{folderId}")]
+		public async Task<Response<IEnumerable<ProfileDto>?>> GetShareForFolder(int folderId)
+		{
+			return await _master.GetSharedProfilesFolder(folderId);
+		}
+
 		[HttpDelete("ShareDocument/{profileId}/{docId}")]
 		public async Task<Response> ShareDoc(int profileId, int docId)
 		{
@@ -159,6 +205,18 @@ namespace DocsMan.Blazor.Server.Controllers
 		public async Task<Response> DelShareDoc(int profileId, int docId)
 		{
 			return await _master.DeleteShareDocument(profileId, docId);
+		}
+
+		[HttpDelete("ShareFolder/{profileId}/{folderId}")]
+		public async Task<Response> ShareFolder(int profileId, int folderId)
+		{
+			return await _master.ShareFolder(profileId, folderId);
+		}
+
+		[HttpDelete("DeleteShareFolder/{profileId}/{folderId}")]
+		public async Task<Response> DelShareFolder(int profileId, int folderId)
+		{
+			return await _master.DeleteShareFolder(profileId, folderId);
 		}
 	}
 }

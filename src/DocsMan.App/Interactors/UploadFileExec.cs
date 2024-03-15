@@ -1,6 +1,7 @@
 using DocsMan.App.Storage.RepositoryPattern;
 using DocsMan.App.Storage.Transaction;
 using DocsMan.Blazor.Shared.OutputData;
+using DocsMan.Domain.BinderEntity;
 using DocsMan.Domain.Entity;
 
 namespace DocsMan.App.Interactors
@@ -8,12 +9,14 @@ namespace DocsMan.App.Interactors
 	public class UploadFileExec
 	{
 		private IRepository<UploadFile> _fileRepos;
+		private IBindingRepository<Folder_Document> _bindFolderDocs;
 		private IUnitWork _unitWork;
 
-		public UploadFileExec(IRepository<UploadFile> fileRepos, IUnitWork unitWork)
+		public UploadFileExec(IRepository<UploadFile> fileRepos, IUnitWork unitWork, IBindingRepository<Folder_Document> bindFolderDocs)
 		{
 			_fileRepos = fileRepos;
 			_unitWork = unitWork;
+			_bindFolderDocs = bindFolderDocs;
 		}
 
 		private string GetOnlyFileResolution(string fileName) =>
@@ -115,6 +118,41 @@ namespace DocsMan.App.Interactors
 				if (size >= 1024)
 					return new($"{(size / 1024.0):F2} Kb");
 				return new($"{size} byte");
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response<(string Size, int Count)>> GetSizeFolder(int folderId, string storagePath)
+		{
+			try
+			{
+				var files = (await _bindFolderDocs.GetAllBindsNoTracking())?
+					.Where(x => x.FolderId == folderId)
+					.Select(x => x.Document.File);
+				int count = files.Count();
+				long size = 0;
+				foreach (var item in files)
+				{
+					size += new FileInfo(storagePath + item.FilePath).Length;
+				}
+				if (size >= 1073741824)
+					return new(($"{(size / 1073741824.0):F2} Gb", count));
+				if (size >= 1048576)
+					return new(($"{(size / 1048576.0):F2} Mb", count));
+				if (size >= 1024)
+					return new(($"{(size / 1024.0):F2} Kb", count));
+				return new(($"{size} byte", count));
 			}
 			catch (ArgumentNullException ex)
 			{

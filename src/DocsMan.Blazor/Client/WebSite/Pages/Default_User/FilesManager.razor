@@ -41,17 +41,20 @@
 
 		<div class="folder-tool">
 			<ul>
-				<li class="tool @toolList[7].BlockStyle">
+				<li @onclick="CreateFolder" class="tool @toolList[7].BlockStyle">
 					<i class="fas fa-folder-plus"></i>
 				</li>
 				<li @onclick="()=>ChangeStyle(8)" class="tool @toolList[8].BlockStyle">
 					<i class="fas fa-edit"></i>
 				</li>
-				<li class="tool @toolList[9].BlockStyle">
+				<li @onclick="HideFolder" class="tool @toolList[9].BlockStyle">
 					<i class="fas fa-folder-minus"></i>
 				</li>
 				<li @onclick="()=>ChangeStyle(10)" class="tool @toolList[10].BlockStyle">
 					<i class="fas fa-info"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(11)" class="tool @toolList[11].BlockStyle">
+					<i class="fa-solid fa-link"></i>
 				</li>
 			</ul>
 		</div>
@@ -78,10 +81,19 @@
 
 			<div class="fm-docslist @docListStyle">
 				<ul>
+					@foreach (var item in folders)
+					{
+						<li @onclick="() => SelectFolder(item)" class="document @item.Style.BlockStyle">
+							<i class="fa-regular fa-folder-open"></i>
+							<div class="doc-name">
+								@item.Folder.Name
+							</div>
+						</li>
+					}
 					@foreach (var item in docs)
 					{
 						<li @onclick="() => SelectDoc(item)" class="document @item.Style.BlockStyle">
-							<i class="fas fa-file-word"></i>
+							<i class="fa-solid fa-file-lines"></i>
 							<div class="doc-name">
 								@item.Document.Name@item.Document.FileType
 							</div>
@@ -89,6 +101,140 @@
 					}
 				</ul>
 			</div>
+
+			@if (selectedFolder != null)
+			{
+				<div class="fm-info @toolList[10].BlockStyle">
+
+					<label for="name">Имя:</label>
+					<p id="name">@selectedFolder.Name</p>
+					<label for="desc">Описание:</label>
+					<p id="desc">@selectedFolder.Description</p>
+					<label for="size">Размер файла:</label>
+					<p id="size">@selectedFolder.FolderSize</p>
+					<label for="count">Количество файлов:</label>
+					<p id="count">@selectedFolder.FilesCount</p>
+
+				</div>
+
+				<div class="fm-change @toolList[8].BlockStyle">
+					<div class="dm-add-new">
+						<div class="set-data">
+							<label for="fname">Имя:</label>
+							<br>
+							<InputText @bind-Value="selectedFolder.Name" id="fname"></InputText>
+						</div>
+						<div class="set-data">
+							<label for="fdesc">Описание:</label>
+							<br>
+							<InputText @bind-Value="selectedFolder.Description" id="fdesc"></InputText>
+						</div>
+						<button @onclick="@ChangeFolder" class="dm-btn create">Изменить информацию</button>
+					</div>
+				</div>
+
+				<div class="fm-share @toolList[11].BlockStyle">
+					<div style="margin-top:20px;">
+						@if (loadShare)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesShare != null)
+							{
+								<label style="margin-left:30px;">Есть доступ:</label>
+								<table style="width:360px; margin-left:20px; margin-top:10px;" class="dm-table">
+									<tr>
+										<td>Фото</td>
+										<td>ФИО</td>
+										<td>Email</td>
+										<td>Удалить</td>
+									</tr>
+									@if (profilesShare.Count > 0)
+									{
+										@foreach (var item in profilesShare)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													@if (item.Profile.Id != profilesShare.First().Profile.Id)
+													{
+														<a @onclick="() => DeleteShareFolder(item.Profile.Id)" class="delete-icon">
+															<i class="fas fa-user-minus"></i>
+														</a>
+													}
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
+
+					<div style="padding-top:20px; border-top:1px #ccc solid; margin-top:20px;">
+						<label style="margin-left:30px;">Дать доступ:</label>
+						<div style="margin-top:20px;" class="dm-add-new">
+							<div class="set-data">
+								<label for="find">ФИО/Email:</label>
+								<br>
+								<InputText @bind-Value="findLine" id="find"></InputText>
+							</div>
+							<button style="margin-top:20px;" @onclick="@FindProfiles" class="dm-btn create">Поиск</button>
+						</div>
+						@if (loadUsers)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesFind != null)
+							{
+								<table style="width:360px; margin-left:20px; margin-top:30px;" class="dm-table">
+									<tr>
+										<td>Фото</td>
+										<td>ФИО</td>
+										<td>Email</td>
+										<td>Добавить</td>
+									</tr>
+									@if (profilesFind.Count > 0)
+									{
+										@foreach (var item in profilesFind)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													<a @onclick="()=>CreateShareFolder(item.Profile.Id)" class="link-icon">
+														<i class="fas fa-user-plus"></i>
+													</a>
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
+				</div>
+			}
+
 			@if (selectedDoc != null)
 			{
 				<div class="fm-info @toolList[5].BlockStyle">
@@ -284,6 +430,7 @@
 	}
 
 	List<(DocumentDto Document, ToggleStyleCSS Style)> docs = new();
+	List<(FolderDto Folder, ToggleStyleCSS Style)> folders = new();
 	async Task LoadDocs()
 	{
 		isClick = true;
@@ -291,8 +438,11 @@
 
 		var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
 		.DoRequest_GET("FileManager/GetDocs");
+		var reqf= await new ServerGet<IEnumerable<FolderDto>?>(WebCooker)
+		.DoRequest_GET("FileManager/GetFolders");
 
 		docs = new();
+		folders = new();
 		if (req.Response.IsSuccess)
 			if (req.Value != null)
 			{
@@ -302,7 +452,20 @@
 				}
 				docs.ForEach(x => x.Style.IsDisabled = false);
 			}
+		if (reqf.Response.IsSuccess)
+			if (reqf.Value != null)
+			{
+				foreach (var item in reqf.Value)
+				{
+					folders.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+				}
+				folders.ForEach(x => x.Style.IsDisabled = false);
+			}
+
 		selectedDoc = null;
+		selectedFolder = null;
+		profilesShare = null;
+		profilesFind = null;
 		toolList.ForEach(x => x.IsDisabled = true);
 		toolList.ForEach(x => x.IsOpen = false);
 		toolList[0].IsDisabled = false;
@@ -328,6 +491,8 @@
 		new("", "", ""), new("", "open", "disabled"),
 		//	delete folder		info
 		new("", "", "disabled"), new("", "open", "disabled"),
+		//	peoples access
+		new("", "open", "disabled"),
 	};
 	string docListStyle = "";
 	async Task ChangeStyle(int id)
@@ -351,6 +516,20 @@
 				await LoadHistory();
 			if (id == 6)
 				await LoadShareProfiles();
+		}
+		if (selectedFolder != null)
+		{
+			for (int i = 8; i <= 11; i++)
+			{
+				if (i != id)
+					toolList[i].IsOpen = false;
+				else
+					toolList[id].IsOpen = !toolList[id].IsOpen;
+			}
+			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+
+			if (id == 11)
+				await LoadShareProfilesFolder();
 		}
 	}
 
@@ -384,11 +563,22 @@
 			else
 				doc.Style.IsOpen = !doc.Style.IsOpen;
 		}
+		for (int i = 0; i < folders.Count; i++)
+		{
+			folders[i].Style.IsOpen = false;
+		}
+
 		if (doc.Style.IsOpen)
 		{
 			selectedDoc = doc.Document;
+			selectedFolder = null;
 			for (int i = 1; i <= 6; i++)
 				toolList[i].IsDisabled = false;
+			for (int i = 8; i <= 11; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
 
 			if (toolList[4].IsOpen)
 				await LoadHistory();
@@ -399,13 +589,14 @@
 		else
 		{
 			selectedDoc = null;
+			profilesFind = null;
 			for (int i = 1; i <= 6; i++)
 			{
 				toolList[i].IsOpen = false;
 				toolList[i].IsDisabled = true;
 			}
-			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
 		}
+		docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
 	}
 
 	bool fileUploaded = false;
@@ -618,6 +809,152 @@
 			.DoRequest_DELETE($"FileManager/ShareDocument/{profileId}/{selectedDoc.Id}");
 
 			await LoadShareProfiles();
+		}
+	}
+
+	async Task CreateFolder()
+	{
+		isClick = true;
+		loading = true;
+
+		FolderDto dto = new()
+		{
+			Name = "NewFolder",
+			Description = "new folder was create"
+		};
+		resp = await new ServerPost<FolderDto>(WebCooker)
+			.DoRequest_POST("FileManager/CreateFolder", dto);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task ChangeFolder()
+	{
+		isClick = true;
+		loading = true;
+
+		resp = await new ServerPost<FolderDto>(WebCooker)
+			.DoRequest_POST("FileManager/ChangeFolder", selectedFolder);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	FolderDto selectedFolder;
+	async void SelectFolder((FolderDto Folder, ToggleStyleCSS Style) folder)
+	{
+		isClick = false;
+		for (int i = 0; i < folders.Count; i++)
+		{
+			if (folders[i].Folder.Id != folder.Folder.Id)
+				folders[i].Style.IsOpen = false;
+			else
+				folder.Style.IsOpen = !folder.Style.IsOpen;
+		}
+		for (int i = 0; i < docs.Count; i++)
+		{
+			docs[i].Style.IsOpen = false;
+		}
+
+		if (folder.Style.IsOpen)
+		{
+			selectedFolder = folder.Folder;
+			selectedDoc = null;
+			for (int i = 8; i <= 11; i++)
+				toolList[i].IsDisabled = false;
+			for (int i = 1; i <= 6; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
+
+			if (toolList[11].IsOpen)
+				await LoadShareProfilesFolder();
+		}
+		else
+		{
+			selectedFolder = null;
+			profilesFind = null;
+			for (int i = 8; i <= 11; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
+		}
+		docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+	}
+
+	async Task CreateShareFolder(int profileId)
+	{
+		if (selectedFolder != null)
+		{
+			isClick = true;
+			resp = await new ServerDelete(WebCooker)
+			.DoRequest_DELETE($"FileManager/ShareFolder/{profileId}/{selectedFolder.Id}");
+
+			await LoadShareProfilesFolder();
+		}
+	}
+
+	async Task DeleteShareFolder(int profileId)
+	{
+		if (selectedFolder != null)
+		{
+			resp = await new ServerDelete(WebCooker)
+				.DoRequest_DELETE($"FileManager/DeleteShareFolder/{profileId}/{selectedFolder.Id}");
+
+			await LoadShareProfilesFolder();
+		}
+	}
+
+	async Task LoadShareProfilesFolder()
+	{
+		if (selectedFolder != null)
+		{
+			isClick = true;
+			loadShare = true;
+
+			profilesShare = new();
+
+			var req = await new ServerGet<IEnumerable<ProfileDto>?>(WebCooker)
+			.DoRequest_GET($"FileManager/GetSharedProfilesFolder/{selectedFolder.Id}");
+			foreach (var item in req.Value.ToList())
+			{
+				string photo = CSS_Styles.GetImage(
+					(await new ServerGet<byte[]>(WebCooker)
+					.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value);
+
+				profilesShare.Add((item, photo));
+			}
+
+			await Task.Delay(500);
+			loadShare = false;
+			StateHasChanged();
+		}
+	}
+
+	async Task HideFolder()
+	{
+		if (selectedFolder != null)
+		{
+			loading = true;
+
+			var req = await new ServerDelete(WebCooker)
+			.DoRequest_DELETE($"FileManager/HideFolder/{selectedFolder.Id}");
+			resp = req;
+
+			await LoadDocs();
+
+			await Task.Delay(500);
+			loading = false;
+			StateHasChanged();
 		}
 	}
 }

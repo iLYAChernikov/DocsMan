@@ -76,6 +76,7 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<IRepository<UploadFile>, GenericRepository<UploadFile>>();
 			builder.Services.AddScoped<IRepository<Document>, GenericRepository<Document>>();
 			builder.Services.AddScoped<IRepository<Notification>, GenericRepository<Notification>>();
+			builder.Services.AddScoped<IRepository<Folder>, GenericRepository<Folder>>();
 
 			builder.Services.AddScoped<IRepository<DocumentHistory>, DocumentHistoryRepository>();
 			builder.Services.AddScoped<IRepository<Profile>, ProfileRepository>();
@@ -85,6 +86,8 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<IBindingRepository<User_Role>, User_Role_BindRepository>();
 			builder.Services.AddScoped<IBindingRepository<Profile_Document>, Profile_Document_BindRepository>();
 			builder.Services.AddScoped<IBindingRepository<Profile_Notify>, Profile_Notify_BindRepository>();
+			builder.Services.AddScoped<IBindingRepository<Profile_Folder>, Profile_Folder_BindRepository>();
+			builder.Services.AddScoped<IBindingRepository<Folder_Document>, Folder_Document_BindRepository>();
 
 			//	Interactors
 			builder.Services.AddScoped<RoleExec>();

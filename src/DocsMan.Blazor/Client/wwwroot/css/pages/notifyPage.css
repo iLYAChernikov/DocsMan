@@ -25,7 +25,7 @@
 	transition: 1s;
 }
 
-.notify-page .msg:nth-child(2) {
+.notify-page .msg:first-child {
 	margin-top: 40px;
 	border-top-left-radius: 20px;
 	border-top-right-radius: 20px;
