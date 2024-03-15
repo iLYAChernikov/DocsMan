@@ -2,9 +2,9 @@
 @layout MainLayout
 @using DocsMan.Blazor.Shared.DTOs
 
-<PageTitle>FilesManager</PageTitle>
+<PageTitle>Менеджер файлов</PageTitle>
 
-<h3 class="page-title">FilesManager</h3>
+<h3 class="page-title">Менеджер файлов</h3>
 
 <div class="fm-box">
 	<div class="fm-tools">
@@ -68,10 +68,10 @@
 			<div class="fm-upload @toolList[0].BlockStyle">
 				<div class="dm-add-new">
 					<div class="set-data">
-						<label for="o-file">Upload File</label>
+						<label for="o-file">Загрузка файла:</label>
 						<br>
 						<InputFile OnChange="OnInputFile" id="o-file"></InputFile>
-						<button @onclick="@SendFile" class="dm-btn create">Create Document</button>
+						<button @onclick="@SendFile" class="dm-btn create">Создать документ</button>
 					</div>
 				</div>
 			</div>
@@ -93,13 +93,13 @@
 			{
 				<div class="fm-info @toolList[5].BlockStyle">
 
-					<label for="name">DocName:</label>
+					<label for="name">Имя:</label>
 					<p id="name">@selectedDoc.Name</p>
-					<label for="type">DocType:</label>
+					<label for="type">Тип:</label>
 					<p id="type">@selectedDoc.FileType</p>
-					<label for="desc">DocDesc:</label>
+					<label for="desc">Описание:</label>
 					<p id="desc">@selectedDoc.Description</p>
-					<label for="size">DocSize:</label>
+					<label for="size">Размер файла:</label>
 					<p id="size">@selectedDoc.FileSize</p>
 
 				</div>
@@ -115,13 +115,13 @@
 						{
 							foreach (var item in history)
 							{
-								<label for="datetime">DateTime Change:</label>
+								<label for="datetime">Время изменения:</label>
 								<p id="datetime">
 									@item.DateTimeOfChanges
 								</p>
-								<label for="hdesc">Description:</label>
+								<label for="hdesc">Описание:</label>
 								<p id="hdesc">@item.Description</p>
-								<label for="hload">Download:</label>
+								<label for="hload">Скачать:</label>
 								<p @onclick="()=>DownloadHistory(item.DocumentId, item.DateTimeOfChanges)" id="hload">
 									<i class="fa-solid fa-download"></i>
 								</p>
@@ -133,24 +133,24 @@
 				<div class="fm-change @toolList[1].BlockStyle">
 					<div class="dm-add-new">
 						<div class="set-data">
-							<label for="o-file">Change File</label>
+							<label for="o-file">Загрузить файл:</label>
 							<br>
 							<InputFile OnChange="OnChangeFile" id="o-file"></InputFile>
 						</div>
-						<button @onclick="@ChangeFile" class="dm-btn create">Change File</button>
+						<button @onclick="@ChangeFile" class="dm-btn create">Заменить файл</button>
 					</div>
 					<div class="dm-add-new">
 						<div class="set-data">
-							<label for="cname">Name:</label>
+							<label for="cname">Имя:</label>
 							<br>
 							<InputText @bind-Value="selectedDoc.Name" id="cname"></InputText>
 						</div>
 						<div class="set-data">
-							<label for="cdesc">Description:</label>
+							<label for="cdesc">Описание:</label>
 							<br>
 							<InputText @bind-Value="selectedDoc.Description" id="cdesc"></InputText>
 						</div>
-						<button @onclick="@ChangeInfo" class="dm-btn create">Change Info</button>
+						<button @onclick="@ChangeInfo" class="dm-btn create">Изменить информацию</button>
 					</div>
 				</div>
 
@@ -167,10 +167,10 @@
 								<label style="margin-left:30px;">Есть доступ:</label>
 								<table style="width:360px; margin-left:20px; margin-top:10px;" class="dm-table">
 									<tr>
-										<td>Photo</td>
-										<td>FIO</td>
+										<td>Фото</td>
+										<td>ФИО</td>
 										<td>Email</td>
-										<td>Delete</td>
+										<td>Удалить</td>
 									</tr>
 									@if (profilesShare.Count > 0)
 									{
@@ -203,14 +203,14 @@
 					</div>
 
 					<div style="padding-top:20px; border-top:1px #ccc solid; margin-top:20px;">
-						<label style="margin-left:30px;">Раздать доступ:</label>
+						<label style="margin-left:30px;">Дать доступ:</label>
 						<div style="margin-top:20px;" class="dm-add-new">
 							<div class="set-data">
-								<label for="find">FIO/Email:</label>
+								<label for="find">ФИО/Email:</label>
 								<br>
 								<InputText @bind-Value="findLine" id="find"></InputText>
 							</div>
-							<button style="margin-top:20px;" @onclick="@FindProfiles" class="dm-btn create">Find Users</button>
+							<button style="margin-top:20px;" @onclick="@FindProfiles" class="dm-btn create">Поиск</button>
 						</div>
 						@if (loadUsers)
 						{
@@ -222,10 +222,10 @@
 							{
 								<table style="width:360px; margin-left:20px; margin-top:30px;" class="dm-table">
 									<tr>
-										<td>Photo</td>
-										<td>FIO</td>
+										<td>Фото</td>
+										<td>ФИО</td>
 										<td>Email</td>
-										<td>Share</td>
+										<td>Добавить</td>
 									</tr>
 									@if (profilesFind.Count > 0)
 									{

@@ -115,11 +115,11 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 			ServerOk.BaseAddress + path;
 	}
 
-	public class ServerGet<Output_T> : ServerConnector
+	public class ServerGet<Input_T> : ServerConnector
 	{
 		public ServerGet(IAltairCABlazorCookieUtil cooker) : base(cooker) { }
 
-		public async Task<RequestResultDto<Output_T>> DoRequest_GET(string path)
+		public async Task<RequestResultDto<Input_T>> DoRequest_GET(string path)
 		{
 			try
 			{
@@ -130,7 +130,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 				using var request = await ServerOk.GetAsync(path);
 				request.EnsureSuccessStatusCode();
 
-				var resp = await request.Content.ReadFromJsonAsync<Response<Output_T>>();
+				var resp = await request.Content.ReadFromJsonAsync<Response<Input_T>>();
 				return new(request.StatusCode, resp);
 			}
 			catch (HttpRequestException ex)
@@ -146,11 +146,11 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 		}
 	}
 
-	public class ServerPost<Input_T> : ServerConnector
+	public class ServerPost<Output_T> : ServerConnector
 	{
 		public ServerPost(IAltairCABlazorCookieUtil cooker) : base(cooker) { }
 
-		public async Task<RequestResultDto> DoRequest_POST(string path, Input_T inputData)
+		public async Task<RequestResultDto> DoRequest_POST(string path, Output_T inputData)
 		{
 			try
 			{
@@ -176,7 +176,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 			}
 		}
 
-		public async Task<RequestResultDto<int>> DoRequest_POST_int(string path, Input_T inputData)
+		public async Task<RequestResultDto<int>> DoRequest_POST_int(string path, Output_T inputData)
 		{
 			try
 			{

@@ -2,9 +2,9 @@
 @layout MainLayout
 @using DocsMan.Blazor.Shared.DTOs
 
-<PageTitle>UserSettings</PageTitle>
+<PageTitle>Настройки</PageTitle>
 
-<h3 class="page-title">UserSettings</h3>
+<h3 class="page-title">Настройки</h3>
 @if (IsAdmin)
 {
 	<h3 class="page-title">Admin View</h3>
@@ -49,7 +49,7 @@ else
 					<h1>Телефон</h1>
 					<InputText @bind-Value="profile.PhoneNumber"></InputText>
 				</div>
-				<button class="dm-btn create" @onclick="@Submit">Change</button>
+				<button class="dm-btn create" @onclick="@Submit">Изменить</button>
 			</div>
 		</div>
 	}

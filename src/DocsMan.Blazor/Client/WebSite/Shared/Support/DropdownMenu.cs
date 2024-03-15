@@ -84,13 +84,13 @@ public static class SideBarNavMenuList
 	{
 		new ()
 		{
-			Title = "Manager",
+			Title = "Менеджер",
 			Icon = "fas fa-folder-open",
 			HrefUrl = "User/Files"
 		},
 		new ()
 		{
-			Title = "Trash",
+			Title = "Корзина",
 			Icon = "fa-solid fa-trash-arrow-up",
 			HrefUrl = "User/Trash"
 		},
@@ -100,7 +100,7 @@ public static class SideBarNavMenuList
 	{
 		new ()
 		{
-			Title = "AdminPanel",
+			Title = "Admin Panel",
 			Icon = "far fa-user-secret",
 			HrefUrl = "Admin/Panel"
 		}

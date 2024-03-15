@@ -2,9 +2,9 @@
 @layout MainLayout
 @using DocsMan.Blazor.Shared.DTOs
 
-<PageTitle>UserDocs</PageTitle>
+<PageTitle>Документы</PageTitle>
 
-<h3 class="page-title">UserDocs</h3>
+<h3 class="page-title">Документы</h3>
 @if (IsAdmin)
 {
 	<h3 class="page-title">Admin View</h3>
@@ -16,9 +16,9 @@
 else
 {
 	<div class="dm-add-new">
-		<h3>Add Personal Docs</h3>
+		<h3>Создать документ</h3>
 		<div class="set-data">
-			<label for="type-name">Type Name</label>
+			<label for="type-name">Тип:</label>
 			<br>
 			<InputSelect @bind-Value="chosen_type" id="type-name">
 				@foreach (var itemTitle in types.Select(x=>x.Title))
@@ -28,18 +28,18 @@ else
 			</InputSelect>
 		</div>
 		<div class="set-data">
-			<label for="o-file">Doc File</label>
+			<label for="o-file">Загрузить файл:</label>
 			<br>
 			<InputFile OnChange="OnInputFile" id="o-file"></InputFile>
 		</div>
 		<div class="set-data">
-			<label for="doc-text">Doc Text</label>
+			<label for="doc-text">Текст:</label>
 			<br>
 			<InputText @bind-Value="@document.TextData" id="doc-text"></InputText>
 		</div>
 		@if (fileUploaded && !string.IsNullOrWhiteSpace(document.TextData) && chosen_type != string.Empty)
 		{
-			<button @onclick="@CreateDoc" class="dm-btn create">Create</button>
+			<button @onclick="@CreateDoc" class="dm-btn create">Создать</button>
 		}
 	</div>
 	@if (docs != null)
@@ -50,10 +50,10 @@ else
 			</a>
 			<table class="dm-table">
 				<tr>
-					<td>TypeName</td>
-					<td>Text</td>
-					<td>Download</td>
-					<td>Delete</td>
+					<td>Тип</td>
+					<td>Текст</td>
+					<td>Скачать</td>
+					<td>Удалить</td>
 				</tr>
 				@foreach (var item in docs)
 				{
