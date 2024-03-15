@@ -34,5 +34,14 @@ namespace DocsMan.Adapter.Repository.Bindings
 				.ThenInclude(x => x.User)
 				.Include(x => x.Document);
 		}
+
+		public async Task<IEnumerable<Profile_Document>?> GetAllBindsNoTracking()
+		{
+			return _context.Profile_Documents
+				.Include(x => x.Profile)
+				.ThenInclude(x => x.User)
+				.Include(x => x.Document)
+				.AsNoTracking();
+		}
 	}
 }

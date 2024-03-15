@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using DocsMan.App.Interactors;
-using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.OutputData;
 using Microsoft.AspNetCore.Authorization;
@@ -70,6 +69,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				return new(ident.ErrorMessage, ident.ErrorInfo);
 			else
 				return await _master.ForgetNotify(ident.Value, notifyId);
+		}
+
+		[HttpDelete("Hide/{notifyId}")]
+		public async Task<Response> Hide(int notifyId)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.ClearNotify(ident.Value, notifyId);
 		}
 	}
 }

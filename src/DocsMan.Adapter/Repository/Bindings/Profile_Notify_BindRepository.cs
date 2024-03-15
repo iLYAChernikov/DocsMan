@@ -33,5 +33,13 @@ namespace DocsMan.Adapter.Repository.Bindings
 				.Include(x => x.Profile)
 				.Include(x => x.Notification);
 		}
+
+		public async Task<IEnumerable<Profile_Notify>?> GetAllBindsNoTracking()
+		{
+			return _context.Profile_Notifications
+				.Include(x => x.Profile)
+				.Include(x => x.Notification)
+				.AsNoTracking();
+		}
 	}
 }

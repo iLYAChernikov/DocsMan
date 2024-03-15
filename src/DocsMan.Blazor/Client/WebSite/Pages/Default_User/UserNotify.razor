@@ -6,6 +6,12 @@
 
 <h3 class="page-title">Центр уведомлений</h3>
 
+<div class="load">
+	<a @onclick="@ReLoadNotify">
+		<i class="fas fa-sync-alt"></i>
+	</a>
+</div>
+
 @if (loading)
 {
 	<SpinnerLoading />
@@ -13,7 +19,6 @@
 else
 {
 	<div class="notify-page">
-
 		@if (messages != null)
 		{
 			@foreach (var item in messages)
@@ -33,13 +38,16 @@ else
 						</div>
 					}
 
+					<a @onclick="()=>HideNotify(item.Id)">
+						<i class="fas fa-trash-alt"></i>
+					</a>
+
 					<h3>@item.Title</h3>
 					<p>@item.Description</p>
 					<p>@item.DateTime.ToShortDateString() @item.DateTime.ToLongTimeString()</p>
 				</div>
 			}
 		}
-
 	</div>
 }
 
@@ -52,13 +60,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		loading = true;
-
-		await LoadNotify();
-
-		await Task.Delay(500);
-		loading = false;
-		StateHasChanged();
+		await ReLoadNotify();
 	}
 
 	IEnumerable<NotificationDto>? messages;
@@ -72,10 +74,23 @@ else
 		StateHasChanged();
 	}
 
+	async Task ReLoadNotify()
+	{
+		loading = true;
+
+		var req = await new ServerGet<IEnumerable<NotificationDto>?>(WebCooker)
+		.DoRequest_GET("Profile/GetNotify");
+		messages = req.Value;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
 	async Task ReadNotify(int id)
 	{
 		await new ServerDelete(WebCooker)
-			.DoRequest_DELETE($"Notify/Read/{id}");
+		.DoRequest_DELETE($"Notify/Read/{id}");
 
 		await LoadNotify();
 	}
@@ -83,8 +98,18 @@ else
 	async Task ForgetNotify(int id)
 	{
 		await new ServerDelete(WebCooker)
-			.DoRequest_DELETE($"Notify/Forget/{id}");
+		.DoRequest_DELETE($"Notify/Forget/{id}");
 
 		await LoadNotify();
+	}
+
+	async Task HideNotify(int id)
+	{
+		isClick = true;
+
+		resp = await new ServerDelete(WebCooker)
+		.DoRequest_DELETE($"Notify/Hide/{id}");
+
+		await ReLoadNotify();
 	}
 }

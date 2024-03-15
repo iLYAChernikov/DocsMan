@@ -15,14 +15,14 @@ namespace DocsMan.Adapter.Repository.Bindings
 
 		public async Task CreateBindAsync(User_Role? bind)
 		{
-			if ( bind == null || bind.UserId <= 0 || bind.RoleId <= 0 )
+			if (bind == null || bind.UserId <= 0 || bind.RoleId <= 0)
 				throw new ArgumentNullException("Null input data");
 			await _context.User_Roles.AddAsync(bind);
 		}
 
 		public async Task DeleteBindAsync(User_Role? bind)
 		{
-			if ( bind == null || bind.UserId <= 0 || bind.RoleId <= 0 )
+			if (bind == null || bind.UserId <= 0 || bind.RoleId <= 0)
 				throw new ArgumentNullException("Null input data");
 			_context.User_Roles.Remove(bind);
 		}
@@ -32,6 +32,14 @@ namespace DocsMan.Adapter.Repository.Bindings
 			return _context.User_Roles
 				.Include(x => x.User)
 				.Include(x => x.Role);
+		}
+
+		public async Task<IEnumerable<User_Role>?> GetAllBindsNoTracking()
+		{
+			return _context.User_Roles
+				.Include(x => x.User)
+				.Include(x => x.Role)
+				.AsNoTracking();
 		}
 	}
 }

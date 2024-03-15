@@ -197,5 +197,31 @@ namespace DocsMan.App.Interactors
 				return new("Ошибка получения", ex.Message);
 			}
 		}
+
+		public async Task<Response> ClearNotify(int profileId, int notifyId)
+		{
+			try
+			{
+				var countBind = (await _notifyBind.GetAllBindsNoTracking())?
+					.Where(x => x.NotificationId == notifyId)?
+					.Count();
+				if (countBind == 1)
+					return await DeleteNotify(notifyId);
+				else
+					return await DeleteBindNotify(profileId, notifyId);
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка удаления", ex.Message);
+			}
+		}
 	}
 }

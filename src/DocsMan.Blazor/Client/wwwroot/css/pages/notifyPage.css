@@ -9,7 +9,24 @@
 	font-family: 'Open Sans';
 }
 
-.notify-page .msg:first-child {
+.load a {
+	position: absolute;
+	left: 56%;
+	top: 120px;
+	color: var(--dm-green-sea-l);
+	scale: 1.2;
+	transition: 1s;
+}
+
+.load a:hover {
+	cursor: pointer;
+	color: var(--dm-malina-d);
+	transform: rotate(360deg);
+	transition: 1s;
+}
+
+.notify-page .msg:nth-child(2) {
+	margin-top: 40px;
 	border-top-left-radius: 20px;
 	border-top-right-radius: 20px;
 }
@@ -59,4 +76,18 @@
 	right: 20px;
 	text-align: end;
 	color: var(--dm-siren-d);
+}
+
+.notify-page .msg a {
+	position: absolute;
+	right: 20px;
+	bottom: 10px;
+	color: var(--dm-malina-d);
+	transition: .5s;
+}
+
+.notify-page .msg a:hover {
+	cursor: pointer;
+	transform: scale(1.2);
+	transition: .5s;
 }
