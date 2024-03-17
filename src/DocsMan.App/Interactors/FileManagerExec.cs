@@ -363,6 +363,61 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
+		public async Task<Response> DeleteFolder(int folderId, string storagePath)
+		{
+			try
+			{
+				var folder = await _folderRepos.GetOneAsync(folderId);
+				string docName = folder.Name;
+				var profiles = (await _bindProfileFolder.GetAllBinds())?
+						.Where(x => x.FolderId == folderId)
+						.Select(x => x.ProfileId).ToList();
+
+				var docs = (await _bindFolderDoc.GetAllBindsNoTracking())?
+					.Where(x => x.FolderId == folderId)
+					.Select(x => x.Document);
+				foreach (var doc in docs)
+				{
+					var history = await GetHistory(doc.Id);
+					foreach (var item in history.Value)
+					{
+						await _fileExec.DeleteFile(item.FileId, storagePath);
+					}
+				}
+
+				await _folderRepos.DeleteAsync(folderId);
+
+				Notification alert = new()
+				{
+					Title = "Destruction folder",
+					Description = $"Folder \"{docName}\" was destruction forever",
+					DateTime = DateTime.Now
+				};
+				var req = await _notifyExec.CreateNotify(alert.ToDto());
+				if (req.IsSuccess)
+				{
+					foreach (var id in profiles)
+					{
+						await _notifyExec.CreateBindNotify(id, req.Value);
+					}
+				}
+
+				return new();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка удаления", ex.Message);
+			}
+		}
+
 		public async Task<Response> HideDocument(int profileId, int folderId)
 		{
 			try

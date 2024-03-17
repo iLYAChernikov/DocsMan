@@ -118,7 +118,7 @@
 					<p id="name">@selectedFolder.Name</p>
 					<label for="desc">Описание:</label>
 					<p id="desc">@selectedFolder.Description</p>
-					<label for="size">Размер файла:</label>
+					<label for="size">Размер папки:</label>
 					<p id="size">@selectedFolder.FolderSize</p>
 					<label for="count">Количество файлов:</label>
 					<p id="count">@selectedFolder.FilesCount</p>
@@ -1020,7 +1020,5 @@
 	{
 		openedFolder = null;
 		await LoadDocs();
-
-		//StateHasChanged();
 	}
 }
