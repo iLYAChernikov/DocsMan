@@ -56,6 +56,13 @@
 				<li @onclick="()=>ChangeStyle(11)" class="tool @toolList[11].BlockStyle">
 					<i class="fa-solid fa-link"></i>
 				</li>
+				@if (openedFolder != null)
+				{
+					<li @onclick="CloseFolder" class="tool open">
+						Home
+						<i class="fa-solid fa-xmark"></i>
+					</li>
+				}
 			</ul>
 		</div>
 
@@ -83,7 +90,8 @@
 				<ul>
 					@foreach (var item in folders)
 					{
-						<li @onclick="() => SelectFolder(item)" class="document @item.Style.BlockStyle">
+						<li @ondblclick="()=>OpenFolder(item.Folder)" @onclick="()=>SelectFolder(item)"
+							class="document @item.Style.BlockStyle">
 							<i class="fa-regular fa-folder-open"></i>
 							<div class="doc-name">
 								@item.Folder.Name
@@ -92,7 +100,7 @@
 					}
 					@foreach (var item in docs)
 					{
-						<li @onclick="() => SelectDoc(item)" class="document @item.Style.BlockStyle">
+						<li @onclick="()=>SelectDoc(item)" class="document @item.Style.BlockStyle">
 							<i class="fa-solid fa-file-lines"></i>
 							<div class="doc-name">
 								@item.Document.Name@item.Document.FileType
@@ -431,36 +439,57 @@
 
 	List<(DocumentDto Document, ToggleStyleCSS Style)> docs = new();
 	List<(FolderDto Folder, ToggleStyleCSS Style)> folders = new();
+
 	async Task LoadDocs()
 	{
 		isClick = true;
 		loading = true;
 
-		var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
-		.DoRequest_GET("FileManager/GetDocs");
-		var reqf= await new ServerGet<IEnumerable<FolderDto>?>(WebCooker)
-		.DoRequest_GET("FileManager/GetFolders");
+		if (openedFolder == null)
+		{
+			var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
+				.DoRequest_GET("FileManager/GetDocs");
+			var reqf = await new ServerGet<IEnumerable<FolderDto>?>(WebCooker)
+				.DoRequest_GET("FileManager/GetFolders");
 
-		docs = new();
-		folders = new();
-		if (req.Response.IsSuccess)
-			if (req.Value != null)
-			{
-				foreach (var item in req.Value)
+			docs = new();
+			folders = new();
+			if (req.Response.IsSuccess)
+				if (req.Value != null)
 				{
-					docs.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					foreach (var item in req.Value)
+					{
+						docs.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					}
+					docs.ForEach(x => x.Style.IsDisabled = false);
 				}
-				docs.ForEach(x => x.Style.IsDisabled = false);
-			}
-		if (reqf.Response.IsSuccess)
-			if (reqf.Value != null)
-			{
-				foreach (var item in reqf.Value)
+			if (reqf.Response.IsSuccess)
+				if (reqf.Value != null)
 				{
-					folders.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					foreach (var item in reqf.Value)
+					{
+						folders.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					}
+					folders.ForEach(x => x.Style.IsDisabled = false);
 				}
-				folders.ForEach(x => x.Style.IsDisabled = false);
-			}
+		}
+		else
+		{
+			var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
+				.DoRequest_GET($"FileManager/GetFolderDocs/{openedFolder.Id}");
+
+			docs = new();
+			folders = new();
+			if (req.Response.IsSuccess)
+				if (req.Value != null)
+				{
+					foreach (var item in req.Value)
+					{
+						docs.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					}
+					docs.ForEach(x => x.Style.IsDisabled = false);
+				}
+		}
 
 		selectedDoc = null;
 		selectedFolder = null;
@@ -488,7 +517,7 @@
 		new("", "open", "disabled"),
 
 		//	add folder			change
-		new("", "", ""), new("", "open", "disabled"),
+		new("", "", "disabled"), new("", "open", "disabled"),
 		//	delete folder		info
 		new("", "", "disabled"), new("", "open", "disabled"),
 		//	peoples access
@@ -579,6 +608,8 @@
 				toolList[i].IsOpen = false;
 				toolList[i].IsDisabled = true;
 			}
+			if (openedFolder != null)
+				toolList[6].IsDisabled = true;
 
 			if (toolList[4].IsOpen)
 				await LoadHistory();
@@ -651,8 +682,12 @@
 		isClick = true;
 		loading = true;
 
-		resp = await new ServerPost<DataFile>(WebCooker)
-		.DoRequest_POST("FileManager/AddDocument", newFile);
+		if (openedFolder == null)
+			resp = await new ServerPost<DataFile>(WebCooker)
+				.DoRequest_POST("FileManager/AddDocument", newFile);
+		else
+			resp = await new ServerPost<DataFile>(WebCooker)
+				.DoRequest_POST($"FileManager/AddFolderDocument/{openedFolder.Id}", newFile);
 
 		await LoadDocs();
 
@@ -718,9 +753,18 @@
 		{
 			loading = true;
 
-			var req = await new ServerDelete(WebCooker)
-			.DoRequest_DELETE($"FileManager/HideDocument/{selectedDoc.Id}");
-			resp = req;
+			if (openedFolder == null)
+			{
+				var req = await new ServerDelete(WebCooker)
+					.DoRequest_DELETE($"FileManager/HideDocument/{selectedDoc.Id}");
+				resp = req;
+			}
+			else
+			{
+				var req = await new ServerDelete(WebCooker)
+					.DoRequest_DELETE($"FileManager/DeleteDocument/{selectedDoc.Id}");
+				resp = req;
+			}
 
 			await LoadDocs();
 
@@ -838,7 +882,7 @@
 		loading = true;
 
 		resp = await new ServerPost<FolderDto>(WebCooker)
-			.DoRequest_POST("FileManager/ChangeFolder", selectedFolder);
+			.DoRequest_POST("FileManager/RenameFolder", selectedFolder);
 
 		await LoadDocs();
 
@@ -956,5 +1000,27 @@
 			loading = false;
 			StateHasChanged();
 		}
+	}
+
+	FolderDto? openedFolder = null;
+	async Task OpenFolder(FolderDto folder)
+	{
+		openedFolder = folder;
+		await LoadDocs();
+
+		for (int i = 6; i <= 11; i++)
+		{
+			toolList[i].IsOpen = false;
+			toolList[i].IsDisabled = true;
+		}
+		StateHasChanged();
+	}
+
+	async Task CloseFolder()
+	{
+		openedFolder = null;
+		await LoadDocs();
+
+		//StateHasChanged();
 	}
 }

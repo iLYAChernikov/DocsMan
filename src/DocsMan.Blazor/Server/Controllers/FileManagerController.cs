@@ -41,6 +41,24 @@ namespace DocsMan.Blazor.Server.Controllers
 				);
 		}
 
+		[HttpPost("AddFolderDocument/{folderId}")]
+		public async Task<Response> AddFolderDoc(DataFile file, int folderId)
+		{
+			if (file.FileData == null)
+				return new("Нет файла", "Empty file");
+
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.AddFolderDocument
+				(
+					ident.Value, folderId, file.FileName,
+					PathStorage.Files_Dir, new MemoryStream(file.FileData),
+					"NewFile"
+				);
+		}
+
 		[HttpPost("CreateFolder")]
 		public async Task<Response> AddFolder(FolderDto dto)
 		{
@@ -71,6 +89,12 @@ namespace DocsMan.Blazor.Server.Controllers
 				return await _master.GetFolders(ident.Value, PathStorage.Files_Dir);
 		}
 
+		[HttpGet("GetFolderDocs/{folderId}")]
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetFolderDocs(int folderId)
+		{
+			return await _master.GetFolderDocs(folderId, PathStorage.Files_Dir);
+		}
+
 		[HttpGet("GetTrash")]
 		public async Task<Response<IEnumerable<DocumentDto>?>> GetTrash()
 		{
@@ -79,6 +103,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				return new(ident.ErrorMessage, ident.ErrorInfo);
 			else
 				return await _master.GetTrash(ident.Value, PathStorage.Files_Dir);
+		}
+
+		[HttpGet("GetFolderTrash")]
+		public async Task<Response<IEnumerable<FolderDto>?>> GetFolderTrash()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetFolderTrash(ident.Value, PathStorage.Files_Dir);
 		}
 
 		[HttpGet("GetHistory/{docId}")]
@@ -117,6 +151,16 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.ReturnDocument(ident.Value, docId);
 		}
 
+		[HttpDelete("ReturnFolder/{folderId}")]
+		public async Task<Response> ReturnFolder(int folderId)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.ReturnFolder(ident.Value, folderId);
+		}
+
 		[HttpDelete("DeleteDocument/{docId}")]
 		public async Task<Response> DeleteDoc(int docId)
 		{
@@ -131,6 +175,16 @@ namespace DocsMan.Blazor.Server.Controllers
 				return ident;
 
 			return await _master.RenameDocument(ident.Value, dto.Id, dto.Name, dto.Description);
+		}
+
+		[HttpPost("RenameFolder")]
+		public async Task<Response> ChangeFolder(FolderDto dto)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.RenameFolder(ident.Value, dto.Id, dto.Name, dto.Description);
 		}
 
 		[HttpPost("ChangeFile")]
@@ -149,16 +203,6 @@ namespace DocsMan.Blazor.Server.Controllers
 					file.FileName, PathStorage.Files_Dir,
 					new MemoryStream(file.FileData)
 				);
-		}
-
-		[HttpPost("ChangeFolder")]
-		public async Task<Response> ChangeFolder(FolderDto dto)
-		{
-			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if (!ident.IsSuccess)
-				return ident;
-
-			return await _master.ChangeFolder(ident.Value, dto.Id, dto.Name, dto.Description);
 		}
 
 		[AllowAnonymous]

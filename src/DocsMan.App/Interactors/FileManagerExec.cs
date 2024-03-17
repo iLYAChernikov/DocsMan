@@ -86,12 +86,57 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
+		public async Task<Response> AddFolderDocument(int profileId, int folderId, string fileName, string storagePath, Stream fileStream, string description)
+		{
+			try
+			{
+				var profile = await _profileRepos.GetOneAsync(profileId);
+				var respFile = await _fileExec.AddFile(fileName, storagePath, fileStream);
+				if (!respFile.IsSuccess)
+					return new(respFile.ErrorMessage, respFile.ErrorInfo);
+				var file = respFile.Value;
+				Document doc = new()
+				{
+					FileId = file.FileId,
+					Name = file.FileName,
+					FileType = file.FileType,
+					Description = description,
+					IsDeleted = false
+				};
+				await _docRepos.CreateAsync(doc);
+				await _unitWork.Commit();
+
+				await _historyExec.AddHistory(doc.Id, file.FileId, $"Загрузка файла - by \"{profile.Email}\"");
+				await _bindFolderDoc.CreateBindAsync(
+					new()
+					{
+						DocumentId = doc.Id,
+						FolderId = folderId
+					});
+				await _unitWork.Commit();
+
+				return new();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка создания", ex.Message);
+			}
+		}
+
 		public async Task<Response<IEnumerable<DocumentDto>?>> GetDocs(int profileId, string storagePath)
 		{
 			try
 			{
 				List<DocumentDto> documents = new();
-				var docs = (await _bindProfileDoc.GetAllBinds())
+				var docs = (await _bindProfileDoc.GetAllBinds())?
 					.Where(x => x.ProfileId == profileId && !x.Document.IsDeleted)
 					.Select(x => x.Document);
 				foreach (var item in docs)
@@ -125,7 +170,7 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				List<FolderDto> folders = new();
-				var files = (await _bindProfileFolder.GetAllBinds())
+				var files = (await _bindProfileFolder.GetAllBinds())?
 					.Where(x => x.ProfileId == profileId && !x.Folder.IsDeleted)
 					.Select(x => x.Folder);
 				foreach (var item in files)
@@ -160,6 +205,40 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetFolderDocs(int folderId, string storagePath)
+		{
+			try
+			{
+				List<DocumentDto> documents = new();
+				var docs = (await _bindFolderDoc.GetAllBinds())?
+					.Where(x => x.FolderId == folderId && !x.Document.IsDeleted)
+					.Select(x => x.Document);
+				foreach (var item in docs)
+				{
+					var dto = item.ToDto();
+					var resp = await _fileExec.GetSizeFile(item.FileId, storagePath);
+					if (!resp.IsSuccess)
+						dto.FileSize = "0?";
+					else
+						dto.FileSize = resp.Value;
+					documents.Add(dto);
+				}
+				return new(documents);
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
 		public async Task<Response<IEnumerable<DocumentDto>?>> GetTrash(int profileId, string storagePath)
 		{
 			try
@@ -179,6 +258,46 @@ namespace DocsMan.App.Interactors
 					documents.Add(dto);
 				}
 				return new(documents);
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response<IEnumerable<FolderDto>?>> GetFolderTrash(int profileId, string storagePath)
+		{
+			try
+			{
+				List<FolderDto> folders = new();
+				var folds = (await _bindProfileFolder.GetAllBinds())?
+					.Where(x => x.ProfileId == profileId && x.Folder.IsDeleted)
+					.Select(x => x.Folder);
+				foreach (var item in folds)
+				{
+					var dto = item.ToDto();
+					var resp = await _fileExec.GetSizeFolder(item.Id, storagePath);
+					if (!resp.IsSuccess)
+					{
+						dto.FolderSize = "0?";
+						dto.FilesCount = 0;
+					}
+					else
+					{
+						dto.FolderSize = resp.Value.Size;
+						dto.FilesCount = resp.Value.Count;
+					}
+					folders.Add(dto);
+				}
+				return new(folders);
 			}
 			catch (ArgumentNullException ex)
 			{
@@ -356,6 +475,50 @@ namespace DocsMan.App.Interactors
 				{
 					var profiles = (await _bindProfileDoc.GetAllBinds())?
 						.Where(x => x.DocumentId == documentId)
+						.Select(x => x.ProfileId);
+
+					foreach (var id in profiles)
+					{
+						await _notifyExec.CreateBindNotify(id, req.Value);
+					}
+				}
+
+				return new();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка изменения", ex.Message);
+			}
+		}
+
+		public async Task<Response> ReturnFolder(int profileId, int folderId)
+		{
+			try
+			{
+				var folder = await _folderRepos.GetOneAsync(folderId);
+				var profile = await _profileRepos.GetOneAsync(profileId);
+				folder.IsDeleted = false;
+				await _unitWork.Commit();
+
+				Notification alert = new()
+				{
+					Title = "Return folder",
+					Description = $"Folder \"{folder?.Name}\" was returned to the FileManager",
+					DateTime = DateTime.Now
+				};
+				var req = await _notifyExec.CreateNotify(alert.ToDto());
+				if (req.IsSuccess)
+				{
+					var profiles = (await _bindProfileFolder.GetAllBinds())?
+						.Where(x => x.FolderId == folderId)
 						.Select(x => x.ProfileId);
 
 					foreach (var id in profiles)
@@ -616,6 +779,56 @@ namespace DocsMan.App.Interactors
 			}
 		}
 
+		public async Task<Response> RenameFolder(int profileId, int folderId, string name, string? description)
+		{
+			try
+			{
+				var folder = await _folderRepos.GetOneAsync(folderId);
+				string oldName = folder.Name;
+				var profile = await _profileRepos.GetOneAsync(profileId);
+				folder.Name = name;
+				folder.Description = description;
+
+				await _unitWork.Commit();
+
+				if (oldName != name)
+				{
+					Notification alert = new()
+					{
+						Title = "Rename folder",
+						Description = $"Folder \"{oldName}\" was rename to \"{name}\"",
+						DateTime = DateTime.Now
+					};
+					var req = await _notifyExec.CreateNotify(alert.ToDto());
+					if (req.IsSuccess)
+					{
+						var profiles = (await _bindProfileFolder.GetAllBinds())?
+							.Where(x => x.FolderId == folderId)
+							.Select(x => x.ProfileId);
+
+						foreach (var id in profiles)
+						{
+							await _notifyExec.CreateBindNotify(id, req.Value);
+						}
+					}
+				}
+
+				return new();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка изменения", ex.Message);
+			}
+		}
+
 		public async Task<Response> ChangeFile(int profileId, int documentId, string fileName, string storagePath, Stream fileStream)
 		{
 			try
@@ -743,56 +956,6 @@ namespace DocsMan.App.Interactors
 			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
-			}
-		}
-
-		public async Task<Response> ChangeFolder(int profileId, int folderId, string name, string? description)
-		{
-			try
-			{
-				var folder = await _folderRepos.GetOneAsync(folderId);
-				string oldName = folder.Name;
-				var profile = await _profileRepos.GetOneAsync(profileId);
-				folder.Name = name;
-				folder.Description = description;
-
-				await _unitWork.Commit();
-
-				if (oldName != name)
-				{
-					Notification alert = new()
-					{
-						Title = "Rename folder",
-						Description = $"Folder \"{oldName}\" was rename to \"{name}\"",
-						DateTime = DateTime.Now
-					};
-					var req = await _notifyExec.CreateNotify(alert.ToDto());
-					if (req.IsSuccess)
-					{
-						var profiles = (await _bindProfileFolder.GetAllBinds())?
-							.Where(x => x.FolderId == folderId)
-							.Select(x => x.ProfileId);
-
-						foreach (var id in profiles)
-						{
-							await _notifyExec.CreateBindNotify(id, req.Value);
-						}
-					}
-				}
-
-				return new();
-			}
-			catch (ArgumentNullException ex)
-			{
-				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
-			}
-			catch (NullReferenceException ex)
-			{
-				return new("Запись не найдена", ex.Message);
-			}
-			catch (Exception ex)
-			{
-				return new("Ошибка изменения", ex.Message);
 			}
 		}
 	}
