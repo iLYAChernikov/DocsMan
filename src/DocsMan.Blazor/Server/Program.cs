@@ -5,9 +5,12 @@ using DocsMan.Adapter.Transaction;
 using DocsMan.App.Interactors;
 using DocsMan.App.Storage.RepositoryPattern;
 using DocsMan.App.Storage.Transaction;
+using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Domain.BinderEntity;
 using DocsMan.Domain.Entity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace DocsMan.Blazor
@@ -24,25 +27,69 @@ namespace DocsMan.Blazor
 			builder.Services.AddDbContext<DocsMan_DBContext>(
 				settings => settings.UseSqlite(builder.Configuration.GetConnectionString("SQLiteConnection")));
 
-			//	transaction
+			//  Start Authentication Block
+
+			//	for getting settings in appsettings.json
+			DocsMan_AuthenticationOptions GetAuthenticationOptions(IConfiguration configuration) =>
+				configuration.GetSection("AuthOptions").Get<DocsMan_AuthenticationOptions>();
+
+			//	bind method
+			builder.Services.AddSingleton<DocsMan_AuthenticationOptions>
+				(provider => GetAuthenticationOptions(builder.Configuration));
+
+			//	get auth settings
+			var authOpts = GetAuthenticationOptions(builder.Configuration);
+
+			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(opts =>
+				{
+					opts.TokenValidationParameters = new TokenValidationParameters()
+					{
+						ValidateIssuer = true,
+						ValidIssuer = authOpts.Issuer,
+
+						ValidateAudience = true,
+						ValidAudience = authOpts.Audience,
+
+						ValidateLifetime = true,
+
+						ValidateIssuerSigningKey = true,
+
+						IssuerSigningKey = authOpts.GetSymmetricSecurityKey()
+					};
+				});
+
+			// End Authentication Block
+
+			//	||	Other Services settings
+			//	\/
+
+			//	Repositories services
+
+			//	Transaction
 			builder.Services.AddTransient<IUnitWork, UnitWork>();
 
-			//	repositories
+			//	Repositories
 			builder.Services.AddScoped<IRepository<Role>, GenericRepository<Role>>();
 			builder.Services.AddScoped<IRepository<User>, GenericRepository<User>>();
 			builder.Services.AddScoped<IRepository<PersonalDocumentType>, GenericRepository<PersonalDocumentType>>();
 			builder.Services.AddScoped<IRepository<UploadFile>, GenericRepository<UploadFile>>();
 			builder.Services.AddScoped<IRepository<Document>, GenericRepository<Document>>();
-			builder.Services.AddScoped<IRepository<DocumentHistory>, GenericRepository<DocumentHistory>>();
+			builder.Services.AddScoped<IRepository<Notification>, GenericRepository<Notification>>();
+			builder.Services.AddScoped<IRepository<Folder>, GenericRepository<Folder>>();
 
+			builder.Services.AddScoped<IRepository<DocumentHistory>, DocumentHistoryRepository>();
 			builder.Services.AddScoped<IRepository<Profile>, ProfileRepository>();
 			builder.Services.AddScoped<IRepository<PersonalDocument>, PersonalDocumentRepository>();
 
-			//	binding repositories
+			//	Binding Repositories
 			builder.Services.AddScoped<IBindingRepository<User_Role>, User_Role_BindRepository>();
 			builder.Services.AddScoped<IBindingRepository<Profile_Document>, Profile_Document_BindRepository>();
+			builder.Services.AddScoped<IBindingRepository<Profile_Notify>, Profile_Notify_BindRepository>();
+			builder.Services.AddScoped<IBindingRepository<Profile_Folder>, Profile_Folder_BindRepository>();
+			builder.Services.AddScoped<IBindingRepository<Folder_Document>, Folder_Document_BindRepository>();
 
-			//	interactors
+			//	Interactors
 			builder.Services.AddScoped<RoleExec>();
 			builder.Services.AddScoped<UserExec>();
 			builder.Services.AddScoped<ProfileExec>();
@@ -51,27 +98,65 @@ namespace DocsMan.Blazor
 			builder.Services.AddScoped<FileManagerExec>();
 			builder.Services.AddScoped<DocumentHistoryExec>();
 			builder.Services.AddScoped<AuthExec>();
+			builder.Services.AddScoped<NotifyExec>();
 
 			builder.Services.AddControllers();
 			builder.Services.AddControllersWithViews();
 			builder.Services.AddRazorPages();
 
-			//	swagger
+			//	Swagger
 			builder.Services.AddSwaggerGen(options =>
 			{
-				options.SwaggerDoc("v1", new OpenApiInfo { Title = "DocsMan_Service", Version = "v1" });
+				options.SwaggerDoc("v2", new OpenApiInfo { Title = "DocsMan_Service", Version = "v2" });
+
+				//	Authentication for Swagger
+				options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+				{
+					Name = "Authorization",
+					Type = SecuritySchemeType.ApiKey,
+					Scheme = JwtBearerDefaults.AuthenticationScheme,
+					BearerFormat = "JWT",
+					In = ParameterLocation.Header,
+					Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+				});
+
+				options.AddSecurityRequirement(new OpenApiSecurityRequirement
+			{
+				{
+					new OpenApiSecurityScheme
+					{
+						Reference = new OpenApiReference
+						{
+							Type = ReferenceType.SecurityScheme,
+							Id = "Bearer"
+						}
+					},
+					new string[] { }
+				}
 			});
+			});
+
+			//	cors
+			builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
+			policyBuilder =>
+			{
+				policyBuilder
+				.WithOrigins("https://localhost:7075")
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+			}
+			));
 
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
-			if ( app.Environment.IsDevelopment() )
+			if (app.Environment.IsDevelopment())
 			{
 				app.UseWebAssemblyDebugging();
 				app.UseSwagger();
 				app.UseSwaggerUI(c =>
 				{
-					c.SwaggerEndpoint("/swagger/v1/swagger.json", "DocsMan Blazor API v1.0");
+					c.SwaggerEndpoint("/swagger/v2/swagger.json", "DocsMan Blazor API v2.0");
 				});
 			}
 			else
@@ -87,6 +172,11 @@ namespace DocsMan.Blazor
 			app.UseStaticFiles();
 
 			app.UseRouting();
+
+			app.UseCors("CorsPolicy");
+
+			app.UseAuthentication();
+			app.UseAuthorization();
 
 			app.MapRazorPages();
 			app.MapControllers();

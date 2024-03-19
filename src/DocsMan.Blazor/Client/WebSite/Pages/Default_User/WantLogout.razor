@@ -1,0 +1,18 @@
+@page "/WantLogout"
+@layout MainLayout
+
+<div class="logout">
+	<h3 class="page-title">Вы хотите выйти из системы?</h3>
+	<button @onclick="@LogOut" class="dm-btn create">YES</button>
+	<button @onclick="@GoHome" class="dm-btn delete">NO</button>
+</div>
+
+@code {
+	async void LogOut()
+	{
+		await new ServerConnector(WebCooker).LogOut();
+		GoAuth();
+	}
+	void GoHome() => PagesNavigation.NavigateTo("/");
+	void GoAuth() => PagesNavigation.NavigateTo("/User/Authorization");
+}

@@ -1,0 +1,1024 @@
+@page "/User/Files"
+@layout MainLayout
+@using DocsMan.Blazor.Shared.DTOs
+
+<PageTitle>Менеджер файлов</PageTitle>
+
+<h3 class="page-title">Менеджер файлов</h3>
+
+<div class="fm-box">
+	<div class="fm-tools">
+		<ul>
+			<li @onclick="LoadDocs" class="tool-update">
+				<i class="fas fa-sync-alt"></i>
+			</li>
+		</ul>
+		<div class="file-tool">
+			<ul>
+				<li @onclick="()=>ChangeStyle(0)" class="tool @toolList[0].BlockStyle">
+					<i class="fa-solid fa-cloud-arrow-up"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(1)" class="tool @toolList[1].BlockStyle">
+					<i class="fas fa-pen"></i>
+				</li>
+				<li @onclick="DownloadDoc" class="tool @toolList[2].BlockStyle">
+					<i class="fa-solid fa-download"></i>
+				</li>
+				<li @onclick="HideDoc" class="tool @toolList[3].BlockStyle">
+					<i class="fas fa-trash-alt"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(4)" class="tool @toolList[4].BlockStyle">
+					<i class="fa-solid fa-clock-rotate-left"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(5)" class="tool @toolList[5].BlockStyle">
+					<i class="fas fa-info"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(6)" class="tool @toolList[6].BlockStyle">
+					<i class="fa-solid fa-link"></i>
+				</li>
+			</ul>
+		</div>
+
+		<div class="folder-tool">
+			<ul>
+				<li @onclick="CreateFolder" class="tool @toolList[7].BlockStyle">
+					<i class="fas fa-folder-plus"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(8)" class="tool @toolList[8].BlockStyle">
+					<i class="fas fa-edit"></i>
+				</li>
+				<li @onclick="HideFolder" class="tool @toolList[9].BlockStyle">
+					<i class="fas fa-folder-minus"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(10)" class="tool @toolList[10].BlockStyle">
+					<i class="fas fa-info"></i>
+				</li>
+				<li @onclick="()=>ChangeStyle(11)" class="tool @toolList[11].BlockStyle">
+					<i class="fa-solid fa-link"></i>
+				</li>
+				@if (openedFolder != null)
+				{
+					<li @onclick="CloseFolder" class="tool open">
+						Home
+						<i class="fa-solid fa-xmark"></i>
+					</li>
+				}
+			</ul>
+		</div>
+
+	</div>
+
+	<div class="fm-workspace">
+		@if (loading)
+		{
+			<SpinnerLoading />
+		}
+		else
+		{
+			<div class="fm-upload @toolList[0].BlockStyle">
+				<div class="dm-add-new">
+					<div class="set-data">
+						<label for="o-file">Загрузка файла:</label>
+						<br>
+						<InputFile OnChange="OnInputFile" id="o-file"></InputFile>
+						<button @onclick="@SendFile" class="dm-btn create">Создать документ</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="fm-docslist @docListStyle">
+				<ul>
+					@foreach (var item in folders)
+					{
+						<li @ondblclick="()=>OpenFolder(item.Folder)" @onclick="()=>SelectFolder(item)"
+							class="document @item.Style.BlockStyle">
+							<i class="fa-regular fa-folder-open"></i>
+							<div class="doc-name">
+								@item.Folder.Name
+							</div>
+						</li>
+					}
+					@foreach (var item in docs)
+					{
+						<li @onclick="()=>SelectDoc(item)" class="document @item.Style.BlockStyle">
+							<i class="fa-solid fa-file-lines"></i>
+							<div class="doc-name">
+								@item.Document.Name@item.Document.FileType
+							</div>
+						</li>
+					}
+				</ul>
+			</div>
+
+			@if (selectedFolder != null)
+			{
+				<div class="fm-info @toolList[10].BlockStyle">
+
+					<label for="name">Имя:</label>
+					<p id="name">@selectedFolder.Name</p>
+					<label for="desc">Описание:</label>
+					<p id="desc">@selectedFolder.Description</p>
+					<label for="size">Размер папки:</label>
+					<p id="size">@selectedFolder.FolderSize</p>
+					<label for="count">Количество файлов:</label>
+					<p id="count">@selectedFolder.FilesCount</p>
+
+				</div>
+
+				<div class="fm-change @toolList[8].BlockStyle">
+					<div class="dm-add-new">
+						<div class="set-data">
+							<label for="fname">Имя:</label>
+							<br>
+							<InputText @bind-Value="selectedFolder.Name" id="fname"></InputText>
+						</div>
+						<div class="set-data">
+							<label for="fdesc">Описание:</label>
+							<br>
+							<InputText @bind-Value="selectedFolder.Description" id="fdesc"></InputText>
+						</div>
+						<button @onclick="@ChangeFolder" class="dm-btn create">Изменить информацию</button>
+					</div>
+				</div>
+
+				<div class="fm-share @toolList[11].BlockStyle">
+					<div style="margin-top:20px;">
+						@if (loadShare)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesShare != null)
+							{
+								<label style="margin-left:30px;">Есть доступ:</label>
+								<table style="width:360px; margin-left:20px; margin-top:10px;" class="dm-table">
+									<tr>
+										<td>Фото</td>
+										<td>ФИО</td>
+										<td>Email</td>
+										<td>Удалить</td>
+									</tr>
+									@if (profilesShare.Count > 0)
+									{
+										@foreach (var item in profilesShare)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													@if (item.Profile.Id != profilesShare.First().Profile.Id)
+													{
+														<a @onclick="() => DeleteShareFolder(item.Profile.Id)" class="delete-icon">
+															<i class="fas fa-user-minus"></i>
+														</a>
+													}
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
+
+					<div style="padding-top:20px; border-top:1px #ccc solid; margin-top:20px;">
+						<label style="margin-left:30px;">Дать доступ:</label>
+						<div style="margin-top:20px;" class="dm-add-new">
+							<div class="set-data">
+								<label for="find">ФИО/Email:</label>
+								<br>
+								<InputText @bind-Value="findLine" id="find"></InputText>
+							</div>
+							<button style="margin-top:20px;" @onclick="@FindProfiles" class="dm-btn create">Поиск</button>
+						</div>
+						@if (loadUsers)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesFind != null)
+							{
+								<table style="width:360px; margin-left:20px; margin-top:30px;" class="dm-table">
+									<tr>
+										<td>Фото</td>
+										<td>ФИО</td>
+										<td>Email</td>
+										<td>Добавить</td>
+									</tr>
+									@if (profilesFind.Count > 0)
+									{
+										@foreach (var item in profilesFind)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													<a @onclick="()=>CreateShareFolder(item.Profile.Id)" class="link-icon">
+														<i class="fas fa-user-plus"></i>
+													</a>
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
+				</div>
+			}
+
+			@if (selectedDoc != null)
+			{
+				<div class="fm-info @toolList[5].BlockStyle">
+
+					<label for="name">Имя:</label>
+					<p id="name">@selectedDoc.Name</p>
+					<label for="type">Тип:</label>
+					<p id="type">@selectedDoc.FileType</p>
+					<label for="desc">Описание:</label>
+					<p id="desc">@selectedDoc.Description</p>
+					<label for="size">Размер файла:</label>
+					<p id="size">@selectedDoc.FileSize</p>
+
+				</div>
+
+				<div class="fm-history @toolList[4].BlockStyle">
+					@if (loadHist)
+					{
+						<SpinnerLoading />
+					}
+					else
+					{
+						@if (history != null)
+						{
+							foreach (var item in history)
+							{
+								<label for="datetime">Время изменения:</label>
+								<p id="datetime">
+									@item.DateTimeOfChanges
+								</p>
+								<label for="hdesc">Описание:</label>
+								<p id="hdesc">@item.Description</p>
+								<label for="hload">Скачать:</label>
+								<p @onclick="()=>DownloadHistory(item.DocumentId, item.DateTimeOfChanges)" id="hload">
+									<i class="fa-solid fa-download"></i>
+								</p>
+							}
+						}
+					}
+				</div>
+
+				<div class="fm-change @toolList[1].BlockStyle">
+					<div class="dm-add-new">
+						<div class="set-data">
+							<label for="o-file">Загрузить файл:</label>
+							<br>
+							<InputFile OnChange="OnChangeFile" id="o-file"></InputFile>
+						</div>
+						<button @onclick="@ChangeFile" class="dm-btn create">Заменить файл</button>
+					</div>
+					<div class="dm-add-new">
+						<div class="set-data">
+							<label for="cname">Имя:</label>
+							<br>
+							<InputText @bind-Value="selectedDoc.Name" id="cname"></InputText>
+						</div>
+						<div class="set-data">
+							<label for="cdesc">Описание:</label>
+							<br>
+							<InputText @bind-Value="selectedDoc.Description" id="cdesc"></InputText>
+						</div>
+						<button @onclick="@ChangeInfo" class="dm-btn create">Изменить информацию</button>
+					</div>
+				</div>
+
+				<div class="fm-share @toolList[6].BlockStyle">
+					<div style="margin-top:20px;">
+						@if (loadShare)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesShare != null)
+							{
+								<label style="margin-left:30px;">Есть доступ:</label>
+								<table style="width:360px; margin-left:20px; margin-top:10px;" class="dm-table">
+									<tr>
+										<td>Фото</td>
+										<td>ФИО</td>
+										<td>Email</td>
+										<td>Удалить</td>
+									</tr>
+									@if (profilesShare.Count > 0)
+									{
+										@foreach (var item in profilesShare)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													@if (item.Profile.Id != profilesShare.First().Profile.Id)
+													{
+														<a @onclick="() => DeleteShare(item.Profile.Id)" class="delete-icon">
+															<i class="fas fa-user-minus"></i>
+														</a>
+													}
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
+
+					<div style="padding-top:20px; border-top:1px #ccc solid; margin-top:20px;">
+						<label style="margin-left:30px;">Дать доступ:</label>
+						<div style="margin-top:20px;" class="dm-add-new">
+							<div class="set-data">
+								<label for="find">ФИО/Email:</label>
+								<br>
+								<InputText @bind-Value="findLine" id="find"></InputText>
+							</div>
+							<button style="margin-top:20px;" @onclick="@FindProfiles" class="dm-btn create">Поиск</button>
+						</div>
+						@if (loadUsers)
+						{
+							<SpinnerLoading />
+						}
+						else
+						{
+							@if (profilesFind != null)
+							{
+								<table style="width:360px; margin-left:20px; margin-top:30px;" class="dm-table">
+									<tr>
+										<td>Фото</td>
+										<td>ФИО</td>
+										<td>Email</td>
+										<td>Добавить</td>
+									</tr>
+									@if (profilesFind.Count > 0)
+									{
+										@foreach (var item in profilesFind)
+										{
+											<tr>
+												<td>
+													<img src="@item.Image" alt="@item.Profile.Full_FIO">
+												</td>
+												<td>
+													@item.Profile.Full_FIO
+												</td>
+												<td>
+													@item.Profile.Email
+												</td>
+												<td>
+													<a @onclick="()=>CreateShare(item.Profile.Id)" class="link-icon">
+														<i class="fas fa-user-plus"></i>
+													</a>
+												</td>
+											</tr>
+										}
+									}
+								</table>
+							}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+
+
+</div>
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
+@code {
+
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+
+	protected override async void OnInitialized()
+	{
+		loading = true;
+
+		toolList[0].IsDisabled = false;
+		toolList[7].IsDisabled = false;
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	List<(DocumentDto Document, ToggleStyleCSS Style)> docs = new();
+	List<(FolderDto Folder, ToggleStyleCSS Style)> folders = new();
+
+	async Task LoadDocs()
+	{
+		isClick = true;
+		loading = true;
+
+		if (openedFolder == null)
+		{
+			var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
+				.DoRequest_GET("FileManager/GetDocs");
+			var reqf = await new ServerGet<IEnumerable<FolderDto>?>(WebCooker)
+				.DoRequest_GET("FileManager/GetFolders");
+
+			docs = new();
+			folders = new();
+			if (req.Response.IsSuccess)
+				if (req.Value != null)
+				{
+					foreach (var item in req.Value)
+					{
+						docs.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					}
+					docs.ForEach(x => x.Style.IsDisabled = false);
+				}
+			if (reqf.Response.IsSuccess)
+				if (reqf.Value != null)
+				{
+					foreach (var item in reqf.Value)
+					{
+						folders.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					}
+					folders.ForEach(x => x.Style.IsDisabled = false);
+				}
+		}
+		else
+		{
+			var req = await new ServerGet<IEnumerable<DocumentDto>?>(WebCooker)
+				.DoRequest_GET($"FileManager/GetFolderDocs/{openedFolder.Id}");
+
+			docs = new();
+			folders = new();
+			if (req.Response.IsSuccess)
+				if (req.Value != null)
+				{
+					foreach (var item in req.Value)
+					{
+						docs.Add(new(item, new ToggleStyleCSS("", "selected", "")));
+					}
+					docs.ForEach(x => x.Style.IsDisabled = false);
+				}
+		}
+
+		selectedDoc = null;
+		selectedFolder = null;
+		profilesShare = null;
+		profilesFind = null;
+		toolList.ForEach(x => x.IsDisabled = true);
+		toolList.ForEach(x => x.IsOpen = false);
+		toolList[0].IsDisabled = false;
+		toolList[7].IsDisabled = false;
+		docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+
+		await Task.Delay(500);
+		loading = false;
+	}
+
+	List<ToggleStyleCSS> toolList = new()
+	{
+		//	upload file			change
+		new("", "open", ""), new("", "open", "disabled"),
+		//	download			delete
+		new("", "", "disabled"), new("", "", "disabled"),
+		//	history 			info
+		new("", "open", "disabled"), new("", "open", "disabled"),
+		//	peoples access
+		new("", "open", "disabled"),
+
+		//	add folder			change
+		new("", "", "disabled"), new("", "open", "disabled"),
+		//	delete folder		info
+		new("", "", "disabled"), new("", "open", "disabled"),
+		//	peoples access
+		new("", "open", "disabled"),
+	};
+	string docListStyle = "";
+	async Task ChangeStyle(int id)
+	{
+		isClick = false;
+		if (id == 0 || id == 7)
+			toolList[id].IsOpen = !toolList[id].IsOpen;
+		else
+		if (selectedDoc != null)
+		{
+			for (int i = 1; i <= 6; i++)
+			{
+				if (i != id)
+					toolList[i].IsOpen = false;
+				else
+					toolList[id].IsOpen = !toolList[id].IsOpen;
+			}
+			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+
+			if (id == 4)
+				await LoadHistory();
+			if (id == 6)
+				await LoadShareProfiles();
+		}
+		if (selectedFolder != null)
+		{
+			for (int i = 8; i <= 11; i++)
+			{
+				if (i != id)
+					toolList[i].IsOpen = false;
+				else
+					toolList[id].IsOpen = !toolList[id].IsOpen;
+			}
+			docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+
+			if (id == 11)
+				await LoadShareProfilesFolder();
+		}
+	}
+
+	List<DocumentHistoryDto> history;
+	bool loadHist = false;
+	async Task LoadHistory()
+	{
+		if (selectedDoc != null)
+		{
+			loadHist = true;
+
+			var req = await new ServerGet<IEnumerable<DocumentHistoryDto>?>(WebCooker)
+			.DoRequest_GET($"FileManager/GetHistory/{selectedDoc.Id}");
+			history = req.Value.ToList();
+
+			await Task.Delay(500);
+			loadHist = false;
+			StateHasChanged();
+		}
+	}
+
+
+	DocumentDto selectedDoc;
+	async void SelectDoc((DocumentDto Document, ToggleStyleCSS Style) doc)
+	{
+		isClick = false;
+		for (int i = 0; i < docs.Count; i++)
+		{
+			if (docs[i].Document.Id != doc.Document.Id)
+				docs[i].Style.IsOpen = false;
+			else
+				doc.Style.IsOpen = !doc.Style.IsOpen;
+		}
+		for (int i = 0; i < folders.Count; i++)
+		{
+			folders[i].Style.IsOpen = false;
+		}
+
+		if (doc.Style.IsOpen)
+		{
+			selectedDoc = doc.Document;
+			selectedFolder = null;
+			for (int i = 1; i <= 6; i++)
+				toolList[i].IsDisabled = false;
+			for (int i = 8; i <= 11; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
+			if (openedFolder != null)
+				toolList[6].IsDisabled = true;
+
+			if (toolList[4].IsOpen)
+				await LoadHistory();
+
+			if (toolList[6].IsOpen)
+				await LoadShareProfiles();
+		}
+		else
+		{
+			selectedDoc = null;
+			profilesFind = null;
+			for (int i = 1; i <= 6; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
+		}
+		docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+	}
+
+	bool fileUploaded = false;
+	DataFile newFile = new();
+	async Task OnInputFile(InputFileChangeEventArgs e)
+	{
+		var file = e.GetMultipleFiles().FirstOrDefault();
+		if (file == null)
+		{
+			fileUploaded = false;
+			return;
+		}
+		else
+		{
+			fileUploaded = true;
+			newFile.FileName = file.Name;
+			using (var ms = new MemoryStream())
+			{
+				await file.OpenReadStream(maxAllowedSize: 102400000).CopyToAsync(ms);
+				newFile.FileData = ms.ToArray();
+			}
+		}
+	}
+
+	bool fileChanged = false;
+	DataFile changeFile = new();
+	async Task OnChangeFile(InputFileChangeEventArgs e)
+	{
+		var file = e.GetMultipleFiles().FirstOrDefault();
+		if (file == null)
+		{
+			fileChanged = false;
+			return;
+		}
+		else
+		{
+			fileChanged = true;
+			changeFile.FileName = file.Name;
+			using (var ms = new MemoryStream())
+			{
+				await file.OpenReadStream(maxAllowedSize: 102400000).CopyToAsync(ms);
+				changeFile.FileData = ms.ToArray();
+			}
+		}
+	}
+
+	async Task SendFile()
+	{
+		if (!fileUploaded)
+			return;
+
+		isClick = true;
+		loading = true;
+
+		if (openedFolder == null)
+			resp = await new ServerPost<DataFile>(WebCooker)
+				.DoRequest_POST("FileManager/AddDocument", newFile);
+		else
+			resp = await new ServerPost<DataFile>(WebCooker)
+				.DoRequest_POST($"FileManager/AddFolderDocument/{openedFolder.Id}", newFile);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		fileUploaded = false;
+		StateHasChanged();
+	}
+
+	async Task ChangeFile()
+	{
+		if (!fileChanged)
+			return;
+
+		isClick = true;
+		loading = true;
+
+		changeFile.OwnerId = selectedDoc.Id;
+
+		resp = await new ServerPost<DataFile>(WebCooker)
+			.DoRequest_POST("FileManager/ChangeFile", changeFile);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		fileChanged = false;
+		StateHasChanged();
+	}
+
+	async Task ChangeInfo()
+	{
+		isClick = true;
+		loading = true;
+
+		resp = await new ServerPost<DocumentDto>(WebCooker)
+			.DoRequest_POST("FileManager/RenameDocument", selectedDoc);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	void DownloadDoc()
+	{
+		if (selectedDoc != null)
+		{
+			PagesNavigation.NavigateTo(
+				ServerConnector.DoDownload($"FileManager/DownloadDocument/{selectedDoc.Id}"));
+		}
+	}
+	void DownloadHistory(int id, string time)
+	{
+		PagesNavigation.NavigateTo(
+		ServerConnector.DoDownload($"FileManager/DownloadHistoryFile/{id}/{time}"));
+	}
+
+	async Task HideDoc()
+	{
+		if (selectedDoc != null)
+		{
+			loading = true;
+
+			if (openedFolder == null)
+			{
+				var req = await new ServerDelete(WebCooker)
+					.DoRequest_DELETE($"FileManager/HideDocument/{selectedDoc.Id}");
+				resp = req;
+			}
+			else
+			{
+				var req = await new ServerDelete(WebCooker)
+					.DoRequest_DELETE($"FileManager/DeleteDocument/{selectedDoc.Id}");
+				resp = req;
+			}
+
+			await LoadDocs();
+
+			await Task.Delay(500);
+			loading = false;
+			StateHasChanged();
+		}
+	}
+
+	bool loadShare = false;
+	bool loadUsers = false;
+	List<(ProfileDto Profile, string Image)> profilesShare;
+	List<(ProfileDto Profile, string Image)> profilesFind;
+
+	async Task LoadShareProfiles()
+	{
+		if (selectedDoc != null)
+		{
+			isClick = true;
+			loadShare = true;
+
+			profilesShare = new();
+
+			var req = await new ServerGet<IEnumerable<ProfileDto>?>(WebCooker)
+			.DoRequest_GET($"FileManager/GetSharedProfiles/{selectedDoc.Id}");
+			foreach (var item in req.Value.ToList())
+			{
+				string photo = CSS_Styles.GetImage(
+					(await new ServerGet<byte[]>(WebCooker)
+					.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value);
+
+				profilesShare.Add((item, photo));
+			}
+
+			await Task.Delay(500);
+			loadShare = false;
+			StateHasChanged();
+		}
+	}
+
+	async Task DeleteShare(int profileId)
+	{
+		if (selectedDoc != null)
+		{
+			resp = await new ServerDelete(WebCooker)
+				.DoRequest_DELETE($"FileManager/DeleteShareDocument/{profileId}/{selectedDoc.Id}");
+
+			await LoadShareProfiles();
+		}
+	}
+
+	string findLine = string.Empty;
+	async Task FindProfiles()
+	{
+		if(!string.IsNullOrWhiteSpace(findLine))
+		{
+			isClick = true;
+			loadUsers = true;
+
+			profilesFind = new();
+
+			var req = await new ServerGet<IEnumerable<ProfileDto>?>(WebCooker)
+		.DoRequest_GET($"Profile/GetFind/{findLine}");
+			resp = req;
+			foreach (var item in req.Value.ToList())
+			{
+				string photo = CSS_Styles.GetImage(
+					(await new ServerGet<byte[]>(WebCooker)
+					.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value);
+
+				profilesFind.Add((item, photo));
+			}
+
+			await Task.Delay(500);
+			loadUsers = false;
+			StateHasChanged();
+		}
+	}
+
+	async Task CreateShare(int profileId)
+	{
+		if (selectedDoc != null)
+		{
+			isClick = true;
+			resp = await new ServerDelete(WebCooker)
+			.DoRequest_DELETE($"FileManager/ShareDocument/{profileId}/{selectedDoc.Id}");
+
+			await LoadShareProfiles();
+		}
+	}
+
+	async Task CreateFolder()
+	{
+		isClick = true;
+		loading = true;
+
+		FolderDto dto = new()
+		{
+			Name = "NewFolder",
+			Description = "new folder was create"
+		};
+		resp = await new ServerPost<FolderDto>(WebCooker)
+			.DoRequest_POST("FileManager/CreateFolder", dto);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task ChangeFolder()
+	{
+		isClick = true;
+		loading = true;
+
+		resp = await new ServerPost<FolderDto>(WebCooker)
+			.DoRequest_POST("FileManager/RenameFolder", selectedFolder);
+
+		await LoadDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	FolderDto selectedFolder;
+	async void SelectFolder((FolderDto Folder, ToggleStyleCSS Style) folder)
+	{
+		isClick = false;
+		for (int i = 0; i < folders.Count; i++)
+		{
+			if (folders[i].Folder.Id != folder.Folder.Id)
+				folders[i].Style.IsOpen = false;
+			else
+				folder.Style.IsOpen = !folder.Style.IsOpen;
+		}
+		for (int i = 0; i < docs.Count; i++)
+		{
+			docs[i].Style.IsOpen = false;
+		}
+
+		if (folder.Style.IsOpen)
+		{
+			selectedFolder = folder.Folder;
+			selectedDoc = null;
+			for (int i = 8; i <= 11; i++)
+				toolList[i].IsDisabled = false;
+			for (int i = 1; i <= 6; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
+
+			if (toolList[11].IsOpen)
+				await LoadShareProfilesFolder();
+		}
+		else
+		{
+			selectedFolder = null;
+			profilesFind = null;
+			for (int i = 8; i <= 11; i++)
+			{
+				toolList[i].IsOpen = false;
+				toolList[i].IsDisabled = true;
+			}
+		}
+		docListStyle = toolList.Any(x => x.IsOpen) ? "open" : "";
+	}
+
+	async Task CreateShareFolder(int profileId)
+	{
+		if (selectedFolder != null)
+		{
+			isClick = true;
+			resp = await new ServerDelete(WebCooker)
+			.DoRequest_DELETE($"FileManager/ShareFolder/{profileId}/{selectedFolder.Id}");
+
+			await LoadShareProfilesFolder();
+		}
+	}
+
+	async Task DeleteShareFolder(int profileId)
+	{
+		if (selectedFolder != null)
+		{
+			resp = await new ServerDelete(WebCooker)
+				.DoRequest_DELETE($"FileManager/DeleteShareFolder/{profileId}/{selectedFolder.Id}");
+
+			await LoadShareProfilesFolder();
+		}
+	}
+
+	async Task LoadShareProfilesFolder()
+	{
+		if (selectedFolder != null)
+		{
+			isClick = true;
+			loadShare = true;
+
+			profilesShare = new();
+
+			var req = await new ServerGet<IEnumerable<ProfileDto>?>(WebCooker)
+			.DoRequest_GET($"FileManager/GetSharedProfilesFolder/{selectedFolder.Id}");
+			foreach (var item in req.Value.ToList())
+			{
+				string photo = CSS_Styles.GetImage(
+					(await new ServerGet<byte[]>(WebCooker)
+					.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value);
+
+				profilesShare.Add((item, photo));
+			}
+
+			await Task.Delay(500);
+			loadShare = false;
+			StateHasChanged();
+		}
+	}
+
+	async Task HideFolder()
+	{
+		if (selectedFolder != null)
+		{
+			loading = true;
+
+			var req = await new ServerDelete(WebCooker)
+			.DoRequest_DELETE($"FileManager/HideFolder/{selectedFolder.Id}");
+			resp = req;
+
+			await LoadDocs();
+
+			await Task.Delay(500);
+			loading = false;
+			StateHasChanged();
+		}
+	}
+
+	FolderDto? openedFolder = null;
+	async Task OpenFolder(FolderDto folder)
+	{
+		openedFolder = folder;
+		await LoadDocs();
+
+		for (int i = 6; i <= 11; i++)
+		{
+			toolList[i].IsOpen = false;
+			toolList[i].IsDisabled = true;
+		}
+		StateHasChanged();
+	}
+
+	async Task CloseFolder()
+	{
+		openedFolder = null;
+		await LoadDocs();
+	}
+}

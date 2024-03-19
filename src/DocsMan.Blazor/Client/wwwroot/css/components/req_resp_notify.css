@@ -1,0 +1,104 @@
+.notify-block {
+	display: block;
+	position: fixed;
+	bottom: 250px;
+	left: 20px;
+	z-index: 100;
+}
+
+.notify-block h2 {
+	font-family: 'Open Sans';
+	font-size: 12px;
+}
+
+.send-req.close,
+.resp-msg.close {
+	display: none;
+}
+
+.cls-btn {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+.cls-btn.large {
+	position: absolute;
+	top: 5px;
+	right: 10px;
+}
+
+.cls-btn:hover {
+	transform: rotate(180deg);
+	transition: .5s;
+	cursor: pointer;
+}
+
+.cls-btn:not(:hover) {
+	transition: .5s;
+}
+
+.send-req {
+	padding: 10px;
+	margin-top: 30px;
+	border: 2px solid transparent;
+	border-radius: 10px;
+	text-align: left;
+	position: relative;
+
+	width: 200px;
+}
+
+.send-req>h2 {
+	font-weight: normal;
+	font-style: italic;
+}
+
+.resp-msg {
+	padding: 10px;
+	margin-top: 6px;
+	border: 2px solid transparent;
+	border-radius: 10px;
+	text-align: center;
+	position: relative;
+	text-align: left;
+}
+
+.resp-msg>h2 {
+	padding-right: 20px;
+	font-weight: bold;
+	font-style: italic;
+}
+
+.resp-msg>h2>span {
+	color: #333;
+	font-family: 'Open Sans';
+	font-weight: bold;
+	font-style: italic;
+	font-size: 12px;
+	margin-right: 5px;
+}
+
+.alert-success {
+	color: #3c763d;
+	background: #dff0d8;
+	border-color: #aedea8;
+}
+
+.alert-info {
+	color: #31708f;
+	background: #d9edf7;
+	border-color: #bce8f1;
+}
+
+.alert-warning {
+	color: #8a6d3b;
+	background: #fcf8e3;
+	border-color: #efddb9;
+}
+
+.alert-danger {
+	color: #a94442;
+	background: #f2dede;
+	border-color: #ebccd1;
+}

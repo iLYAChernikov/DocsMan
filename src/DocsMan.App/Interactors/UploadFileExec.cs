@@ -1,6 +1,7 @@
 using DocsMan.App.Storage.RepositoryPattern;
 using DocsMan.App.Storage.Transaction;
 using DocsMan.Blazor.Shared.OutputData;
+using DocsMan.Domain.BinderEntity;
 using DocsMan.Domain.Entity;
 
 namespace DocsMan.App.Interactors
@@ -8,12 +9,14 @@ namespace DocsMan.App.Interactors
 	public class UploadFileExec
 	{
 		private IRepository<UploadFile> _fileRepos;
+		private IBindingRepository<Folder_Document> _bindFolderDocs;
 		private IUnitWork _unitWork;
 
-		public UploadFileExec(IRepository<UploadFile> fileRepos, IUnitWork unitWork)
+		public UploadFileExec(IRepository<UploadFile> fileRepos, IUnitWork unitWork, IBindingRepository<Folder_Document> bindFolderDocs)
 		{
 			_fileRepos = fileRepos;
 			_unitWork = unitWork;
+			_bindFolderDocs = bindFolderDocs;
 		}
 
 		private string GetOnlyFileResolution(string fileName) =>
@@ -24,7 +27,7 @@ namespace DocsMan.App.Interactors
 		{
 			var howNow = DateTime.Now;
 			string name = GetOnlyFileName(fileName);
-			string tempName = $"{name}_{howNow.Day}.{howNow.Month}.{howNow.Year}_{howNow.Hour}.{howNow.Minute}.{howNow.Second}";
+			string tempName = $"{name}_{howNow.ToShortDateString()}_{howNow.Hour:D2}.{howNow.Minute:D2}.{howNow.Second:D2}";
 			return tempName + GetOnlyFileResolution(fileName);
 		}
 
@@ -39,18 +42,18 @@ namespace DocsMan.App.Interactors
 				await _fileRepos.CreateAsync(newFile);
 				await _unitWork.Commit();
 
-				using ( var nfs = new FileStream(storagePath + newFile.FilePath, FileMode.Create) )
+				using (var nfs = new FileStream(storagePath + newFile.FilePath, FileMode.Create))
 				{
 					await fileStream.CopyToAsync(nfs);
 				}
 
 				return new((newFile.Id, GetOnlyFileName(fileName), GetOnlyFileResolution(fileName)));
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new($"Пустые входные данные: {ex.ParamName}", "Internal error of entity null props");
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
 			{
 				return new("Ошибка создания", ex.Message);
 			}
@@ -64,7 +67,7 @@ namespace DocsMan.App.Interactors
 			await _fileRepos.DeleteAsync(fileId);
 			await _unitWork.Commit();
 
-			if ( File.Exists(storagePath + path) )
+			if (File.Exists(storagePath + path))
 				File.Delete(storagePath + path);
 
 			return new();
@@ -75,25 +78,91 @@ namespace DocsMan.App.Interactors
 			try
 			{
 				var file = await _fileRepos.GetOneAsync(fileId);
-				if ( file == null )
+				if (file == null)
 					return new("Файл не существует", "File not exist");
 
-				using ( var nfs = new FileStream(storagePath + file.FilePath, FileMode.Open) )
+				using (var nfs = new FileStream(storagePath + file.FilePath, FileMode.Open))
 				{
 					var ms = new MemoryStream();
 					await nfs.CopyToAsync(ms);
 					return new((GetOnlyFileResolution(file.FilePath), ms.ToArray()));
 				}
 			}
-			catch ( ArgumentNullException ex )
+			catch (ArgumentNullException ex)
 			{
 				return new("Пустые входные данные", ex.ParamName);
 			}
-			catch ( NullReferenceException ex )
+			catch (NullReferenceException ex)
 			{
 				return new("Запись не найдена", ex.Message);
 			}
-			catch ( Exception ex )
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response<string>> GetSizeFile(int fileId, string storagePath)
+		{
+			try
+			{
+				var file = await _fileRepos.GetOneAsync(fileId);
+				if (file == null)
+					return new("Файл не существует", "File not exist");
+
+				var size = new FileInfo(storagePath + file.FilePath).Length;
+				if (size >= 1073741824)
+					return new($"{(size / 1073741824.0):F2} Gb");
+				if (size >= 1048576)
+					return new($"{(size / 1048576.0):F2} Mb");
+				if (size >= 1024)
+					return new($"{(size / 1024.0):F2} Kb");
+				return new($"{size} byte");
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return new("Ошибка получения", ex.Message);
+			}
+		}
+
+		public async Task<Response<(string Size, int Count)>> GetSizeFolder(int folderId, string storagePath)
+		{
+			try
+			{
+				var files = (await _bindFolderDocs.GetAllBindsNoTracking())?
+					.Where(x => x.FolderId == folderId)
+					.Select(x => x.Document.File);
+				int count = files.Count();
+				long size = 0;
+				foreach (var item in files)
+				{
+					size += new FileInfo(storagePath + item.FilePath).Length;
+				}
+				if (size >= 1073741824)
+					return new(($"{(size / 1073741824.0):F2} Gb", count));
+				if (size >= 1048576)
+					return new(($"{(size / 1048576.0):F2} Mb", count));
+				if (size >= 1024)
+					return new(($"{(size / 1024.0):F2} Kb", count));
+				return new(($"{size} byte", count));
+			}
+			catch (ArgumentNullException ex)
+			{
+				return new("Пустые входные данные", ex.ParamName);
+			}
+			catch (NullReferenceException ex)
+			{
+				return new("Запись не найдена", ex.Message);
+			}
+			catch (Exception ex)
 			{
 				return new("Ошибка получения", ex.Message);
 			}

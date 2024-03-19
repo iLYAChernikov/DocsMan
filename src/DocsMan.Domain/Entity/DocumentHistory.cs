@@ -7,7 +7,7 @@ namespace DocsMan.Domain.Entity
 			get => _documentId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id документа");
 				_documentId = value;
 			}
@@ -19,17 +19,28 @@ namespace DocsMan.Domain.Entity
 			get => _fileId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id файла");
 				_fileId = value;
 			}
 		}
 		public UploadFile File { get; set; }
 
-		public DateTime DateTimeOfChanges { get; set; } = DateTime.Now;
+		public string DateTimeOfChanges
+		{
+			get => _datetime;
+			set
+			{
+				if (string.IsNullOrWhiteSpace(value))
+					throw new ArgumentNullException("Ошибка заполнения даты-времени истории");
+				_datetime = value;
+			}
+		}
+
 		public string? Description { get; set; } = string.Empty;
 
 		private int _documentId;
 		private int _fileId;
+		private string _datetime = string.Empty;
 	}
 }

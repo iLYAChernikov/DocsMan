@@ -1,0 +1,212 @@
+@page "/Admin/Role"
+@layout AdminLayout
+@using DocsMan.Blazor.Shared.DTOs
+
+<PageTitle>Role</PageTitle>
+
+<h3 class="page-title">Roles</h3>
+
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	<div class="dm-add-new">
+		<h3>Add Role</h3>
+		<div class="set-data">
+			<label for="role-name">Role Name</label>
+			<br>
+			<InputText @bind-Value="@newRole.Title" id="role-name"></InputText>
+		</div>
+		<div class="set-data">
+			<label for="role-desc">Role Desc</label>
+			<br>
+			<InputText @bind-Value="@newRole.Description" id="role-desc"></InputText>
+		</div>
+		<button @onclick="@CreateRole" class="dm-btn create">Create</button>
+	</div>
+
+	@if (roles != null)
+	{
+		<div class="dm-list">
+			<a @onclick="@LoadRoleList" class="update-list">
+				<i class="fas fa-sync-alt"></i>
+			</a>
+			<table class="dm-table">
+				<tr>
+					<td>Title</td>
+					<td>Description</td>
+					<td>Users</td>
+					<td>Delete</td>
+				</tr>
+				@foreach (var item in roles)
+				{
+					<tr>
+						<td>@item.Title</td>
+						<td>@item.Description</td>
+						<td>
+							<a @onclick="() => GetProfiles(item)" class="link-icon">
+								<i class="fas fa-user-friends"></i>
+							</a>
+						</td>
+						<td>
+							<a @onclick="() => DeleteRole(item.Id)" class="delete-icon">
+								<i class="fas fa-trash-alt"></i>
+							</a>
+						</td>
+					</tr>
+				}
+			</table>
+		</div>
+
+		@if (chosenRole != null)
+		{
+			<div class="dm-list">
+				<h3>Chosen role: @chosenRole.Title</h3>
+				@if ( chosenRole.Id != 1 )
+				{
+					<a style="display: none;" class="add-users">
+						<i class="fas fa-user-plus"></i>
+					</a>
+				}
+				@if (profiles != null && images != null)
+				{
+					<a @onclick="() => GetProfiles(chosenRole)" class="update-list">
+						<i class="fas fa-sync-alt"></i>
+					</a>
+					<table class="dm-table">
+						<tr>
+							<td>Photo</td>
+							<td>FIO</td>
+							<td>Email</td>
+							<td>Delete</td>
+						</tr>
+						@if (profiles.Count > 0 && images.Count > 0)
+						{
+							@for (int i = 0; i < profiles.Count(); i++)
+							{
+								<tr>
+									<td>
+										<img src="@images[i]" alt="@profiles[i].Short_FIO">
+									</td>
+									<td>
+										<a href="User/Profile/@profiles[i].Email" class="to-user">
+											@profiles[i].Full_FIO
+										</a>
+									</td>
+									<td>@profiles[i].Email</td>
+									<td>
+										@if (chosenRole.Id != 1 && !(chosenRole.Id == 2 && profiles[i].UserId == 1))
+										{
+											<a class="delete-icon">
+												<i class="fas fa-user-minus"></i>
+											</a>
+										}
+									</td>
+								</tr>
+							}
+						}
+					</table>
+				}
+			</div>
+		}
+	}
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
+@code {
+
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+	IEnumerable<RoleDto>? roles;
+	RoleDto? chosenRole;
+	List<ProfileDto>? profiles;
+	List<string>? images;
+	RoleDto newRole = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadRoleList();
+	}
+
+	async Task LoadRoleList()
+	{
+		isClick = true;
+		var req = await new ServerGet<IEnumerable<RoleDto>>(WebCooker)
+		.DoRequest_GET("Role/GetAll");
+
+		resp = req;
+		roles = req?.Value;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task GetProfiles(RoleDto role)
+	{
+		chosenRole = role;
+		resp = null;
+		loading = true;
+
+		var req = await new ServerGet<IEnumerable<ProfileDto>>(WebCooker)
+		.DoRequest_GET($"Role/GetProfiles/{role.Id}");
+
+		resp = req;
+		profiles = req.Value?.ToList();
+		await GetPhotos();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task GetPhotos()
+	{
+		if (profiles != null)
+		{
+			images = new();
+			foreach (var item in profiles)
+			{
+				images.Add(CSS_Styles.GetImage(
+				(await new ServerGet<byte[]>(WebCooker)
+				.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value));
+			}
+		}
+	}
+
+	async Task CreateRole()
+	{
+		resp = null;
+		loading = true;
+		isClick = true;
+
+		var req = await new ServerPost<RoleDto>(WebCooker)
+		.DoRequest_POST($"Role/Create", newRole);
+
+		resp = req;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task DeleteRole(int roleId)
+	{
+		resp = null;
+		loading = true;
+		isClick = true;
+
+		var req = await new ServerDelete(WebCooker)
+		.DoRequest_DELETE($"Role/Delete/{roleId}");
+
+		resp = req;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+}

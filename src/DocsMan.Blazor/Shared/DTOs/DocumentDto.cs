@@ -12,5 +12,6 @@ namespace DocsMan.Blazor.Shared.DTOs
 		public int FileId { get; set; }
 
 		public bool IsDeleted { get; set; } = false;
+		public string? FileSize { get; set; } = string.Empty;
 	}
 }

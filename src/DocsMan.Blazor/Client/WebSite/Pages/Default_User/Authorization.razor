@@ -1,0 +1,67 @@
+@page "/User/Authorization"
+@using DocsMan.Blazor.Client.WebSite.Shared.Layouts;
+@layout EmptyLayout
+@using DocsMan.Blazor.Shared.Helpers;
+
+<PageTitle>Авторизация</PageTitle>
+
+<div class="form-page">
+	<div class="form-box">
+
+		<div class="set-center-text">
+			<h1>Авторизация</h1>
+		</div>
+
+		<div class="form-group">
+			<label class="label-for-input" for="Email">Email:</label>
+			<InputText @bind-Value="user.Email" id="Email" class="form-control-text" placeholder="Email address" tabindex="1" />
+		</div>
+		<br>
+		<div class="form-group">
+			<label class="label-for-input" for="Pass">Пароль:</label>
+			<InputText @bind-Value="user.Password" type="@PasswordType" id="Pass" class="form-control-text"
+				placeholder="Password" tabindex="2" />
+
+			<span @onclick="HidePass" class="eye-pass-icon">
+				@if (hide_password)
+				{
+					<i class="fas fa-eye-slash"></i>
+				}
+				else
+				{
+					<i class="fas fa-eye"></i>
+				}
+			</span>
+		</div>
+		<br>
+		<div class="button-group">
+			<button tabindex="3" class="btn-auth" @onclick=Submit>Войти</button>
+			<button tabindex="4" class="btn-auth" @onclick=GoToReg>Регистрация</button>
+		</div>
+	</div>
+	<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+</div>
+
+@code
+{
+	bool hide_password = true;
+	string PasswordType => hide_password ? "password" : "text";
+	void HidePass() => hide_password = !hide_password;
+
+	bool isClick = false;
+	RequestResultDto? resp;
+
+	AuthDto user = new();
+
+	async Task Submit()
+	{
+		isClick = true;
+
+		var helper = new ServerConnector(WebCooker);
+		resp = await helper.DoAuthorization(user);
+
+		if (await helper.IsUserAuthorized()) GoToHome();
+	}
+	void GoToHome() => PagesNavigation.NavigateTo("/");
+	void GoToReg() => PagesNavigation.NavigateTo("/User/Registration");
+}

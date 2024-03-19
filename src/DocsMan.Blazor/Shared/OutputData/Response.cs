@@ -36,17 +36,14 @@ namespace DocsMan.Blazor.Shared.OutputData
 	{
 		public T? Value { get; set; }
 
-		public Response(T? data)
+		public Response() : base() { }
+
+		public Response(T? data) : base()
 		{
 			Value = data;
 			IsSuccess = true;
 		}
 
-		public Response(string? errorMessage, string? errorInfo)
-		{
-			IsSuccess = false;
-			ErrorMessage = errorMessage;
-			ErrorInfo = errorInfo;
-		}
+		public Response(string? errorMessage, string? errorInfo) : base(errorMessage, errorInfo) { }
 	}
 }

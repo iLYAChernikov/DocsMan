@@ -1,0 +1,93 @@
+.notify-page {
+	margin-top: 30px;
+	margin-left: 100px;
+	overflow-y: auto;
+}
+
+.notify-page p,
+.notify-page h3 {
+	font-family: 'Open Sans';
+}
+
+.load a {
+	position: absolute;
+	left: 56%;
+	top: 120px;
+	color: var(--dm-green-sea-l);
+	scale: 1.2;
+	transition: 1s;
+}
+
+.load a:hover {
+	cursor: pointer;
+	color: var(--dm-malina-d);
+	transform: rotate(360deg);
+	transition: 1s;
+}
+
+.notify-page .msg:first-child {
+	margin-top: 40px;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+}
+
+.notify-page .msg:last-child {
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
+	border-bottom: none;
+}
+
+.notify-page .msg {
+	position: relative;
+	width: 80%;
+	padding: 20px;
+	padding-left: 80px;
+	background: #1952c322;
+	border-bottom: 2px var(--dm-blue) solid;
+}
+
+.notify-page .msg .point {
+	position: absolute;
+	top: 40%;
+	left: 30px;
+	scale: 1.2;
+	color: var(--dm-blue-d);
+	transition: .5s;
+}
+
+.notify-page .msg .point:hover {
+	cursor: pointer;
+	color: var(--dm-malina-d);
+	transition: .5s;
+}
+
+.notify-page .msg h3 {
+	margin-bottom: 10px;
+	font-size: 18px;
+}
+
+.notify-page .msg p {
+	font-style: italic;
+}
+
+.notify-page .msg p:last-child {
+	position: absolute;
+	top: 10px;
+	right: 20px;
+	text-align: end;
+	color: var(--dm-siren-d);
+}
+
+.notify-page .msg a {
+	position: absolute;
+	right: 20px;
+	bottom: 10px;
+	color: var(--dm-malina-d);
+	transition: .5s;
+}
+
+.notify-page .msg a:hover {
+	cursor: pointer;
+	transform: scale(1.2);
+	transition: .5s;
+}

@@ -1,0 +1,76 @@
+<div class="nav-dark-header">
+
+	<ul class="nav-dark-brand">
+		<li>
+			<a href="/">DocsMan</a>
+		</li>
+	</ul>
+
+	<ul class="nav-dark-header-menu">
+
+		<li class="nav-dark-header-menu-list">
+			<i class="fas fa-bell">
+				<a class="nav-button" href="User/Notify"></a>
+				@if (IsNotifyNotRead)
+				{
+					<div class="exist-notify">
+						<i class="fas fa-circle"></i>
+					</div>	
+				}			
+			</i>
+		</li>
+
+		<li class="nav-dark-header-menu-list @GetMenuType(profileMenu)" @onclick="()=>OpenSubmenu(profileMenu)">
+
+			<div class="menu-profile-photo">
+				<img src="@PhotoUrl" alt="@UserName Photo">
+			</div>
+
+			<a class="title">@UserName</a>
+				<div class="caret-icon">
+				@if (profileMenu.IsOpen)
+				{
+					<i class="fas fa-angle-up"></i>
+				}
+				else
+				{
+					<i class="fas fa-angle-down"></i>
+				}
+				</div>
+			<ul class="nav-dark-submenu @GetMenuType(profileMenu)">
+				@foreach (var sub in profileMenu.Submenus)
+				{
+					<li class="nav-dark-submenu-list">
+						<div class="submenu-icon">
+							<i class="@sub.Icon"></i>
+						</div>
+						<a class="nav-link" href="@sub.HrefUrl">
+							@sub.Title
+						</a>
+					</li>
+				}
+			</ul>
+		</li>
+
+		<li class="nav-dark-header-menu-list">
+			<i class="fas fa-sign-out-alt">
+				<a class="nav-button" href="WantLogout"></a>
+			</i>
+		</li>
+
+	</ul>
+</div>
+
+@code {
+	string GetMenuType(DropdownMenu menuItem) => menuItem.IsOpen ? "open" : "";
+	void OpenSubmenu(DropdownMenu menuItem) => menuItem.IsOpen = !menuItem.IsOpen;
+
+	[Parameter]
+	public string PhotoUrl { get; set; }
+	[Parameter]
+	public bool IsNotifyNotRead { get; set; }
+	[Parameter]
+	public string UserName { get; set; }
+
+	DropdownMenu profileMenu = HeaderNavMenuList.headerMenu[0];
+}

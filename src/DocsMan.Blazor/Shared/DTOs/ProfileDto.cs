@@ -9,6 +9,8 @@ namespace DocsMan.Blazor.Shared.DTOs
 		public string SurName { get; set; } = null!;
 		public string Name { get; set; } = null!;
 		public string LastName { get; set; } = null!;
+		public string Full_FIO => $"{SurName} {Name} {LastName}";
+		public string Short_FIO => $"{SurName} {Name[0]}.{LastName[0]}.";
 
 		public DateTime Birthdate { get; set; } = DateTime.Now;
 		public GenderDto Gender { get; set; } = GenderDto.Man;

@@ -8,7 +8,7 @@ namespace DocsMan.Adapter.EntityConfigurations
 	{
 		public void Configure(EntityTypeBuilder<Folder_Document> builder)
 		{
-			builder.HasKey(x => new { x.FolderId, x.FileId });
+			builder.HasKey(x => new { x.FolderId, x.DocumentId });
 		}
 	}
 }

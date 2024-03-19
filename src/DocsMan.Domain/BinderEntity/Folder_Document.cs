@@ -9,26 +9,26 @@ namespace DocsMan.Domain.BinderEntity
 			get => _folderId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id папки");
 				_folderId = value;
 			}
 		}
 		public Folder Folder { get; set; }
 
-		public int FileId
+		public int DocumentId
 		{
-			get => _fileId;
+			get => _docId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id файла");
-				_fileId = value;
+				_docId = value;
 			}
 		}
-		public UploadFile File { get; set; }
+		public Document Document { get; set; }
 
 		private int _folderId;
-		private int _fileId;
+		private int _docId;
 	}
 }

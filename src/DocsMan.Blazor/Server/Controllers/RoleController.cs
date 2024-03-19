@@ -1,10 +1,12 @@
 using DocsMan.App.Interactors;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.OutputData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocsMan.Blazor.Server.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class RoleController : ControllerBase
@@ -46,8 +48,8 @@ namespace DocsMan.Blazor.Server.Controllers
 			return await _master.GetOne(title);
 		}
 
-		[HttpGet("GetUsers/{roleId}")]
-		public async Task<Response<IEnumerable<UserDto?>?>> GetUsers(int roleId)
+		[HttpGet("GetProfiles/{roleId}")]
+		public async Task<Response<IEnumerable<ProfileDto?>?>> GetUsers(int roleId)
 		{
 			return await _master.GetUsers(roleId);
 		}

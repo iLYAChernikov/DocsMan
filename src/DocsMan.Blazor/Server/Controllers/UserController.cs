@@ -1,10 +1,12 @@
 using DocsMan.App.Interactors;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.OutputData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocsMan.Blazor.Server.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class UserController : ControllerBase
@@ -16,6 +18,7 @@ namespace DocsMan.Blazor.Server.Controllers
 			_master = master;
 		}
 
+		[AllowAnonymous]
 		[HttpPost("Create")]
 		public async Task<Response> Create(UserDto user)
 		{

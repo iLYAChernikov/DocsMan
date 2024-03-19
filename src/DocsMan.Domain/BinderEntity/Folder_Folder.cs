@@ -9,7 +9,7 @@ namespace DocsMan.Domain.BinderEntity
 			get => _ownerId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id родительской папки");
 				_ownerId = value;
 			}
@@ -21,7 +21,7 @@ namespace DocsMan.Domain.BinderEntity
 			get => _childId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id вложенной папки");
 				_childId = value;
 			}

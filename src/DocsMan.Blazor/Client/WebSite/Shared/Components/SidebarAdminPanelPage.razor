@@ -1,0 +1,15 @@
+<div class="nav-dark-sidebar">
+	<ul class="nav-dark-sidebar-menu">
+
+		@foreach (var menuItem in SideBarNavMenuList.adminPanelMenu)
+		{
+			<li class="nav-dark-sidebar-menu-list">
+				<span class="side-menu-item-icon">
+					<i class="fas @menuItem.Icon"></i>
+				</span>
+				<a class="title" href="@menuItem.HrefUrl">@menuItem.Title</a>
+			</li>
+		}
+
+	</ul>
+</div>

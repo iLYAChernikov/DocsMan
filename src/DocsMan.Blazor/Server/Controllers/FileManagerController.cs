@@ -4,10 +4,14 @@ using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Blazor.Shared.DTOs;
 using DocsMan.Blazor.Shared.Helpers;
 using DocsMan.Blazor.Shared.OutputData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocsMan.Blazor.Server.Controllers
 {
+	[Authorize]
+	[ApiController]
+	[Route("[controller]")]
 	public class FileManagerController : ControllerBase
 	{
 		private FileManagerExec _master;
@@ -22,10 +26,12 @@ namespace DocsMan.Blazor.Server.Controllers
 		[HttpPost("AddDocument")]
 		public async Task<Response> AddDoc(DataFile file)
 		{
-			if ( file.FileData == null ) return new("Нет файла", "Empty file");
+			if (file.FileData == null)
+				return new("Нет файла", "Empty file");
 
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.AddDocument
 				(
@@ -35,31 +41,167 @@ namespace DocsMan.Blazor.Server.Controllers
 				);
 		}
 
+		[HttpPost("AddFolderDocument/{folderId}")]
+		public async Task<Response> AddFolderDoc(DataFile file, int folderId)
+		{
+			if (file.FileData == null)
+				return new("Нет файла", "Empty file");
+
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.AddFolderDocument
+				(
+					ident.Value, folderId, file.FileName,
+					PathStorage.Files_Dir, new MemoryStream(file.FileData),
+					"NewFile"
+				);
+		}
+
+		[HttpPost("CreateFolder")]
+		public async Task<Response> AddFolder(FolderDto dto)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.CreateFolder(ident.Value, dto);
+		}
+
+		[HttpGet("GetDocs")]
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetAllDocs()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetDocs(ident.Value, PathStorage.Files_Dir);
+		}
+
+		[HttpGet("GetFolders")]
+		public async Task<Response<IEnumerable<FolderDto>?>> GetAllFolders()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetFolders(ident.Value, PathStorage.Files_Dir);
+		}
+
+		[HttpGet("GetFolderDocs/{folderId}")]
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetFolderDocs(int folderId)
+		{
+			return await _master.GetFolderDocs(folderId, PathStorage.Files_Dir);
+		}
+
+		[HttpGet("GetTrash")]
+		public async Task<Response<IEnumerable<DocumentDto>?>> GetTrash()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetTrash(ident.Value, PathStorage.Files_Dir);
+		}
+
+		[HttpGet("GetFolderTrash")]
+		public async Task<Response<IEnumerable<FolderDto>?>> GetFolderTrash()
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return new(ident.ErrorMessage, ident.ErrorInfo);
+			else
+				return await _master.GetFolderTrash(ident.Value, PathStorage.Files_Dir);
+		}
+
+		[HttpGet("GetHistory/{docId}")]
+		public async Task<Response<IEnumerable<DocumentHistoryDto>?>> GetDocHistory(int docId)
+		{
+			return await _master.GetHistory(docId);
+		}
+
 		[HttpDelete("HideDocument/{docId}")]
 		public async Task<Response> HideDoc(int docId)
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.HideDocument(ident.Value, docId);
+		}
+
+		[HttpDelete("HideFolder/{folderId}")]
+		public async Task<Response> HideFolder(int folderId)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.HideFolder(ident.Value, folderId);
+		}
+
+		[HttpDelete("ReturnDocument/{docId}")]
+		public async Task<Response> ReturnDoc(int docId)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.ReturnDocument(ident.Value, docId);
+		}
+
+		[HttpDelete("ReturnFolder/{folderId}")]
+		public async Task<Response> ReturnFolder(int folderId)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.ReturnFolder(ident.Value, folderId);
+		}
+
+		[HttpDelete("DeleteDocument/{docId}")]
+		public async Task<Response> DeleteDoc(int docId)
+		{
+			return await _master.DeleteDocument(docId, PathStorage.Files_Dir);
+		}
+
+		[HttpDelete("DeleteFolder/{folderId}")]
+		public async Task<Response> DeleteFolder(int folderId)
+		{
+			return await _master.DeleteFolder(folderId, PathStorage.Files_Dir);
 		}
 
 		[HttpPost("RenameDocument")]
 		public async Task<Response> RenameDoc(DocumentDto dto)
 		{
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.RenameDocument(ident.Value, dto.Id, dto.Name, dto.Description);
+		}
+
+		[HttpPost("RenameFolder")]
+		public async Task<Response> ChangeFolder(FolderDto dto)
+		{
+			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
+			if (!ident.IsSuccess)
+				return ident;
+
+			return await _master.RenameFolder(ident.Value, dto.Id, dto.Name, dto.Description);
 		}
 
 		[HttpPost("ChangeFile")]
 		public async Task<Response> ChangeFile(DataFile file)
 		{
-			if ( file.FileData == null ) return new("Нет файла", "Empty file");
+			if (file.FileData == null)
+				return new("Нет файла", "Empty file");
 
 			var ident = await _auth.GetProfileId(User.FindFirstValue(ClaimTypes.UserData));
-			if ( !ident.IsSuccess ) return ident;
+			if (!ident.IsSuccess)
+				return ident;
 
 			return await _master.ChangeFile
 				(
@@ -69,24 +211,62 @@ namespace DocsMan.Blazor.Server.Controllers
 				);
 		}
 
+		[AllowAnonymous]
 		[HttpGet("DownloadDocument/{docId}")]
 		public async Task<ActionResult> DownloadDoc(int docId)
 		{
 			var resp = await _master.DownloadFile(docId, PathStorage.Files_Dir);
-			if ( resp.IsSuccess && resp.Value?.FileData != null )
+			if (resp.IsSuccess && resp.Value?.FileData != null)
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
 		}
 
-		[HttpGet("DownloadHistoryFile")]
-		public async Task<ActionResult> DownloadHistory(DocumentHistoryDto dto)
+		[AllowAnonymous]
+		[HttpGet("DownloadHistoryFile/{docId}/{time}")]
+		public async Task<ActionResult> DownloadHistory(int docId, string time)
 		{
-			var resp = await _master.DownloadHistoryFile(dto, PathStorage.Files_Dir);
-			if ( resp.IsSuccess && resp.Value?.FileData != null )
+			var resp = await _master.DownloadHistoryFile(docId, time, PathStorage.Files_Dir);
+			if (resp.IsSuccess && resp.Value?.FileData != null)
 				return File(resp.Value.FileData, "application/x-rar-compressed", resp.Value.FileName);
 			else
 				return NotFound($"{resp.ErrorInfo} {resp.ErrorMessage}");
+		}
+
+		[HttpGet("GetSharedProfiles/{docId}")]
+		public async Task<Response<IEnumerable<ProfileDto>?>> GetShare(int docId)
+		{
+			return await _master.GetSharedProfiles(docId);
+		}
+
+		[HttpGet("GetSharedProfilesFolder/{folderId}")]
+		public async Task<Response<IEnumerable<ProfileDto>?>> GetShareForFolder(int folderId)
+		{
+			return await _master.GetSharedProfilesFolder(folderId);
+		}
+
+		[HttpDelete("ShareDocument/{profileId}/{docId}")]
+		public async Task<Response> ShareDoc(int profileId, int docId)
+		{
+			return await _master.ShareDocument(profileId, docId);
+		}
+
+		[HttpDelete("DeleteShareDocument/{profileId}/{docId}")]
+		public async Task<Response> DelShareDoc(int profileId, int docId)
+		{
+			return await _master.DeleteShareDocument(profileId, docId);
+		}
+
+		[HttpDelete("ShareFolder/{profileId}/{folderId}")]
+		public async Task<Response> ShareFolder(int profileId, int folderId)
+		{
+			return await _master.ShareFolder(profileId, folderId);
+		}
+
+		[HttpDelete("DeleteShareFolder/{profileId}/{folderId}")]
+		public async Task<Response> DelShareFolder(int profileId, int folderId)
+		{
+			return await _master.DeleteShareFolder(profileId, folderId);
 		}
 	}
 }

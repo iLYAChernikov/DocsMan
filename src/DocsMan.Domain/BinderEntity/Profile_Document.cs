@@ -9,7 +9,7 @@ namespace DocsMan.Domain.BinderEntity
 			get => _profileId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id профиля");
 				_profileId = value;
 			}
@@ -21,7 +21,7 @@ namespace DocsMan.Domain.BinderEntity
 			get => _documentId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id документа");
 				_documentId = value;
 			}

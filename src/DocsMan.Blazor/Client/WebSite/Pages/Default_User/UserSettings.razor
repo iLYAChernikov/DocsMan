@@ -1,0 +1,154 @@
+@page "/User/Profile/Settings/{ProfileId:int?}"
+@layout MainLayout
+@using DocsMan.Blazor.Shared.DTOs
+
+<PageTitle>Настройки</PageTitle>
+
+<h3 class="page-title">Настройки</h3>
+@if (IsAdmin)
+{
+	<h3 class="page-title">Admin View</h3>
+}
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	@if (profile != null)
+	{
+		<div class="profile-block">
+			<div class="photo">
+				<img src="@imageUrl" alt="@profile.Short_FIO">
+			</div>
+			<div class="info">
+				<div class="prop">
+					<h1>ФИО</h1>
+					<div class="prop-fio">
+						<InputText @bind-Value="profile.SurName"></InputText>
+						<InputText @bind-Value="profile.Name"></InputText>
+						<InputText @bind-Value="profile.LastName"></InputText>
+					</div>
+				</div>
+				<div class="prop">
+					<h1>Email</h1>
+					<h2>@profile.Email</h2>
+				</div>
+				<div class="prop">
+					<h1>Дата рождения</h1>
+					<InputDate @bind-Value="profile.Birthdate"></InputDate>
+				</div>
+				<div class="prop">
+					<h1>Пол</h1>
+					<InputSelect @bind-Value="profile.Gender">
+						<option value="@GenderDto.Man">@GenderDto.Man</option>
+						<option value="@GenderDto.Woman">@GenderDto.Woman</option>
+					</InputSelect>
+				</div>
+				<div class="prop">
+					<h1>Телефон</h1>
+					<InputText @bind-Value="profile.PhoneNumber"></InputText>
+				</div>
+				<button class="dm-btn create" @onclick="@Submit">Изменить</button>
+			</div>
+		</div>
+	}
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
+@code {
+	[Parameter]
+	public int ProfileId { get; set; } = 0;
+	bool IsAdmin;
+
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+	ProfileDto? profile;
+	string imageUrl;
+
+	protected override async void OnInitialized()
+	{
+		loading = true;
+		if (ProfileId <= 0)
+		{
+			ProfileId = await GetProfileId();
+			await GetProfile();
+		}
+		else
+		{
+			await GetProfile();
+			if (ProfileId != await GetProfileId() && !await IsAdminCheck())
+			{
+				PagesNavigation.NavigateTo("/User/Profile/Settings");
+			}
+			IsAdmin = await IsAdminCheck();
+		}
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task<int> GetProfileId()
+	{
+		var id_resp = await new ServerGet<int>(WebCooker)
+		.DoRequest_GET("Auth/GetProfileId");
+		if (id_resp.Response.IsSuccess)
+			return id_resp.Value;
+		else
+		{
+			resp = id_resp;
+			return 0;
+		}
+	}
+
+	async Task<bool> IsAdminCheck()
+	{
+		var req = await new ServerGet<bool>(WebCooker)
+		.DoRequest_GET("Auth/IsAdmin");
+		if (req != null)
+			return req.Value;
+		else
+			return false;
+	}
+
+	async Task GetProfile()
+	{
+		var req = await new ServerGet<ProfileDto>(WebCooker)
+		.DoRequest_GET($"Profile/GetOneById/{ProfileId}");
+		if (req == null || !req.Response.IsSuccess)
+		{
+			resp = req;
+			return;
+		}
+		else
+		{
+			profile = req.Value;
+			await GetPhoto();
+		}
+	}
+
+	async Task GetPhoto()
+	{
+		var photo = await new ServerGet<byte[]>(WebCooker)
+		.DoRequest_GET($"Profile/GetPersonalPhoto/{profile.Id}");
+		if (photo != null)
+			imageUrl = CSS_Styles.GetImage(photo.Value);
+	}
+
+	async Task Submit()
+	{
+		resp = null;
+		isClick = true;
+		loading = true;
+
+		resp = await new ServerPost<ProfileDto>(WebCooker)
+		.DoRequest_POST("Profile/ChangeInfo", profile);
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+}

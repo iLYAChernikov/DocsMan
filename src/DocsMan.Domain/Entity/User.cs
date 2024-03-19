@@ -7,7 +7,7 @@ namespace DocsMan.Domain.Entity
 			get => _id;
 			set
 			{
-				if ( value < 0 )
+				if (value < 0)
 					throw new ArgumentNullException("Ошибка заполнения id пользователя");
 				_id = value;
 			}
@@ -17,7 +17,7 @@ namespace DocsMan.Domain.Entity
 			get => _email;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения почты пользователя");
 				_email = value;
 			}
@@ -27,7 +27,7 @@ namespace DocsMan.Domain.Entity
 			get => _password;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения пароля пользователя");
 				_password = value;
 			}

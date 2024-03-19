@@ -1,0 +1,149 @@
+@page "/Admin/Notify"
+@layout AdminLayout
+@using DocsMan.Blazor.Shared.DTOs
+
+<PageTitle>Notify</PageTitle>
+
+<h3 class="page-title">Notifying</h3>
+
+<div class="dm-add-new">
+	<div class="set-data">
+		<label for="ttl">Title:</label>
+		<br>
+		<InputText @bind-Value="notifyNew.Title" id="ttl"></InputText>
+	</div>
+	<div class="set-data">
+		<label for="desc">Description:</label>
+		<br>
+		<InputText @bind-Value="notifyNew.Description" id="desc"></InputText>
+	</div>
+</div>
+<div class="dm-add-new">
+	<div class="set-data">
+		<label for="find">FIO/Email:</label>
+		<br>
+		<InputText @bind-Value="findLine" id="find"></InputText>
+	</div>
+	<button @onclick="@FindProfiles" class="dm-btn create">Find Users</button>
+</div>
+@if (loadUsers)
+{
+	<SpinnerLoading />
+}
+else
+{
+	@if (profilesFind != null)
+	{
+		<table class="dm-table">
+			<tr>
+				<td>Photo</td>
+				<td>FIO</td>
+				<td>Email</td>
+				<td>Add</td>
+			</tr>
+			@if (profilesFind.Count > 0)
+			{
+				@foreach (var item in profilesFind)
+				{
+					<tr>
+						<td>
+							<img src="@item.Image" alt="@item.Profile.Full_FIO">
+						</td>
+						<td>
+							@item.Profile.Full_FIO
+						</td>
+						<td>
+							@item.Profile.Email
+						</td>
+						<td>
+							<a @onclick="() => AddProfile(item.Profile.Id)" style="color:var(@CheckSelect(item.Profile.Id))">
+								<i class="fa-solid fa-user"></i>
+							</a>
+						</td>
+					</tr>
+				}
+			}
+		</table>
+	}
+}
+@if (!string.IsNullOrWhiteSpace(notifyNew.Title) &&
+	 !string.IsNullOrWhiteSpace(notifyNew.Description) &&
+	  selectedProfiles.Count != 0)
+{
+	<button style="margin-top:20px" @onclick="@SendNotify" class="dm-btn create">Send Notification</button>
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
+@code {
+	RequestResultDto? resp;
+	bool isClick = false;
+
+	bool loadUsers = false;
+	List<(ProfileDto Profile, string Image)> profilesFind;
+	List<int> selectedProfiles = new();
+
+	NotificationDto notifyNew = new();
+	string findLine = string.Empty;
+
+	string CheckSelect(int id) =>
+	selectedProfiles.FirstOrDefault(x => x == id) == 0 ? "--dm-malina-d" : "--dm-green-sea";
+
+	async Task FindProfiles()
+	{
+		if (!string.IsNullOrWhiteSpace(findLine))
+		{
+			isClick = true;
+			loadUsers = true;
+
+			profilesFind = new();
+
+			var req = await new ServerGet<IEnumerable<ProfileDto>?>(WebCooker)
+			.DoRequest_GET($"Profile/GetFind/{findLine}");
+			resp = req;
+			foreach (var item in req.Value.ToList())
+			{
+				string photo = CSS_Styles.GetImage(
+				(await new ServerGet<byte[]>(WebCooker)
+				.DoRequest_GET($"Profile/GetPersonalPhoto/{item.Id}")).Value);
+
+				profilesFind.Add((item, photo));
+			}
+
+			await Task.Delay(500);
+			loadUsers = false;
+			StateHasChanged();
+		}
+	}
+
+	void AddProfile(int id)
+	{
+		isClick = false;
+		if (selectedProfiles.FirstOrDefault(x => x == id) == 0)
+			selectedProfiles.Add(id);
+		else
+			selectedProfiles.Remove(id);
+
+		StateHasChanged();
+	}
+
+	async Task SendNotify()
+	{
+		isClick = true;
+		notifyNew.DateTime = DateTime.Now;
+
+		var req = await new ServerPost<NotificationDto>(WebCooker)
+			.DoRequest_POST_int("Notify/Create", notifyNew);
+		resp = req;
+
+		if (req.Response.IsSuccess)
+		{
+			var notify = req.Value;
+			foreach (var item in selectedProfiles)
+			{
+				await new ServerDelete(WebCooker)
+					.DoRequest_DELETE($"Notify/Bind/{item}/{notify}");
+			}
+		}
+	}
+}

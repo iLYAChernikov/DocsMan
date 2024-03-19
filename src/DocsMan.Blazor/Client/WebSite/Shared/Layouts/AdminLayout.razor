@@ -1,0 +1,103 @@
+@using DocsMan.Blazor.Client.WebSite.Shared.Components
+@using DocsMan.Blazor.Client.WebSite.Shared.Support
+@using DocsMan.Blazor.Shared.DTOs
+@inherits LayoutComponentBase
+
+@if (loading)
+{
+	<PrimeLoading />
+}
+else
+{
+	<div class="global-page">
+
+		<header>
+			<HeaderPage PhotoUrl=@imageUrl IsNotifyNotRead=@isNotifyNotRead UserName=@name />
+			<SidebarAdminPanelPage />
+		</header>
+
+		<main class="user-main">
+			@Body
+		</main>
+
+	</div>
+}
+
+@code {
+	bool isNotifyNotRead;
+	string name;
+	string imageUrl;
+
+	bool loading = true;
+	bool isUserAuth;
+	protected override async void OnInitialized()
+	{
+		isUserAuth = await new ServerConnector(WebCooker).IsUserAuthorized();
+		CheckAuthLinks();
+		await ProfileLoad();
+
+		await Task.Delay(500);
+		loading = false;
+
+		StateHasChanged();
+	}
+
+	async Task ProfileLoad()
+	{
+		// get current profile id
+		var id_resp = await new ServerGet<int>(WebCooker).DoRequest_GET("Auth/GetProfileId");
+		if (id_resp.Response.IsSuccess)
+		{
+			//	load current profile
+			var prof = await new ServerGet<ProfileDto>(WebCooker)
+			.DoRequest_GET($"Profile/GetOneById/{id_resp.Value}");
+			if (prof != null && prof.Value != null)
+				name = prof.Value.Short_FIO;
+			else
+				name = "User_FIO";
+
+			//	load profile photo
+			var photo = await new ServerGet<byte[]>(WebCooker)
+			.DoRequest_GET($"Profile/GetPersonalPhoto/{id_resp.Value}");
+			if (photo != null)
+				imageUrl = CSS_Styles.GetImage(photo.Value);
+
+			//	check notifies
+			var notify = await new ServerGet<bool>(WebCooker)
+			.DoRequest_GET($"Profile/IsAnyNotifyNotRead/{id_resp.Value}");
+			if (notify != null)
+				isNotifyNotRead = notify.Value;
+			else isNotifyNotRead = false;
+
+			//	check admin access
+			bool isAdmin;
+			var req = await new ServerGet<bool>(WebCooker)
+			.DoRequest_GET("Auth/IsAdmin");
+			if (req != null)
+				isAdmin = req.Value;
+			else
+				isAdmin = false;
+			if (!isAdmin)
+				GoToHome();
+		}
+		CheckAuthLinks();
+		StateHasChanged();
+	}
+
+	bool CheckCurrentPath(string path) =>
+	PagesNavigation.Uri.ToLower() == PagesNavigation.BaseUri.ToLower() + path.ToLower();
+	void GoAuthorizing() => PagesNavigation.NavigateTo("/User/Authorization");
+	void GoRegistration() => PagesNavigation.NavigateTo("/User/Registration");
+	void GoToHome() => PagesNavigation.NavigateTo("/");
+	void CheckAuthLinks()
+	{
+		if (!isUserAuth) GoAuthorizing();
+		if (CheckCurrentPath("User/Authorization"))
+			if (isUserAuth) GoToHome();
+			else GoAuthorizing();
+		if (CheckCurrentPath("User/Registration"))
+			if (isUserAuth) GoToHome();
+			else GoRegistration();
+		if (CheckCurrentPath(PagesNavigation.BaseUri) && isUserAuth) GoToHome();
+	}
+}

@@ -1,0 +1,33 @@
+<div class="nav-dark-sidebar">
+	<ul class="nav-dark-sidebar-menu">
+
+		@if (IsRoleAdmin)
+		{
+			@foreach (var menuItem in SideBarNavMenuList.adminMenu)
+			{
+				<li class="nav-dark-sidebar-menu-list">
+					<span class="side-menu-item-icon">
+						<i class="fas @menuItem.Icon"></i>
+					</span>
+					<a class="title" href="@menuItem.HrefUrl">@menuItem.Title</a>
+				</li>
+			}
+		}
+
+		@foreach (var menuItem in SideBarNavMenuList.userMenu)
+		{
+			<li class="nav-dark-sidebar-menu-list">
+				<span class="side-menu-item-icon">
+					<i class="fas @menuItem.Icon"></i>
+				</span>
+				<a class="title" href="@menuItem.HrefUrl">@menuItem.Title</a>
+			</li>
+		}
+
+	</ul>
+</div>
+
+@code {
+	[Parameter]
+	public bool IsRoleAdmin { get; set; }
+}

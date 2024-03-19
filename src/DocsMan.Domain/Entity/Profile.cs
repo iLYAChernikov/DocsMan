@@ -7,7 +7,7 @@ namespace DocsMan.Domain.Entity
 			get => _id;
 			set
 			{
-				if ( value < 0 )
+				if (value < 0)
 					throw new ArgumentNullException("Ошибка заполнения id профиля");
 				_id = value;
 			}
@@ -18,7 +18,7 @@ namespace DocsMan.Domain.Entity
 			get => _userId;
 			set
 			{
-				if ( value <= 0 )
+				if (value <= 0)
 					throw new ArgumentNullException("Ошибка заполнения id пользователя в профиле");
 				_userId = value;
 			}
@@ -30,7 +30,7 @@ namespace DocsMan.Domain.Entity
 			get => _surName;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения фамилии в профиле");
 				_surName = value;
 			}
@@ -40,7 +40,7 @@ namespace DocsMan.Domain.Entity
 			get => _name;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения имени в профиле");
 				_name = value;
 			}
@@ -50,7 +50,7 @@ namespace DocsMan.Domain.Entity
 			get => _lastName;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения отчества в профиле");
 				_lastName = value;
 			}

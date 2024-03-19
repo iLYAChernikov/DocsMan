@@ -1,0 +1,127 @@
+@page "/Admin/DocsType"
+@layout AdminLayout
+@using DocsMan.Blazor.Shared.DTOs
+
+<PageTitle>DocsType</PageTitle>
+
+<h3 class="page-title">DocsTypes</h3>
+
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	<div class="dm-add-new">
+		<h3>Add Docs Type</h3>
+		<div class="set-data">
+			<label for="type-name">Type Name</label>
+			<br>
+			<InputText @bind-Value="@newType.Title" id="type-name"></InputText>
+		</div>
+		<div class="set-data">
+			<label for="type-desc">Type Desc</label>
+			<br>
+			<InputText @bind-Value="@newType.Description" id="type-desc"></InputText>
+		</div>
+		<button @onclick="@CreateType" class="dm-btn create">Create</button>
+	</div>
+
+	@if (types != null)
+	{
+		<div class="dm-list">
+			<a @onclick="@UpdateList" class="update-list">
+				<i class="fas fa-sync-alt"></i>
+			</a>
+			<table class="dm-table">
+				<tr>
+					<td>Title</td>
+					<td>Description</td>
+					<td>Delete</td>
+				</tr>
+				@foreach (var item in types)
+				{
+					<tr>
+						<td>@item.Title</td>
+						<td>@item.Description</td>
+						<td>
+							<a @onclick="()=>DeleteType(item.Id)" class="delete-icon">
+								<i class="fas fa-trash-alt"></i>
+							</a>
+						</td>
+					</tr>
+				}
+			</table>
+		</div>
+	}
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
+@code {
+
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+	IEnumerable<PersonalDocumentTypeDto>? types;
+	PersonalDocumentTypeDto newType = new();
+
+	protected override async void OnInitialized()
+	{
+		isClick = true;
+		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker)
+		.DoRequest_GET("PersonalDocType/GetAll");
+
+		resp = req;
+		types = req?.Value;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task UpdateList()
+	{
+		isClick = true;
+		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker)
+		.DoRequest_GET("PersonalDocType/GetAll");
+
+		types = req?.Value;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task CreateType()
+	{
+		resp = null;
+		isClick = true;
+		loading = true;
+
+		var req = await new ServerPost<PersonalDocumentTypeDto>(WebCooker)
+		.DoRequest_POST($"PersonalDocType/Create", newType);
+
+		resp = req;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task DeleteType(int typeId)
+	{
+		resp = null;
+		isClick = true;
+		loading = true;
+
+		var req = await new ServerDelete(WebCooker)
+		.DoRequest_DELETE($"PersonalDocType/Delete/{typeId}");
+
+		resp = req;
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+}

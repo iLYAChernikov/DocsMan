@@ -6,7 +6,7 @@ namespace DocsMan.Blazor.Shared.DTOs
 
 		public int FileId { get; set; }
 
-		public DateTime DateTimeOfChanges { get; set; } = DateTime.Now;
+		public string DateTimeOfChanges { get; set; } = string.Empty;
 		public string? Description { get; set; } = string.Empty;
 	}
 }

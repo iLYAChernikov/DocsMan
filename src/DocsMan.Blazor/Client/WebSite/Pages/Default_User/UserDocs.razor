@@ -1,0 +1,230 @@
+@page "/User/Docs/{ProfileId:int?}"
+@layout MainLayout
+@using DocsMan.Blazor.Shared.DTOs
+
+<PageTitle>Документы</PageTitle>
+
+<h3 class="page-title">Документы</h3>
+@if (IsAdmin)
+{
+	<h3 class="page-title">Admin View</h3>
+}
+@if (loading)
+{
+	<SpinnerLoading />
+}
+else
+{
+	<div class="dm-add-new">
+		<h3>Создать документ</h3>
+		<div class="set-data">
+			<label for="type-name">Тип:</label>
+			<br>
+			<InputSelect @bind-Value="chosen_type" id="type-name">
+				@foreach (var itemTitle in types.Select(x=>x.Title))
+				{
+					<option value="@itemTitle">@itemTitle</option>
+				}
+			</InputSelect>
+		</div>
+		<div class="set-data">
+			<label for="o-file">Загрузить файл:</label>
+			<br>
+			<InputFile OnChange="OnInputFile" id="o-file"></InputFile>
+		</div>
+		<div class="set-data">
+			<label for="doc-text">Текст:</label>
+			<br>
+			<InputText @bind-Value="@document.TextData" id="doc-text"></InputText>
+		</div>
+		@if (fileUploaded && !string.IsNullOrWhiteSpace(document.TextData) && chosen_type != string.Empty)
+		{
+			<button @onclick="@CreateDoc" class="dm-btn create">Создать</button>
+		}
+	</div>
+	@if (docs != null)
+	{
+		<div class="dm-list">
+			<a @onclick="@LoadDocsList" class="update-list">
+				<i class="fas fa-sync-alt"></i>
+			</a>
+			<table class="dm-table">
+				<tr>
+					<td>Тип</td>
+					<td>Текст</td>
+					<td>Скачать</td>
+					<td>Удалить</td>
+				</tr>
+				@foreach (var item in docs)
+				{
+					<tr>
+						<td>@item.PersonalDocumentType.Title</td>
+						<td>@item.Text</td>
+						<td>
+							<a @onclick="()=>DownloadDoc(item.ProfileId, item.TypeId)" class="link-icon">
+								<i class="fas fa-download"></i>
+							</a>
+						</td>
+						<td>
+							<a @onclick="()=>DeleteDoc(item.ProfileId, item.TypeId)" class="delete-icon">
+								<i class="fas fa-trash-alt"></i>
+							</a>
+						</td>
+					</tr>
+				}
+			</table>
+		</div>
+		
+	}
+}
+
+<ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
+
+@code {
+	[Parameter]
+	public int ProfileId { get; set; } = 0;
+	bool IsAdmin;
+
+	bool loading = true;
+	bool isClick = false;
+	RequestResultDto? resp;
+
+	IEnumerable<PersonalDocumentDto>? docs;
+	IEnumerable<PersonalDocumentTypeDto>? types;
+
+	bool fileUploaded = false;
+	string chosen_type = string.Empty;
+	PersonalDocumentDataDto document = new();
+
+	protected override async void OnInitialized()
+	{
+		loading = true;
+		if (ProfileId <= 0)
+		{
+			ProfileId = await GetProfileId();
+		}
+		else
+		{
+			if (ProfileId != await GetProfileId() && !await IsAdminCheck())
+			{
+				PagesNavigation.NavigateTo("/User/Docs");
+			}
+			IsAdmin = await IsAdminCheck();
+		}
+
+		await LoadDocsList();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task<int> GetProfileId()
+	{
+		var id_resp = await new ServerGet<int>(WebCooker)
+		.DoRequest_GET("Auth/GetProfileId");
+		if (id_resp.Response.IsSuccess)
+			return id_resp.Value;
+		else
+		{
+			resp = id_resp;
+			return 0;
+		}
+	}
+
+	async Task<bool> IsAdminCheck()
+	{
+		var req = await new ServerGet<bool>(WebCooker)
+		.DoRequest_GET("Auth/IsAdmin");
+		if (req != null)
+			return req.Value;
+		else
+			return false;
+	}
+
+	async Task LoadDocsList()
+	{
+		loading = true;
+
+		await GetTypes();
+		await GetDocs();
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task GetDocs()
+	{
+		var req = await new ServerGet<IEnumerable<PersonalDocumentDto>>(WebCooker)
+		.DoRequest_GET($"Profile/GetPersonalDocs/{ProfileId}");
+
+		docs = req.Value;
+	}
+
+	async Task GetTypes()
+	{
+		var req = await new ServerGet<IEnumerable<PersonalDocumentTypeDto>>(WebCooker)
+		.DoRequest_GET("PersonalDocType/GetAll");
+
+		types = req.Value;
+	}
+
+	async Task OnInputFile(InputFileChangeEventArgs e)
+	{
+		var file = e.GetMultipleFiles().FirstOrDefault();
+		if (file == null)
+		{
+			fileUploaded = false;
+			return;
+		}
+		else
+		{
+			fileUploaded = true;
+			document.FileName = file.Name;
+			using (var ms = new MemoryStream())
+			{
+				await file.OpenReadStream(maxAllowedSize: 20480000).CopyToAsync(ms);
+				document.FileData = ms.ToArray();
+			}
+		}
+	}
+
+	async Task CreateDoc()
+	{
+		if (!fileUploaded)
+			return;
+
+		isClick = true;
+		loading = true;
+
+		document.OwnerId = ProfileId;
+		document.PersonalDocumentTypeId = types.FirstOrDefault(x => x.Title == chosen_type).Id;
+
+		resp = await new ServerPost<PersonalDocumentDataDto>(WebCooker)
+		.DoRequest_POST("Profile/AddPersonalDoc", document);
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task DeleteDoc(int profileId, int typeId)
+	{
+		isClick = true;
+		loading = true;
+		resp = await new ServerDelete(WebCooker)
+		.DoRequest_DELETE($"Profile/DeletePersonalDoc/{profileId}/{typeId}");
+
+		await Task.Delay(500);
+		loading = false;
+		StateHasChanged();
+	}
+
+	async Task DownloadDoc( int profileId, int typeId )
+	{
+		isClick = true;
+		PagesNavigation.NavigateTo(
+			ServerConnector.DoDownload($"Profile/DownloadPersonalDoc/{profileId}/{typeId}"));
+	}
+}

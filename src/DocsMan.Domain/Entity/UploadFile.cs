@@ -7,7 +7,7 @@ namespace DocsMan.Domain.Entity
 			get => _id;
 			set
 			{
-				if ( value < 0 )
+				if (value < 0)
 					throw new ArgumentNullException("Ошибка заполнения id файла");
 				_id = value;
 			}
@@ -17,7 +17,7 @@ namespace DocsMan.Domain.Entity
 			get => _filePath;
 			set
 			{
-				if ( string.IsNullOrWhiteSpace(value) )
+				if (string.IsNullOrWhiteSpace(value))
 					throw new ArgumentNullException("Ошибка заполнения пути файла");
 				_filePath = value;
 			}
