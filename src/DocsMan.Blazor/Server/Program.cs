@@ -141,7 +141,7 @@ namespace DocsMan.Blazor
 			policyBuilder =>
 			{
 				policyBuilder
-				.WithOrigins("https://localhost:7075")
+				.WithOrigins("https://localhost:7200")
 				.AllowAnyHeader()
 				.AllowAnyMethod();
 			}

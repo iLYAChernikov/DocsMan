@@ -17,7 +17,7 @@ namespace DocsMan.Blazor.Client.WebSite.Shared.Support
 			_cooker = cooker;
 		}
 
-		private static string ServerPath => "https://localhost:7070/";
+		private static string ServerPath => "https://localhost:5200/";
 		protected static HttpClient ServerOk = new() { BaseAddress = new Uri(ServerPath) };
 
 		public async Task<string?> GetCookie(string name) =>
