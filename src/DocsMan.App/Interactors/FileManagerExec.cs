@@ -334,8 +334,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Destruction document",
-					Description = $"Document \"{docName}\" was destruction forever",
+					Title = "Уничтожение файла",
+					Description = $"Файл \"{docName}\" навсегда удалён",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -389,8 +389,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Destruction folder",
-					Description = $"Folder \"{docName}\" was destruction forever",
+					Title = "Уничтожение папки",
+					Description = $"Папка \"{docName}\" навсегда удалена",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -431,8 +431,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Delete document",
-					Description = $"Document \"{doc?.Name + doc?.FileType}\" was moved to the Trash",
+					Title = "Удаление файла",
+					Description = $"Файл \"{doc?.Name + doc?.FileType}\" перемещён в Корзину",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -475,8 +475,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Delete folder",
-					Description = $"Folder \"{folder?.Name}\" was moved to the Trash",
+					Title = "Удаление папки",
+					Description = $"Папка \"{folder?.Name}\" перемещена в Корзину",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -521,8 +521,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Return document",
-					Description = $"Document \"{doc?.Name + doc?.FileType}\" was returned to the FileManager",
+					Title = "Восстановление файла",
+					Description = $"Файл \"{doc?.Name + doc?.FileType}\" возвращён в Файловый менеджер",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -565,8 +565,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Return folder",
-					Description = $"Folder \"{folder?.Name}\" was returned to the FileManager",
+					Title = "Восстановление папки",
+					Description = $"Папка \"{folder?.Name}\" возвращена в Файловый менеджер",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -660,8 +660,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Share document",
-					Description = $"You have been given access to the document \"{doc?.Name + doc?.FileType}\"",
+					Title = "Получение доступа к файлу",
+					Description = $"Вам был дан доступ к файлу \"{doc?.Name + doc?.FileType}\"",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -702,8 +702,8 @@ namespace DocsMan.App.Interactors
 
 				Notification alert = new()
 				{
-					Title = "Share folder",
-					Description = $"You have been given access to the folder \"{folder?.Name}\"",
+					Title = "Получение доступа к папке",
+					Description = $"Вам был дан доступ к папке \"{folder?.Name}\"",
 					DateTime = DateTime.Now
 				};
 				var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -800,8 +800,8 @@ namespace DocsMan.App.Interactors
 				{
 					Notification alert = new()
 					{
-						Title = "Rename document",
-						Description = $"Document \"{oldName + doc?.FileType}\" was rename to \"{name + doc?.FileType}\"",
+						Title = "Переименование файла",
+						Description = $"Файл \"{oldName + doc?.FileType}\" переименован в \"{name + doc?.FileType}\"",
 						DateTime = DateTime.Now
 					};
 					var req = await _notifyExec.CreateNotify(alert.ToDto());
@@ -850,8 +850,8 @@ namespace DocsMan.App.Interactors
 				{
 					Notification alert = new()
 					{
-						Title = "Rename folder",
-						Description = $"Folder \"{oldName}\" was rename to \"{name}\"",
+						Title = "Переименование папки",
+						Description = $"Папка \"{oldName}\" переименована в  \"{name}\"",
 						DateTime = DateTime.Now
 					};
 					var req = await _notifyExec.CreateNotify(alert.ToDto());

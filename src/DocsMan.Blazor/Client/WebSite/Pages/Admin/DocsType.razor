@@ -2,9 +2,9 @@
 @layout AdminLayout
 @using DocsMan.Blazor.Shared.DTOs
 
-<PageTitle>DocsType</PageTitle>
+<PageTitle>DocsTypes</PageTitle>
 
-<h3 class="page-title">DocsTypes</h3>
+<h3 class="page-title">Типы личных документов</h3>
 
 @if (loading)
 {
@@ -13,18 +13,18 @@
 else
 {
 	<div class="dm-add-new">
-		<h3>Add Docs Type</h3>
+		<h3>Добавить тип</h3>
 		<div class="set-data">
-			<label for="type-name">Type Name</label>
+			<label for="type-name">Название</label>
 			<br>
 			<InputText @bind-Value="@newType.Title" id="type-name"></InputText>
 		</div>
 		<div class="set-data">
-			<label for="type-desc">Type Desc</label>
+			<label for="type-desc">Описание</label>
 			<br>
 			<InputText @bind-Value="@newType.Description" id="type-desc"></InputText>
 		</div>
-		<button @onclick="@CreateType" class="dm-btn create">Create</button>
+		<button @onclick="@CreateType" class="dm-btn create">Создать</button>
 	</div>
 
 	@if (types != null)
@@ -35,9 +35,9 @@ else
 			</a>
 			<table class="dm-table">
 				<tr>
-					<td>Title</td>
-					<td>Description</td>
-					<td>Delete</td>
+					<td>Название</td>
+					<td>Описание</td>
+					<td>Удалить</td>
 				</tr>
 				@foreach (var item in types)
 				{

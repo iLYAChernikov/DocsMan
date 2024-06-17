@@ -84,7 +84,7 @@ public static class SideBarNavMenuList
 	{
 		new ()
 		{
-			Title = "Менеджер",
+			Title = "Проводник",
 			Icon = "fas fa-folder-open",
 			HrefUrl = "User/Files"
 		},
@@ -100,7 +100,7 @@ public static class SideBarNavMenuList
 	{
 		new ()
 		{
-			Title = "Admin Panel",
+			Title = "Управление",
 			Icon = "far fa-user-secret",
 			HrefUrl = "Admin/Panel"
 		}
@@ -110,31 +110,31 @@ public static class SideBarNavMenuList
 	{
 		new ()
 		{
-			Title = "Home",
+			Title = "Главная",
 			Icon = "far fa-home",
 			HrefUrl = "/"
 		},
 		new ()
 		{
-			Title = "Roles",
+			Title = "Роли",
 			Icon = "fas fa-user-tag",
 			HrefUrl = "Admin/Role"
 		},
 		new ()
 		{
-			Title = "DocsTypes",
+			Title = "Документы",
 			Icon = "fas fa-id-card",
 			HrefUrl = "Admin/DocsType"
 		},
 		new ()
 		{
-			Title = "Groups",
+			Title = "Группы",
 			Icon = "fas fa-users",
 			HrefUrl = "Admin/Group"
 		},
 		new ()
 		{
-			Title = "Notifying",
+			Title = "Уведомления",
 			Icon = "fas fa-envelope",
 			HrefUrl = "Admin/Notify"
 		},

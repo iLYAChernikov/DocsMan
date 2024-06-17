@@ -2,9 +2,9 @@
 @layout AdminLayout
 @using DocsMan.Blazor.Shared.DTOs
 
-<PageTitle>Role</PageTitle>
+<PageTitle>Roles</PageTitle>
 
-<h3 class="page-title">Roles</h3>
+<h3 class="page-title">Роли</h3>
 
 @if (loading)
 {
@@ -13,18 +13,18 @@
 else
 {
 	<div class="dm-add-new">
-		<h3>Add Role</h3>
+		<h3>Добавить роль</h3>
 		<div class="set-data">
-			<label for="role-name">Role Name</label>
+			<label for="role-name">Название</label>
 			<br>
 			<InputText @bind-Value="@newRole.Title" id="role-name"></InputText>
 		</div>
 		<div class="set-data">
-			<label for="role-desc">Role Desc</label>
+			<label for="role-desc">Описание</label>
 			<br>
 			<InputText @bind-Value="@newRole.Description" id="role-desc"></InputText>
 		</div>
-		<button @onclick="@CreateRole" class="dm-btn create">Create</button>
+		<button @onclick="@CreateRole" class="dm-btn create">Создать</button>
 	</div>
 
 	@if (roles != null)
@@ -35,10 +35,10 @@ else
 			</a>
 			<table class="dm-table">
 				<tr>
-					<td>Title</td>
-					<td>Description</td>
-					<td>Users</td>
-					<td>Delete</td>
+					<td>Название</td>
+					<td>Описание</td>
+					<td>Пользователи</td>
+					<td>Удалить</td>
 				</tr>
 				@foreach (var item in roles)
 				{
@@ -63,7 +63,7 @@ else
 		@if (chosenRole != null)
 		{
 			<div class="dm-list">
-				<h3>Chosen role: @chosenRole.Title</h3>
+				<h3>Выбрана роль: @chosenRole.Title</h3>
 				@if ( chosenRole.Id != 1 )
 				{
 					<a style="display: none;" class="add-users">
@@ -77,10 +77,10 @@ else
 					</a>
 					<table class="dm-table">
 						<tr>
-							<td>Photo</td>
-							<td>FIO</td>
+							<td>Фото</td>
+							<td>ФИО</td>
 							<td>Email</td>
-							<td>Delete</td>
+							<td>Удалить</td>
 						</tr>
 						@if (profiles.Count > 0 && images.Count > 0)
 						{

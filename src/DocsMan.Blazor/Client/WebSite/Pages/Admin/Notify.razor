@@ -4,27 +4,27 @@
 
 <PageTitle>Notify</PageTitle>
 
-<h3 class="page-title">Notifying</h3>
+<h3 class="page-title">Панель уведомлений</h3>
 
 <div class="dm-add-new">
 	<div class="set-data">
-		<label for="ttl">Title:</label>
+		<label for="ttl">Название:</label>
 		<br>
 		<InputText @bind-Value="notifyNew.Title" id="ttl"></InputText>
 	</div>
 	<div class="set-data">
-		<label for="desc">Description:</label>
+		<label for="desc">Описание:</label>
 		<br>
 		<InputText @bind-Value="notifyNew.Description" id="desc"></InputText>
 	</div>
 </div>
 <div class="dm-add-new">
 	<div class="set-data">
-		<label for="find">FIO/Email:</label>
+		<label for="find">ФИО/Email:</label>
 		<br>
 		<InputText @bind-Value="findLine" id="find"></InputText>
 	</div>
-	<button @onclick="@FindProfiles" class="dm-btn create">Find Users</button>
+	<button @onclick="@FindProfiles" class="dm-btn create">Найти</button>
 </div>
 @if (loadUsers)
 {
@@ -36,10 +36,10 @@ else
 	{
 		<table class="dm-table">
 			<tr>
-				<td>Photo</td>
-				<td>FIO</td>
+				<td>Фото</td>
+				<td>ФИО</td>
 				<td>Email</td>
-				<td>Add</td>
+				<td>Добавить</td>
 			</tr>
 			@if (profilesFind.Count > 0)
 			{
@@ -70,7 +70,7 @@ else
 	 !string.IsNullOrWhiteSpace(notifyNew.Description) &&
 	  selectedProfiles.Count != 0)
 {
-	<button style="margin-top:20px" @onclick="@SendNotify" class="dm-btn create">Send Notification</button>
+	<button style="margin-top:20px" @onclick="@SendNotify" class="dm-btn create">Отправить уведомление</button>
 }
 
 <ResponseResultPage RequestResult="@resp" IsWasSendRequest="@isClick" OpenCloseStyles="@CSS_Styles.OpenCloseStyles" />
