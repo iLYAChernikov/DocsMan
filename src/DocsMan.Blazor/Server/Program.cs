@@ -9,6 +9,7 @@ using DocsMan.Blazor.Server.DataStorage;
 using DocsMan.Domain.BinderEntity;
 using DocsMan.Domain.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -181,6 +182,15 @@ namespace DocsMan.Blazor
 			app.MapRazorPages();
 			app.MapControllers();
 			app.MapFallbackToFile("index.html");
+
+			//	disable file-size limit in server
+			app.Use(async (context, next) =>
+			{
+				context.Features.Get<IHttpMaxRequestBodySizeFeature>()
+					.MaxRequestBodySize = null;
+
+				await next.Invoke();
+			});
 
 			app.Run();
 		}

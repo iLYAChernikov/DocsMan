@@ -646,7 +646,8 @@
 			newFile.FileName = file.Name;
 			using (var ms = new MemoryStream())
 			{
-				await file.OpenReadStream(maxAllowedSize: 102400000).CopyToAsync(ms);
+												//	limit 100Mb
+				await file.OpenReadStream(maxAllowedSize: 104_857_600).CopyToAsync(ms);
 				newFile.FileData = ms.ToArray();
 			}
 		}
@@ -668,7 +669,8 @@
 			changeFile.FileName = file.Name;
 			using (var ms = new MemoryStream())
 			{
-				await file.OpenReadStream(maxAllowedSize: 102400000).CopyToAsync(ms);
+												//	limit 100Mb
+				await file.OpenReadStream(maxAllowedSize: 104_857_600).CopyToAsync(ms);
 				changeFile.FileData = ms.ToArray();
 			}
 		}

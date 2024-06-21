@@ -184,7 +184,8 @@ else
 			document.FileName = file.Name;
 			using (var ms = new MemoryStream())
 			{
-				await file.OpenReadStream(maxAllowedSize: 20480000).CopyToAsync(ms);
+												//	limit 20Mb
+				await file.OpenReadStream(maxAllowedSize: 20_971_520).CopyToAsync(ms);
 				document.FileData = ms.ToArray();
 			}
 		}
